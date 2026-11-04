@@ -1,0 +1,143 @@
+<div class="bg-slate-900/90 backdrop-blur-md rounded-2xl border border-slate-800 p-5 shadow-xl flex flex-col gap-4">
+  <!-- Header -->
+  <div class="flex items-start justify-between border-b border-slate-800 pb-3">
+    <div>
+      <div class="flex items-center gap-2">
+        <!-- ShieldCheck Icon -->
+        <svg class="w-5 h-5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+          <path d="m9 12 2 2 4-4" />
+        </svg>
+        <h3 class="font-bold text-slate-100 text-base">
+          {{ t().stabilizerTitle }}: Stab_G({{ pieceName() }})
+        </h3>
+      </div>
+      <p class="text-xs text-slate-400 mt-1">
+        {{ t().stabilizerSubtitle }}
+      </p>
+    </div>
+    <div class="px-2.5 py-1 rounded-full bg-emerald-950/60 border border-emerald-800/60 text-emerald-300 font-mono text-xs flex items-center gap-1.5">
+      <!-- Lock Icon -->
+      <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+      </svg>
+      <span>{{ t().fixedPointsTag }}</span>
+    </div>
+  </div>
+
+  <!-- Intuitive Beginner Guide Box -->
+  <div class="p-3.5 rounded-xl bg-gradient-to-r from-emerald-950/40 to-slate-950 border border-emerald-500/30 text-xs text-slate-300 space-y-2">
+    <div class="flex items-center gap-2 font-bold text-emerald-300">
+      <span>💡</span>
+      <span>{{ language() === 'bg' ? 'Какво е стабилизатор и как да го проверите?' : 'What is a Stabilizer and how to verify it?' }}</span>
+    </div>
+    <p class="text-[11px] leading-relaxed text-slate-300">
+      {{ language() === 'bg'
+        ? 'Стабилизаторът Stab(x) включва само онези ходове, които оставят избраното парче абсолютно неподвижно на мястото му. Ако завъртането не засяга избраното парче (или прави 360° на неговия слой), то е в неговия стабилизатор!'
+        : 'The stabilizer Stab(x) contains only those moves that leave the chosen piece strictly fixed in its place. If a turn does not touch the piece, it belongs to its stabilizer!'
+      }}
+    </p>
+    <div class="p-2 bg-slate-900/90 rounded-lg border border-slate-800 text-[11px] space-y-1 text-slate-400">
+      <div class="text-amber-300 font-semibold">{{ language() === 'bg' ? '🎯 Опитайте следното:' : '🎯 Try this:' }}</div>
+      <div>1. {{ language() === 'bg' ? 'Погледнете списъка с ходове долу: тези със зелена отметка не мърдат парчето.' : 'Look at the candidate moves below: those with green checkmarks keep the piece motionless.' }}</div>
+      <div>2. {{ language() === 'bg' ? 'Кликнете върху зелен ход (напр. D или R за горно парче) и вижте как кубчето се върти, но избраното парче остава неподвижно!' : 'Click a green move (e.g. D or R) and observe the cube turn while the target piece stays fixed!' }}</div>
+    </div>
+  </div>
+
+  <!-- Orbit-Stabilizer Cardinality Card -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+    <div class="bg-slate-950/80 rounded-xl p-3 border border-slate-800 flex flex-col justify-between">
+      <div class="text-xs font-semibold text-slate-300 flex items-center gap-1.5 mb-2">
+        <!-- Calculator Icon -->
+        <svg class="w-4 h-4 text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect width="16" height="20" x="4" y="2" rx="2" />
+          <line x1="8" x2="16" y1="6" y2="6" />
+          <line x1="16" x2="16" y1="14" y2="18" />
+          <path d="M16 10h.01" /><path d="M12 10h.01" /><path d="M8 10h.01" />
+          <path d="M12 14h.01" /><path d="M8 14h.01" />
+          <path d="M12 18h.01" /><path d="M8 18h.01" />
+        </svg>
+        <span>{{ t().posStabilizerIndex }}</span>
+      </div>
+      <div class="text-center text-sm py-2.5 px-3 bg-slate-900 rounded-xl border border-slate-800 text-slate-200 min-h-[54px] flex items-center justify-center overflow-x-auto">
+        <app-math-view
+          [math]="posStabilizerFormula()"
+          [block]="true"
+        />
+      </div>
+      <p class="text-[11px] text-slate-400 mt-2 leading-relaxed">
+        <span class="font-mono text-indigo-300 font-bold">
+          {{ selectedPieceType() === 'corner' ? '5,406,500,409,311,232,000' : '3,604,333,606,207,488,000' }}
+        </span> {{ t().posStabDesc }}
+      </p>
+    </div>
+
+    <div class="bg-slate-950/80 rounded-xl p-3 border border-slate-800 flex flex-col justify-between">
+      <div class="text-xs font-semibold text-slate-300 flex items-center gap-1.5 mb-2">
+        <!-- Lock Icon -->
+        <svg class="w-4 h-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+        </svg>
+        <span>{{ t().orientedStabTitle }}</span>
+      </div>
+      <div class="text-center text-sm py-2.5 px-3 bg-slate-900 rounded-xl border border-slate-800 text-slate-200 min-h-[54px] flex items-center justify-center overflow-x-auto">
+        <app-math-view
+          [math]="orientedStabilizerFormula()"
+          [block]="true"
+        />
+      </div>
+      <p class="text-[11px] text-slate-400 mt-2 leading-relaxed">
+        {{ t().orientedStabDesc }}
+      </p>
+    </div>
+  </div>
+
+  <!-- Generator Stability Grid -->
+  <div>
+    <div class="flex items-center justify-between mb-2">
+      <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+        {{ t().generatorMembership }}
+      </span>
+      <span class="text-xs text-slate-400">
+        {{ t().clickToTest }}
+      </span>
+    </div>
+    <div class="grid grid-cols-4 sm:grid-cols-7 gap-1.5">
+      @for (item of generatorCheck(); track item.move) {
+        <button
+          (click)="applyMove.emit(item.move)"
+          [disabled]="isAnimating()"
+          [title]="
+            item.fixesOrientation
+              ? item.move + ' fixes ' + pieceName()
+              : item.fixesPos
+              ? item.move + ' twists ' + pieceName()
+              : item.move + ' moves ' + pieceName()
+          "
+          [class]="'py-1.5 px-2 rounded-lg text-xs font-mono flex items-center justify-between border transition-all cursor-pointer ' + (
+            item.fixesOrientation
+              ? 'bg-emerald-950/50 text-emerald-300 border-emerald-800 hover:bg-emerald-900/50'
+              : item.fixesPos
+              ? 'bg-amber-950/40 text-amber-300 border-amber-800/60'
+              : 'bg-slate-950 text-slate-500 border-slate-800/80 hover:bg-slate-800 hover:text-slate-300'
+          )"
+        >
+          <span class="font-bold">{{ item.move }}</span>
+          @if (item.fixesOrientation) {
+            <!-- Check Icon -->
+            <svg class="w-3.5 h-3.5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          } @else {
+            <!-- X Icon -->
+            <svg class="w-3 h-3 text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 6 6 18" /><path d="m6 6 12 12" />
+            </svg>
+          }
+        </button>
+      }
+    </div>
+  </div>
+</div>

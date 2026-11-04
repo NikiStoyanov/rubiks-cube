@@ -1,0 +1,134 @@
+<div class="flex flex-col gap-4 animate-fade-in">
+  <!-- Tab Navigation Pill Bar -->
+  <div class="grid grid-cols-3 sm:grid-cols-5 gap-1 p-1 bg-slate-900/90 backdrop-blur-md rounded-2xl border border-slate-800">
+    <button
+      (click)="setActiveTab('orbit')"
+      [class]="'py-2 rounded-xl text-xs font-semibold flex flex-col items-center gap-1 transition-all ' + (
+        activeTab() === 'orbit'
+          ? 'bg-cyan-600 text-white shadow-md'
+          : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+      )"
+    >
+      <!-- Orbit Icon -->
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3" />
+        <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(45 12 12)" />
+        <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(-45 12 12)" />
+      </svg>
+      <span>{{ t().tabOrbit }}</span>
+    </button>
+
+    <button
+      (click)="setActiveTab('stabilizer')"
+      [class]="'py-2 rounded-xl text-xs font-semibold flex flex-col items-center gap-1 transition-all ' + (
+        activeTab() === 'stabilizer'
+          ? 'bg-emerald-600 text-white shadow-md'
+          : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+      )"
+    >
+      <!-- ShieldCheck Icon -->
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+        <path d="m9 12 2 2 4-4" />
+      </svg>
+      <span>{{ t().tabStabilizer }}</span>
+    </button>
+
+    <button
+      (click)="setActiveTab('cycles')"
+      [class]="'py-2 rounded-xl text-xs font-semibold flex flex-col items-center gap-1 transition-all ' + (
+        activeTab() === 'cycles'
+          ? 'bg-indigo-600 text-white shadow-md'
+          : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+      )"
+    >
+      <!-- GitCommit Icon -->
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3" />
+        <line x1="3" x2="9" y1="12" y2="12" />
+        <line x1="15" x2="21" y1="12" y2="12" />
+      </svg>
+      <span>{{ t().tabCycles }}</span>
+    </button>
+
+    <button
+      (click)="setActiveTab('order')"
+      [class]="'py-2 rounded-xl text-xs font-semibold flex flex-col items-center gap-1 transition-all ' + (
+        activeTab() === 'order'
+          ? 'bg-amber-600 text-white shadow-md'
+          : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+      )"
+    >
+      <!-- RotateCw Icon -->
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
+        <path d="M21 3v5h-5" />
+      </svg>
+      <span>{{ t().tabOrder }}</span>
+    </button>
+
+    <button
+      (click)="setActiveTab('subgroups')"
+      [class]="'py-2 rounded-xl text-xs font-semibold flex flex-col items-center gap-1 transition-all ' + (
+        activeTab() === 'subgroups'
+          ? 'bg-sky-600 text-white shadow-md'
+          : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+      )"
+    >
+      <!-- Boxes Icon -->
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2.97 12.92A2 2 0 0 0 2 14.63v3.24a2 2 0 0 0 .97 1.71l6 3.43a2 2 0 0 0 2.06 0l6-3.43a2 2 0 0 0 .97-1.71v-3.24a2 2 0 0 0-.97-1.71L11 9.49a2 2 0 0 0-2.06 0l-5.97 3.43Z" />
+        <path d="m12 12 6-3.43a2 2 0 0 0 .97-1.71V3.62a2 2 0 0 0-.97-1.71l-6-3.43a2 2 0 0 0-2.06 0l-6 3.43a2 2 0 0 0-.97 1.71v3.24a2 2 0 0 0 .97 1.71L10 12" />
+      </svg>
+      <span>{{ t().tabSubgroups }}</span>
+    </button>
+  </div>
+
+  <!-- Tab Content Panels -->
+  <div>
+    @if (activeTab() === 'orbit') {
+      <app-orbit-visualizer
+        [selectedPieceType]="selectedPieceType()"
+        [selectedPieceId]="selectedPieceId()"
+        [activeSubgroupId]="activeSubgroupId()"
+        (selectPiece)="selectPiece.emit($event)"
+        (selectSubgroup)="selectSubgroup.emit($event)"
+      />
+    }
+
+    @if (activeTab() === 'stabilizer') {
+      <app-stabilizer-inspector
+        [selectedPieceType]="selectedPieceType()"
+        [selectedPieceId]="selectedPieceId()"
+        [isAnimating]="isAnimating()"
+        (applyMove)="applyMove.emit($event)"
+      />
+    }
+
+    @if (activeTab() === 'cycles') {
+      <app-cycle-notation-panel
+        [analysis]="analysis()"
+        [lastMove]="lastMove()"
+        [showCycleArrows]="showCycleArrows()"
+        (toggleCycleArrows)="toggleCycleArrows.emit($event)"
+      />
+    }
+
+    @if (activeTab() === 'order') {
+      <app-order-cycle-stepper
+        [isSolved]="isSolved()"
+        [isAnimating]="isAnimating()"
+        (applyAlgorithm)="applyAlgorithm.emit($event)"
+      />
+    }
+
+    @if (activeTab() === 'subgroups') {
+      <app-subgroup-explorer
+        [activeSubgroupId]="activeSubgroupId()"
+        [isAnimating]="isAnimating()"
+        (selectSubgroup)="selectSubgroup.emit($event)"
+        (applyAlgorithm)="applyAlgorithm.emit($event)"
+      />
+    }
+  </div>
+</div>

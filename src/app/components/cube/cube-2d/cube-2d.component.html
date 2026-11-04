@@ -1,0 +1,120 @@
+<div
+  class="w-full h-full flex flex-col items-center justify-center p-3 select-none overflow-auto net-stage"
+  [class.unfolded]="active()"
+  [class.folded]="!active()"
+>
+  <!-- 2D Unfolded Net Grid Layout -->
+  <div class="flex flex-col items-center gap-2 max-w-full">
+    <!-- Top Row: U (Up / White) Face -->
+    <div class="flex justify-center">
+      <ng-container *ngTemplateOutlet="faceTemplate; context: { face: 'U' }"></ng-container>
+    </div>
+
+    <!-- Middle Row: L, F, R, B Faces -->
+    <div class="flex flex-wrap sm:flex-nowrap items-center justify-center gap-2">
+      <ng-container *ngTemplateOutlet="faceTemplate; context: { face: 'L' }"></ng-container>
+      <ng-container *ngTemplateOutlet="faceTemplate; context: { face: 'F' }"></ng-container>
+      <ng-container *ngTemplateOutlet="faceTemplate; context: { face: 'R' }"></ng-container>
+      <ng-container *ngTemplateOutlet="faceTemplate; context: { face: 'B' }"></ng-container>
+    </div>
+
+    <!-- Bottom Row: D (Down / Yellow) Face -->
+    <div class="flex justify-center">
+      <ng-container *ngTemplateOutlet="faceTemplate; context: { face: 'D' }"></ng-container>
+    </div>
+  </div>
+
+  <!-- Face Template Definition -->
+  <ng-template #faceTemplate let-face="face">
+    <div
+      [class]="'face-card face-' + face + ' bg-slate-900/95 border border-slate-800 rounded-2xl p-2 flex flex-col items-center gap-1.5 shadow-lg shadow-black/40 backdrop-blur-sm transition-all hover:border-slate-700'"
+    >
+      <!-- Face Header with Label & Rotation Controls -->
+      <div class="flex items-center justify-between w-full px-1">
+        <div class="flex items-center gap-1.5">
+          <span
+            class="w-2.5 h-2.5 rounded-full shadow-sm"
+            [style.background-color]="getFaceColor(face)"
+          ></span>
+          <span class="text-xs font-bold font-mono text-slate-200">{{ face }}</span>
+          <span class="text-[10px] text-slate-400 font-medium">({{ getFaceLabel(face) }})</span>
+        </div>
+
+        <!-- Quick Rotate Face Buttons -->
+        <div class="flex items-center gap-0.5">
+          <button
+            type="button"
+            (click)="onFaceRotateCW(face)"
+            [disabled]="isAnimating()"
+            [title]="getCWTitle(face)"
+            class="p-1 rounded hover:bg-slate-800 text-slate-400 hover:text-cyan-300 disabled:opacity-40 transition-colors"
+          >
+            <!-- Rotate CW Icon -->
+            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.85.83 6.72 2.24L21 8" />
+              <polyline points="21 3 21 8 16 8" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            (click)="onFaceRotateCCW(face)"
+            [disabled]="isAnimating()"
+            [title]="getCCWTitle(face)"
+            class="p-1 rounded hover:bg-slate-800 text-slate-400 hover:text-cyan-300 disabled:opacity-40 transition-colors"
+          >
+            <!-- Rotate CCW Icon -->
+            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M3 12a9 9 0 1 0 9-9c-2.52 0-4.85.83-6.72 2.24L3 8" />
+              <polyline points="3 3 3 8 8 8" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- 3x3 Stickers Grid -->
+      <div class="grid grid-cols-3 gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800/90 shadow-inner">
+        @for (row of getFaceGrid(face); track $index; let r = $index) {
+          @for (sticker of row; track $index; let c = $index) {
+            <button
+              type="button"
+              (click)="onStickerClick(sticker)"
+              [title]="getStickerTooltip(sticker)"
+              [class]="'w-7 h-7 sm:w-8 sm:h-8 rounded-lg transition-all duration-150 relative flex items-center justify-center cursor-pointer ' + getStickerClasses(sticker)"
+              [style.background-color]="sticker.color"
+            >
+              <!-- Glossy highlight reflection -->
+              <div class="absolute inset-0 rounded-lg bg-gradient-to-tr from-black/20 via-transparent to-white/30 pointer-events-none"></div>
+
+              <!-- Center piece indicator dot -->
+              @if (sticker.pieceType === 'center') {
+                <div class="w-1.5 h-1.5 rounded-full bg-black/40"></div>
+              }
+
+              <!-- Selected Piece Indicator Badge -->
+              @if (isStickerSelected(sticker)) {
+                <div class="w-2 h-2 rounded-full bg-cyan-400 animate-ping absolute"></div>
+                <div class="w-1.5 h-1.5 rounded-full bg-cyan-300 relative z-10 shadow-sm"></div>
+              }
+
+              <!-- Orbit Member Glow -->
+              @if (isStickerInOrbit(sticker) && !isStickerSelected(sticker)) {
+                <div class="w-1.5 h-1.5 rounded-full bg-amber-400 relative z-10 shadow-sm"></div>
+              }
+            </button>
+          }
+        }
+      </div>
+    </div>
+  </ng-template>
+
+  <!-- Bottom Hint -->
+  @if (showHighlights()) {
+    <div class="mt-3 flex items-center gap-2 text-[11px] text-slate-400 bg-slate-900/80 px-3 py-1 rounded-full border border-slate-800 animate-fade-in">
+      <span class="inline-block w-2 h-2 rounded-full bg-cyan-400"></span>
+      <span>{{ language() === 'bg' ? 'Кликнете върху стикер за избор на връх или ръб' : 'Click any sticker to select corner or edge' }}</span>
+      <span class="text-slate-600">|</span>
+      <span class="inline-block w-2 h-2 rounded-full bg-amber-400"></span>
+      <span>{{ language() === 'bg' ? 'Орбита (Orb)' : 'Orbit (Orb)' }}</span>
+    </div>
+  }
+</div>

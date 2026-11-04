@@ -1,0 +1,188 @@
+<div class="bg-slate-900/90 backdrop-blur-md rounded-2xl border border-slate-800 p-5 shadow-xl flex flex-col gap-4">
+  <!-- Header with Title & Formula -->
+  <div class="flex items-start justify-between border-b border-slate-800 pb-3">
+    <div>
+      <div class="flex items-center gap-2">
+        <!-- Orbit Icon -->
+        <svg class="w-5 h-5 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3" />
+          <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(45 12 12)" />
+          <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(-45 12 12)" />
+        </svg>
+        <h3 class="font-bold text-slate-100 text-base">{{ t().orbitTitle }}</h3>
+      </div>
+      <p class="text-xs text-slate-400 mt-1">
+        {{ t().orbitSubtitle }}
+      </p>
+    </div>
+    <div class="px-2.5 py-1 rounded-full bg-cyan-950/60 border border-cyan-800/60 text-cyan-300 font-mono text-xs flex items-center gap-1.5">
+      <!-- Sparkles Icon -->
+      <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+      </svg>
+      <span>|Orb(x)| = {{ orbitData().orbitPositions.length }}</span>
+    </div>
+  </div>
+
+  <!-- Intuitive Beginner Guide Box -->
+  <div class="p-3.5 rounded-xl bg-gradient-to-r from-cyan-950/40 to-slate-950 border border-cyan-500/30 text-xs text-slate-300 space-y-2">
+    <div class="flex items-center gap-2 font-bold text-cyan-300">
+      <span>💡</span>
+      <span>{{ language() === 'bg' ? 'Какво е орбита и как да експериментирате тук?' : 'What is an Orbit and how to experiment?' }}</span>
+    </div>
+    <p class="text-[11px] leading-relaxed text-slate-300">
+      {{ language() === 'bg'
+        ? 'Орбитата Orb(x) е съвкупността от абсолютно всички места по кубчето, до които избраното парче може да стигне чрез позволените ходове. В 3D модела тези позиции светят в неоново синьо!'
+        : 'The orbit Orb(x) is the set of all positions a piece can reach under allowed moves. In the 3D model, all orbit positions glow in neon cyan!'
+      }}
+    </p>
+    <div class="p-2 bg-slate-900/90 rounded-lg border border-slate-800 text-[11px] space-y-1 text-slate-400">
+      <div class="text-amber-300 font-semibold">{{ language() === 'bg' ? '🎯 Опитайте следното:' : '🎯 Try this:' }}</div>
+      <div>1. {{ language() === 'bg' ? 'Кликнете върху парче долу или направо върху 3D кубчето.' : 'Click any piece below or directly on the 3D cube.' }}</div>
+      <div>2. {{ language() === 'bg' ? 'Сменете подгрупата (напр. "Само 180° ходове") и вижте как орбитата веднага се свива само до 4 позиции!' : 'Switch subgroup (e.g. "Half-Turns only") to see the orbit shrink to just 4 pieces!' }}</div>
+    </div>
+  </div>
+
+  <!-- Target Set Selector & Active Piece Selection -->
+  <div class="grid grid-cols-2 gap-3">
+    <!-- Set X Selection -->
+    <div>
+      <label class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-1.5">
+        {{ t().targetSetLabel }}
+      </label>
+      <div class="grid grid-cols-2 gap-1.5 p-1 bg-slate-950 rounded-xl border border-slate-800">
+        <button
+          (click)="onTypeClick('corner')"
+          [class]="'py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ' + (selectedPieceType() === 'corner' ? 'bg-cyan-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200')"
+        >
+          {{ t().cornersSet }}
+        </button>
+        <button
+          (click)="onTypeClick('edge')"
+          [class]="'py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ' + (selectedPieceType() === 'edge' ? 'bg-cyan-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200')"
+        >
+          {{ t().edgesSet }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Subgroup H Selection -->
+    <div>
+      <label class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-1.5">
+        {{ t().actingSubgroupLabel }}
+      </label>
+      <select
+        [value]="activeSubgroupId()"
+        (change)="onSubgroupChange($event)"
+        class="w-full py-1.5 px-2.5 bg-slate-950 text-slate-200 rounded-xl border border-slate-800 text-xs font-mono focus:outline-none focus:border-cyan-500 cursor-pointer"
+      >
+        @for (p of subgroupPresets; track p.id) {
+          <option [value]="p.id">
+            {{ language() === 'bg' && p.nameBg ? p.nameBg : p.name }}
+          </option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <!-- Piece Picker Grid -->
+  <div>
+    <div class="flex items-center justify-between mb-1.5">
+      <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+        {{ t().choosePieceLabel }}
+      </span>
+      <span class="text-xs text-amber-400 font-mono font-bold">
+        {{ t().selectedLabel }} {{ currentPieceName() }}
+      </span>
+    </div>
+    <div class="grid grid-cols-4 sm:grid-cols-6 gap-1.5">
+      @for (p of availablePieces(); track p.id) {
+        <button
+          (click)="onPieceClick(p.id)"
+          [class]="'py-1 px-2 rounded-lg text-xs font-mono transition-all border cursor-pointer ' + (
+            p.id === selectedPieceId()
+              ? 'bg-amber-500 text-slate-950 font-bold border-amber-400 shadow-md scale-105'
+              : isPieceInOrbit(p.id)
+              ? 'bg-cyan-950/40 text-cyan-300 border-cyan-800/60 hover:bg-cyan-900/40'
+              : 'bg-slate-950/60 text-slate-500 border-slate-800/80 hover:bg-slate-800'
+          )"
+        >
+          {{ p.name }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Orbit Theorem Box & Details -->
+  <div class="bg-slate-950/80 rounded-xl p-3.5 border border-slate-800 flex flex-col gap-2.5">
+    <div class="flex items-center justify-between">
+      <span class="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+        <!-- Network Icon -->
+        <svg class="w-4 h-4 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="16" y="16" width="6" height="6" rx="1" />
+          <rect x="2" y="16" width="6" height="6" rx="1" />
+          <rect x="9" y="2" width="6" height="6" rx="1" />
+          <path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3" />
+          <path d="M12 12V8" />
+        </svg>
+        {{ t().orbitElements }}
+      </span>
+      <span
+        [class]="'text-[11px] px-2 py-0.5 rounded-full font-medium ' + (
+          isTransitive()
+            ? 'bg-emerald-950 text-emerald-400 border border-emerald-800'
+            : 'bg-indigo-950 text-indigo-400 border border-indigo-800'
+        )"
+      >
+        {{ isTransitive() ? t().transitiveAction : t().intransitiveAction }}
+      </span>
+    </div>
+
+    <!-- Orbit pieces badges -->
+    <div class="flex flex-wrap gap-1.5">
+      @for (name of orbitData().orbitNames; track name) {
+        <span
+          [class]="'px-2 py-0.5 rounded-md text-xs font-mono font-medium ' + (
+            name === currentPieceName()
+              ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+              : 'bg-cyan-950 text-cyan-300 border border-cyan-800/40'
+          )"
+        >
+          {{ name }}
+        </span>
+      }
+    </div>
+
+    <!-- Orbit-Stabilizer Theorem banner -->
+    <div class="mt-1 pt-2 border-t border-slate-800/80 text-xs text-slate-300">
+      <div class="font-medium text-slate-200 mb-1.5 flex items-center justify-between">
+        <span>{{ t().orbitStabilizerTheoremTitle }}</span>
+        <span class="text-[10px] text-cyan-400 font-mono">
+          [H : Stab_H] = {{ orbitData().orbitPositions.length }}
+        </span>
+      </div>
+      <div class="bg-slate-900/90 rounded-lg p-2.5 font-mono text-center text-cyan-300 border border-slate-800 shadow-inner">
+        <app-math-view
+          [math]="orbitTheoremFormula()"
+          [block]="true"
+        />
+      </div>
+      <div class="text-[11px] text-slate-300 mt-2 space-y-1.5 leading-relaxed bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/60">
+        <div>
+          @if (language() === 'bg') {
+            Всеки елемент <app-math-view math="h \in H" />, който премества парчето, принадлежи на съседен клас на стабилизатора <app-math-view [math]="'\mathrm{Stab}_H(\text{' + currentPieceName() + '})'" />.
+          } @else {
+            Every element <app-math-view math="h \in H" /> that moves the piece belongs to a coset of the stabilizer <app-math-view [math]="'\mathrm{Stab}_H(\text{' + currentPieceName() + '})'" />.
+          }
+        </div>
+        <div class="text-slate-400">
+          @if (language() === 'bg') {
+            Общият брой достижими позиции (орбитата) е точно равен на индекса <app-math-view [math]="'[H : \mathrm{Stab}_H(\text{' + currentPieceName() + '})] = ' + orbitData().orbitPositions.length" />.
+          } @else {
+            The total number of reachable positions (the orbit) equals the coset index <app-math-view [math]="'[H : \mathrm{Stab}_H(\text{' + currentPieceName() + '})] = ' + orbitData().orbitPositions.length" />.
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

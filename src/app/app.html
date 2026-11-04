@@ -1,0 +1,316 @@
+<div class="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
+  <!-- Top Navigation Bar -->
+  <header class="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-md sticky top-0 z-40 px-4 sm:px-6 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 via-sky-500 to-amber-400 p-0.5 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+        <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
+          <!-- Boxes Icon -->
+          <svg class="w-5 h-5 text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2.97 12.92A2 2 0 0 0 2 14.63v3.24a2 2 0 0 0 .97 1.71l6 3.43a2 2 0 0 0 2.06 0l6-3.43a2 2 0 0 0 .97-1.71v-3.24a2 2 0 0 0-.97-1.71L11 9.49a2 2 0 0 0-2.06 0l-5.97 3.43Z" />
+            <path d="m12 12 6-3.43a2 2 0 0 0 .97-1.71V3.62a2 2 0 0 0-.97-1.71l-6-3.43a2 2 0 0 0-2.06 0l-6 3.43a2 2 0 0 0-.97 1.71v3.24a2 2 0 0 0 .97 1.71L10 12" />
+          </svg>
+        </div>
+      </div>
+      <div>
+        <h1 class="text-sm sm:text-base font-bold text-slate-100 flex items-center gap-2">
+          <span>{{ language() === 'bg' ? 'Групови Действия върху Кубчето на Рубик' : "Rubik's Cube Group Actions" }}</span>
+          <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-normal">G ↷ X</span>
+        </h1>
+      </div>
+    </div>
+
+    <!-- Central 3-Page Navigation Tabs -->
+    <nav class="hidden md:flex items-center gap-1.5 p-1 bg-slate-950/80 rounded-2xl border border-slate-800/80 shadow-inner">
+      <!-- Page 1: Math Concepts -->
+      <button
+        type="button"
+        (click)="setActivePage('math')"
+        [class]="'flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ' + (
+          activePage() === 'math'
+            ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
+            : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+        )"
+      >
+        <!-- Sigma/Pi Math Icon -->
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 4h16v3h-2l-6 5 6 5h2v3H4v-3h2l5-5-5-5H4Z" />
+        </svg>
+        <span>{{ t().pageMath }}</span>
+      </button>
+
+      <!-- Page 2: Orbit Validator -->
+      <button
+        type="button"
+        (click)="setActivePage('validator')"
+        [class]="'flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ' + (
+          activePage() === 'validator'
+            ? 'bg-amber-600 text-white shadow-md shadow-amber-600/30'
+            : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+        )"
+      >
+        <!-- Shield Check Invariant Icon -->
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+          <path d="m9 12 2 2 4-4" />
+        </svg>
+        <span>{{ t().pageValidator }}</span>
+      </button>
+
+      <!-- Page 3: Cube Tutorial -->
+      <button
+        type="button"
+        (click)="setActivePage('tutorial')"
+        [class]="'flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ' + (
+          activePage() === 'tutorial'
+            ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30'
+            : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+        )"
+      >
+        <!-- Book/Graduation Icon -->
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
+          <path d="M6 6h10" />
+          <path d="M6 10h10" />
+        </svg>
+        <span>{{ t().pageTutorial }}</span>
+      </button>
+    </nav>
+
+    <div class="flex items-center gap-2">
+      <!-- Theory Guide Button -->
+      <button
+        (click)="openTheory()"
+        [title]="t().theoryGuideBtn"
+        class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-colors shadow-sm"
+      >
+        <!-- Lightbulb/Book Icon -->
+        <svg class="w-3.5 h-3.5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" />
+          <path d="M9 18h6" />
+          <path d="M10 22h4" />
+        </svg>
+        <span>{{ t().theoryGuideBtn }}</span>
+      </button>
+
+      <!-- Bilingual Language Switcher Toggle -->
+      <button
+        (click)="toggleLanguage()"
+        [title]="language() === 'en' ? 'Превключи на Български' : 'Switch to English'"
+        class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-colors shadow-sm"
+      >
+        <!-- Languages Icon -->
+        <svg class="w-3.5 h-3.5 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m5 8 6 6" />
+          <path d="m4 14 6-6 2-3" />
+          <path d="M2 5h12" />
+          <path d="M7 2h1" />
+          <path d="m22 22-5-10-5 10" />
+          <path d="M14 18h6" />
+        </svg>
+        <span class="font-mono font-bold">{{ language() === 'en' ? 'BG' : 'EN' }}</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobile Secondary Tab Bar (Visible on small screens) -->
+  <div class="flex md:hidden items-center justify-around p-2 bg-slate-900 border-b border-slate-800 text-xs font-semibold">
+    <button
+      (click)="setActivePage('math')"
+      [class]="'flex items-center gap-1.5 px-3 py-1.5 rounded-xl transition-all ' + (activePage() === 'math' ? 'bg-indigo-600 text-white' : 'text-slate-400')"
+    >
+      <span>{{ t().pageMath }}</span>
+    </button>
+    <button
+      (click)="setActivePage('validator')"
+      [class]="'flex items-center gap-1.5 px-3 py-1.5 rounded-xl transition-all ' + (activePage() === 'validator' ? 'bg-amber-600 text-white' : 'text-slate-400')"
+    >
+      <span>{{ t().pageValidator }}</span>
+    </button>
+    <button
+      (click)="setActivePage('tutorial')"
+      [class]="'flex items-center gap-1.5 px-3 py-1.5 rounded-xl transition-all ' + (activePage() === 'tutorial' ? 'bg-emerald-600 text-white' : 'text-slate-400')"
+    >
+      <span>{{ t().pageTutorial }}</span>
+    </button>
+  </div>
+
+  <!-- Main Workspace Layout (Rubik's Cube 3D Application) -->
+  <main class="flex-1 max-w-[1700px] w-full mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <!-- Left Column: 3D Cube Canvas & 3D Manipulator (always visible!) -->
+    <section class="lg:col-span-5 xl:col-span-5 flex flex-col gap-4">
+      <!-- 3D WebGL Canvas / 2D Net Container -->
+      <div class="relative w-full h-[460px] sm:h-[540px] rounded-3xl bg-gradient-to-b from-slate-900/90 via-slate-950 to-slate-900 border border-slate-800/80 overflow-hidden shadow-2xl flex flex-col">
+        <!-- Top Left: View Mode Toggle (Wider Segmented Ellipse Toggle) -->
+        <div class="absolute top-4 left-4 z-20 flex items-center gap-3">
+          <!-- Wider Pill Container with Inner Ellipse Selector -->
+          <div class="p-1 bg-slate-950/90 backdrop-blur-md rounded-full border border-slate-700/90 shadow-xl flex items-center">
+            <!-- 3D Option -->
+            <button
+              type="button"
+              (click)="setViewMode('3d')"
+              [class]="'flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 cursor-pointer ' + (
+                viewMode() === '3d'
+                  ? 'bg-gradient-to-r from-indigo-600 to-indigo-500 text-white shadow-md shadow-indigo-600/40'
+                  : 'text-slate-400 hover:text-slate-200'
+              )"
+            >
+              <!-- 3D Cube Icon -->
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+                <line x1="12" y1="22.08" x2="12" y2="12" />
+              </svg>
+              <span>3D</span>
+            </button>
+
+            <!-- 2D Option -->
+            <button
+              type="button"
+              (click)="setViewMode('2d')"
+              [class]="'flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 cursor-pointer ' + (
+                viewMode() === '2d'
+                  ? 'bg-gradient-to-r from-cyan-600 to-cyan-500 text-white shadow-md shadow-cyan-600/40'
+                  : 'text-slate-400 hover:text-slate-200'
+              )"
+            >
+              <!-- 2D Net Icon -->
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect width="18" height="18" x="3" y="3" rx="2" />
+                <path d="M3 9h18" />
+                <path d="M3 15h18" />
+                <path d="M9 3v18" />
+                <path d="M15 3v18" />
+              </svg>
+              <span>2D</span>
+            </button>
+          </div>
+
+          <div class="hidden sm:block px-3 py-1 rounded-full bg-slate-900/90 backdrop-blur-md border border-slate-700 text-slate-300 text-xs font-mono shadow-md pointer-events-none">
+            {{ viewMode() === '3d' ? t().canvasInstructions : (language() === 'bg' ? '2D Разгъвка на всички 6 стени' : '2D Unfolded Net (6 faces)') }}
+          </div>
+        </div>
+
+        <div class="absolute top-4 right-4 z-20 flex items-center gap-2">
+          @if (viewMode() === '3d') {
+            <button
+              (click)="handleResetCamera()"
+              [title]="t().resetCameraTitle"
+              class="p-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 backdrop-blur-md border border-slate-700 text-slate-300 transition-colors shadow-md"
+            >
+              <!-- Compass Icon -->
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
+              </svg>
+            </button>
+          }
+        </div>
+
+        <!-- 3D Canvas Mount (kept mounted in DOM, butter-smooth crossfade & scale) -->
+        <div
+          #cubeContainer
+          [class.pointer-events-none]="viewMode() !== '3d'"
+          class="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing transition-all duration-500 ease-out"
+          [class.opacity-100]="viewMode() === '3d'"
+          [class.scale-100]="viewMode() === '3d'"
+          [class.opacity-0]="viewMode() !== '3d'"
+          [class.scale-90]="viewMode() !== '3d'"
+          [class.blur-sm]="viewMode() !== '3d'"
+        ></div>
+
+        <!-- 2D Net View Mount (kept mounted in DOM, butter-smooth origami unfold transition) -->
+        <div
+          [class.pointer-events-none]="viewMode() !== '2d'"
+          class="absolute inset-0 w-full h-full pt-14 pb-12 overflow-auto transition-all duration-500 ease-out"
+          [class.opacity-100]="viewMode() === '2d'"
+          [class.scale-100]="viewMode() === '2d'"
+          [class.opacity-0]="viewMode() !== '2d'"
+          [class.scale-95]="viewMode() !== '2d'"
+        >
+          <app-cube-2d
+            [net]="net2DFaces()"
+            [selectedPieceType]="selectedPieceType()"
+            [selectedPieceId]="selectedPieceId()"
+            [orbitPieces]="orbitPieces()"
+            [isAnimating]="isAnimating()"
+            [active]="viewMode() === '2d'"
+            [showHighlights]="activePage() === 'math'"
+            (pieceClick)="handlePieceClick($event.type, $event.id)"
+            (faceMove)="handleApplyMove($event)"
+          />
+        </div>
+
+        <!-- Bottom Status Overlay (Only visible in Math Concepts page) -->
+        @if (activePage() === 'math') {
+          <div class="absolute bottom-3 left-4 right-4 z-20 flex items-center justify-between text-xs text-slate-400 pointer-events-none animate-fade-in">
+            <div class="px-3 py-1 rounded-lg bg-slate-900/90 backdrop-blur-md border border-slate-800 font-mono text-cyan-300">
+              {{ t().activeSelection }} {{ selectedPieceType().toUpperCase() }} #{{ selectedPieceId() }} ({{ activePieceName() }})
+            </div>
+            <div class="hidden sm:block px-3 py-1 rounded-lg bg-slate-900/90 backdrop-blur-md border border-slate-800 font-mono text-slate-300">
+              {{ viewMode() === '3d' ? t().clickInstruction : (language() === 'bg' ? 'Кликнете върху стикер от разгъвката за избор' : 'Click any sticker on the net to inspect') }}
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- 3D Controls (Face turns, slice turns, explode, speed) -->
+      <app-controls-3d
+        [explodeFactor]="explodeFactor()"
+        [animSpeed]="animSpeed()"
+        [showCycleArrows]="showCycleArrows()"
+        [isAnimating]="isAnimating()"
+        (move)="handleApplyMove($event)"
+        (reset)="handleReset()"
+        (scramble)="handleScramble()"
+        (explodeChange)="handleExplodeChange($event)"
+        (speedChange)="handleSpeedChange($event)"
+        (toggleCycleArrows)="setShowCycleArrows($event)"
+        (resetCamera)="handleResetCamera()"
+      />
+    </section>
+
+    <!-- Right Column: Dynamic Content according to activePage() (7 cols) -->
+    <section class="lg:col-span-7 xl:col-span-7 flex flex-col gap-4">
+      <!-- Page 1: Math Concepts -->
+      @if (activePage() === 'math') {
+        <app-math-concepts
+          [selectedPieceType]="selectedPieceType()"
+          [selectedPieceId]="selectedPieceId()"
+          [activeSubgroupId]="activeSubgroupId()"
+          [analysis]="analysis()"
+          [lastMove]="lastMove()"
+          [showCycleArrows]="showCycleArrows()"
+          [isSolved]="isSolved()"
+          [isAnimating]="isAnimating()"
+          (selectPiece)="setSelectedPiece($event)"
+          (selectSubgroup)="setActiveSubgroup($event)"
+          (applyMove)="handleApplyMove($event)"
+          (applyAlgorithm)="handleApplyAlgorithm($event)"
+          (toggleCycleArrows)="setShowCycleArrows($event)"
+          (tabChange)="setActiveTab($event)"
+        />
+      }
+
+      <!-- Page 2: Solution Orbit Invariant Validator -->
+      @if (activePage() === 'validator') {
+        <app-orbit-validator
+          [cubeState]="cubeState()"
+          [isAnimating]="isAnimating()"
+          (stateChange)="handleOrbitStateChange($event)"
+        />
+      }
+
+      <!-- Page 3: 7-Step Group-Theoretic Cube Tutorial -->
+      @if (activePage() === 'tutorial') {
+        <app-cube-tutorial
+          [isAnimating]="isAnimating()"
+          (applyAlgorithm)="handleApplyAlgorithm($event)"
+          (reset)="handleReset()"
+        />
+      }
+    </section>
+  </main>
+
+  <!-- Theory Guide Modal -->
+  <app-theory-guide-modal [isOpen]="isTheoryOpen()" (close)="closeTheory()" />
+</div>

@@ -1,0 +1,113 @@
+<div class="bg-slate-900/90 backdrop-blur-md rounded-2xl border border-slate-800 p-5 shadow-xl flex flex-col gap-5">
+  <!-- Header -->
+  <div class="border-b border-slate-800 pb-3">
+    <div class="flex items-center gap-2">
+      <!-- Boxes Icon -->
+      <svg class="w-5 h-5 text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2.97 12.92A2 2 0 0 0 2 14.63v3.24a2 2 0 0 0 .97 1.71l6 3.43a2 2 0 0 0 2.06 0l6-3.43a2 2 0 0 0 .97-1.71v-3.24a2 2 0 0 0-.97-1.71L11 9.49a2 2 0 0 0-2.06 0l-5.97 3.43Z" />
+        <path d="m12 12 6-3.43a2 2 0 0 0 .97-1.71V3.62a2 2 0 0 0-.97-1.71l-6-3.43a2 2 0 0 0-2.06 0l-6 3.43a2 2 0 0 0-.97 1.71v3.24a2 2 0 0 0 .97 1.71L10 12" />
+      </svg>
+      <h3 class="font-bold text-slate-100 text-base">
+        {{ t().subgroupsTitle }}
+      </h3>
+    </div>
+    <p class="text-xs text-slate-400 mt-1">
+      {{ t().subgroupsSubtitle }}
+    </p>
+  </div>
+
+  <!-- Intuitive Beginner Guide Box -->
+  <div class="p-3.5 rounded-xl bg-gradient-to-r from-sky-950/40 to-slate-950 border border-sky-500/30 text-xs text-slate-300 space-y-2">
+    <div class="flex items-center gap-2 font-bold text-sky-300">
+      <span>💡</span>
+      <span>{{ language() === 'bg' ? 'Какво е подгрупа (H ≤ G) и защо поражда симетрии?' : 'What is a Subgroup (H ≤ G) and why does it yield symmetries?' }}</span>
+    </div>
+    <p class="text-[11px] leading-relaxed text-slate-300">
+      {{ language() === 'bg'
+        ? 'Подгрупата е затворено подмножество от ходове. Ограничавайки се само до определени генератори (например само 180° ходове ⟨R², L², U², D², F², B²⟩), пространството от възможни състояния намалява драстично от 4.3×10¹⁹ до малка група с висока симетрия.'
+        : 'A subgroup is a closed subset of moves. Restricting yourself to specific generators (e.g. only 180° turns ⟨R², L², U², D², F², B²⟩) shrinks the state space dramatically from 4.3×10¹⁹ to a highly symmetric subgroup.'
+      }}
+    </p>
+    <div class="p-2 bg-slate-900/90 rounded-lg border border-slate-800 text-[11px] space-y-1 text-slate-400">
+      <div class="text-amber-300 font-semibold">{{ language() === 'bg' ? '🎯 Опитайте следното:' : '🎯 Try this:' }}</div>
+      <div>1. {{ language() === 'bg' ? 'Кликнете "Приложи" (▶) на "Шахматна дъска" или "Cube-in-a-Cube" долу, за да генерирате красиви симетрични конфигурации.' : 'Click "Apply" (▶) on "Checkerboard" or "Cube-in-a-Cube" below to create elegant symmetric states.' }}</div>
+      <div>2. {{ language() === 'bg' ? 'Разгледайте "Подгрупа на Косиемба" — това е основата на 2-фазовия алгоритъм, с който решаващите ботове решават всяко кубче за под 20 хода!' : 'Inspect the "Kociemba Subgroup" — the foundation of the 2-phase algorithm that solves any cube in ≤20 moves!' }}</div>
+    </div>
+  </div>
+
+  <!-- Subgroups List -->
+  <div class="flex flex-col gap-2.5">
+    <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+      {{ t().famousSubgroupsHeading }}
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+      @for (sg of subgroupPresets; track sg.id) {
+        <div
+          (click)="selectSubgroup.emit(sg.id)"
+          [class]="'p-3 rounded-xl border cursor-pointer transition-all ' + (
+            sg.id === activeSubgroupId()
+              ? 'bg-sky-950/40 border-sky-500/80 shadow-md shadow-sky-500/10'
+              : 'bg-slate-950/60 border-slate-800/80 hover:bg-slate-800/60'
+          )"
+        >
+          <div class="flex items-center justify-between mb-1">
+            <span class="font-semibold text-xs text-slate-200">
+              {{ language() === 'bg' && sg.nameBg ? sg.nameBg : sg.name }}
+            </span>
+            <span class="text-[10px] font-mono text-sky-400 bg-sky-950 px-2 py-0.5 rounded-full border border-sky-800/40">
+              {{ t().orderApprox }} {{ sg.orderApprox }}
+            </span>
+          </div>
+          <div class="font-mono text-xs text-amber-300/90 my-1">
+            <app-math-view [math]="sg.formula" />
+          </div>
+          <p class="text-[11px] text-slate-400 leading-relaxed mt-1">
+            {{ language() === 'bg' && sg.descriptionBg ? sg.descriptionBg : sg.description }}
+          </p>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Canonical Group Elements and Symmetries -->
+  <div class="border-t border-slate-800 pt-3 flex flex-col gap-2.5">
+    <div class="flex items-center justify-between">
+      <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+        {{ t().canonicalHeading }}
+      </span>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+      @for (p of algorithmPresets; track p.id) {
+        <div class="p-3 bg-slate-950/80 rounded-xl border border-slate-800 flex flex-col justify-between gap-2">
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <span class="font-semibold text-xs text-slate-200">
+                {{ language() === 'bg' && p.nameBg ? p.nameBg : p.name }}
+              </span>
+              <span class="text-[10px] font-mono text-amber-400 bg-amber-950/40 px-2 py-0.5 rounded-full border border-amber-800/40">
+                ord = {{ p.order }}
+              </span>
+            </div>
+            <p class="text-[11px] text-slate-400 leading-snug">
+              {{ language() === 'bg' && p.descriptionBg ? p.descriptionBg : p.description }}
+            </p>
+            <div class="text-[10px] text-indigo-300/90 mt-1 font-mono bg-slate-900/90 p-1.5 rounded-lg border border-slate-800">
+              {{ language() === 'bg' && p.groupNoteBg ? p.groupNoteBg : p.groupNote }}
+            </div>
+          </div>
+          <button
+            (click)="applyAlgorithm.emit(p.alg)"
+            [disabled]="isAnimating()"
+            class="w-full py-1.5 px-2.5 rounded-lg bg-indigo-600/30 hover:bg-indigo-600/50 disabled:opacity-50 text-indigo-200 border border-indigo-500/40 text-xs font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+          >
+            <!-- Play Icon -->
+            <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <polygon points="5 3 19 12 5 21 5 3" />
+            </svg>
+            <span>{{ t().applyPatternBtn }}</span>
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+</div>

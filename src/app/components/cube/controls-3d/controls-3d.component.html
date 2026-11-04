@@ -1,0 +1,218 @@
+<div class="bg-slate-900/90 backdrop-blur-md rounded-2xl border border-slate-800 p-4 shadow-xl flex flex-col gap-4">
+  <!-- Top Header & Fast Actions -->
+  <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+    <div class="flex items-center gap-2">
+      <!-- Layers Icon -->
+      <svg class="w-5 h-5 text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="12 2 2 7 12 12 22 7 12 2" />
+        <polyline points="2 17 12 22 22 17" />
+        <polyline points="2 12 12 17 22 12" />
+      </svg>
+      <span class="font-semibold text-slate-200 text-sm">{{ t().controlsTitle }}</span>
+    </div>
+    <div class="flex items-center gap-1.5">
+      <button
+        (click)="resetCamera.emit()"
+        [title]="t().resetCameraTitle"
+        class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors cursor-pointer"
+      >
+        <!-- Compass Icon -->
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10" />
+          <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
+        </svg>
+      </button>
+      <button
+        (click)="scramble.emit()"
+        [disabled]="isAnimating()"
+        [title]="t().scrambleBtn"
+        class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-xs font-medium text-white transition-all shadow-md shadow-indigo-600/20 cursor-pointer"
+      >
+        <!-- Shuffle Icon -->
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="16 3 21 3 21 8" />
+          <line x1="4" y1="20" x2="21" y2="3" />
+          <polyline points="21 16 21 21 16 21" />
+          <line x1="15" y1="15" x2="21" y2="21" />
+          <line x1="4" y1="4" x2="9" y2="9" />
+        </svg>
+        <span>{{ t().scrambleBtn }}</span>
+      </button>
+      <button
+        (click)="reset.emit()"
+        [disabled]="isAnimating()"
+        [title]="t().identityBtn"
+        class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-rose-950/40 hover:text-rose-400 text-xs font-medium text-slate-300 border border-slate-700 transition-all cursor-pointer"
+      >
+        <!-- RotateCcw Icon -->
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+          <path d="M3 3v5h5" />
+        </svg>
+        <span>{{ t().identityBtn }}</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Face Turn Action Buttons -->
+  <div>
+    <div class="text-[11px] font-medium uppercase tracking-wider text-slate-400 mb-2 flex items-center justify-between">
+      <span>{{ t().generatorsHeading }}</span>
+      <span class="text-slate-500 text-[10px]">{{ t().generatorsSub }}</span>
+    </div>
+    <div class="grid grid-cols-6 gap-2">
+      @for (face of faces(); track face.name) {
+        <div class="flex flex-col gap-1 items-center">
+          <!-- Clockwise -->
+          <button
+            (click)="onMoveClick(face.name)"
+            [disabled]="isAnimating()"
+            [title]="face.label + ' ' + (t().generatorsSub.split('/')[0].trim())"
+            [class]="'w-full py-1.5 rounded-lg font-bold text-xs transition-transform active:scale-95 shadow-sm border cursor-pointer ' + face.color"
+          >
+            {{ face.name }}
+          </button>
+          <!-- Counter-Clockwise (Inverse) -->
+          <button
+            (click)="onInverseMove(face.name)"
+            [disabled]="isAnimating()"
+            [title]="face.label + ' ' + (t().generatorsSub.split('/')[1]?.trim() || 'Inverse')"
+            class="w-full py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 font-mono text-[11px] transition-colors cursor-pointer"
+          >
+            {{ face.name }}'
+          </button>
+          <!-- Double Turn 180° -->
+          <button
+            (click)="onDoubleMove(face.name)"
+            [disabled]="isAnimating()"
+            [title]="face.label + ' 180°'"
+            class="w-full py-0.5 rounded bg-slate-800/60 hover:bg-slate-700/80 text-slate-400 hover:text-slate-200 border border-slate-800 font-mono text-[10px] transition-colors cursor-pointer"
+          >
+            {{ face.name }}²
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Slice moves M, E, S -->
+  <div class="border-t border-slate-800/80 pt-2">
+    <div class="flex items-center justify-between mb-1.5 text-[11px] text-slate-400">
+      <span class="flex items-center gap-1">
+        <!-- ArrowRightLeft Icon -->
+        <svg class="w-3 h-3 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m16 3 4 4-4 4" />
+          <path d="M20 7H4" />
+          <path d="m8 21-4-4 4-4" />
+          <path d="M4 17h16" />
+        </svg>
+        {{ t().sliceHeading }}
+      </span>
+      <span class="text-[10px] text-slate-500">{{ t().fixedCornersTag }}</span>
+    </div>
+    <div class="grid grid-cols-3 gap-2">
+      @for (m of sliceMoves; track m) {
+        <div class="flex gap-1">
+          <button
+            (click)="onMoveClick(m)"
+            [disabled]="isAnimating()"
+            class="flex-1 py-1 rounded-md bg-cyan-950/40 hover:bg-cyan-900/60 text-cyan-300 border border-cyan-800/50 font-bold text-xs font-mono cursor-pointer"
+          >
+            {{ m }}
+          </button>
+          <button
+            (click)="onInverseMove(m)"
+            [disabled]="isAnimating()"
+            class="flex-1 py-1 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 font-mono text-xs cursor-pointer"
+          >
+            {{ m }}'
+          </button>
+          <button
+            (click)="onDoubleMove(m)"
+            [disabled]="isAnimating()"
+            class="flex-1 py-1 rounded-md bg-slate-800/70 hover:bg-slate-700 text-slate-400 font-mono text-xs cursor-pointer"
+          >
+            {{ m }}²
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Sliders: Explode & Speed & 3D Vectors -->
+  <div class="border-t border-slate-800 pt-3 flex flex-col gap-3">
+    <!-- Exploded View Slider -->
+    <div class="flex items-center justify-between gap-3 text-xs">
+      <label class="flex items-center gap-1.5 text-slate-300 font-medium">
+        <!-- Maximize2 Icon -->
+        <svg class="w-3.5 h-3.5 text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 3 21 3 21 9" />
+          <polyline points="9 21 3 21 3 15" />
+          <line x1="21" y1="3" x2="14" y2="10" />
+          <line x1="3" y1="21" x2="10" y2="14" />
+        </svg>
+        <span>{{ t().explodedView }}</span>
+      </label>
+      <div class="flex items-center gap-2 flex-1 max-w-[160px]">
+        <input
+          type="range"
+          min="0"
+          max="1"
+          step="0.02"
+          [value]="explodeFactor()"
+          (input)="onExplodeInput($event)"
+          class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-sky-500"
+        />
+        <span class="font-mono text-[11px] text-slate-400 w-8 text-right">
+          {{ Math.round(explodeFactor() * 100) }}%
+        </span>
+      </div>
+    </div>
+
+    <!-- Speed Slider -->
+    <div class="flex items-center justify-between gap-3 text-xs">
+      <label class="flex items-center gap-1.5 text-slate-300 font-medium">
+        <!-- Gauge Icon -->
+        <svg class="w-3.5 h-3.5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m12 14 4-4" />
+          <path d="M3.34 19a10 10 0 1 1 17.32 0" />
+        </svg>
+        <span>{{ t().animSpeed }}</span>
+      </label>
+      <div class="flex items-center gap-2 flex-1 max-w-[160px]">
+        <input
+          type="range"
+          min="0.05"
+          max="0.45"
+          step="0.02"
+          [value]="animSpeed()"
+          (input)="onSpeedInput($event)"
+          class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-amber-500"
+        />
+        <span class="font-mono text-[11px] text-slate-400 w-8 text-right">
+          {{ animSpeed() > 0.3 ? t().speedFast : animSpeed() < 0.12 ? t().speedSlow : t().speedMed }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Toggle 3D Cycle Arrows -->
+    <div class="flex items-center justify-between text-xs pt-1">
+      <span class="flex items-center gap-1.5 text-slate-300">
+        <!-- Eye Icon -->
+        <svg class="w-3.5 h-3.5 text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+          <circle cx="12" cy="12" r="3" />
+        </svg>
+        <span>{{ t().cycleVectorsToggle }}</span>
+      </span>
+      <button
+        (click)="toggleCycleArrows.emit(!showCycleArrows())"
+        [class]="'relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ' + (showCycleArrows() ? 'bg-indigo-600' : 'bg-slate-700')"
+      >
+        <span
+          [class]="'inline-block h-4 w-4 transform rounded-full bg-white shadow transition duration-200 ease-in-out ' + (showCycleArrows() ? 'translate-x-4' : 'translate-x-0')"
+        ></span>
+      </button>
+    </div>
+  </div>
+</div>

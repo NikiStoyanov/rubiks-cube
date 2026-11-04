@@ -1,0 +1,147 @@
+@if (isOpen()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm overflow-y-auto">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-3xl w-full max-h-[88vh] overflow-y-auto shadow-2xl p-6 sm:p-8 flex flex-col gap-6 text-slate-200">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+        <div class="flex items-center gap-2.5">
+          <!-- BookOpen Icon -->
+          <svg class="w-6 h-6 text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+          </svg>
+          <h2 class="text-xl font-bold text-white">
+            {{ t().modalTitle }}
+          </h2>
+        </div>
+        <button
+          (click)="close.emit()"
+          class="p-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer"
+        >
+          <!-- X Icon -->
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 6 6 18" /><path d="m6 6 12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Section 1: Definition of Group Action -->
+      <div class="flex flex-col gap-2">
+        <h3 class="text-base font-bold text-indigo-300">
+          {{ t().theorySec1Title }}
+        </h3>
+        <p class="text-xs text-slate-300 leading-relaxed">
+          {{ t().theorySec1Desc }}
+        </p>
+        <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 text-center font-mono text-sm text-cyan-300">
+          <app-math-view math="\varphi: G \times X \to X, \quad (g, x) \mapsto g \cdot x" [block]="true" />
+        </div>
+        <p class="text-xs text-slate-300 leading-relaxed">
+          {{ t().theorySec1AxiomsTitle }}
+        </p>
+        <ul class="text-xs list-disc list-inside space-y-1 text-slate-400 pl-2">
+          <li><strong>{{ t().theorySec1Identity.split(':')[0] }}:</strong> <app-math-view math="e \cdot x = x \quad (\forall x \in X)" /></li>
+          <li><strong>{{ t().theorySec1Compatibility.split(':')[0] }}:</strong> <app-math-view math="(g \cdot h) \cdot x = g \cdot (h \cdot x) \quad (\forall g, h \in G, \; x \in X)" /></li>
+        </ul>
+      </div>
+
+      <!-- Section 2: The Sets X in Rubik's Cube -->
+      <div class="flex flex-col gap-2">
+        <h3 class="text-base font-bold text-indigo-300">
+          {{ t().theorySec2Title }}
+        </h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+          <div class="p-3 bg-slate-950 rounded-xl border border-slate-800">
+            <span class="font-semibold text-amber-300">{{ t().theorySec2CornersTitle }}</span>
+            <p class="text-slate-400 mt-1 leading-relaxed">
+              {{ t().theorySec2CornersDesc }}
+            </p>
+          </div>
+          <div class="p-3 bg-slate-950 rounded-xl border border-slate-800">
+            <span class="font-semibold text-cyan-300">{{ t().theorySec2EdgesTitle }}</span>
+            <p class="text-slate-400 mt-1 leading-relaxed">
+              {{ t().theorySec2EdgesDesc }}
+            </p>
+          </div>
+          <div class="p-3 bg-slate-950 rounded-xl border border-slate-800">
+            <span class="font-semibold text-emerald-300">{{ t().theorySec2StickersTitle }}</span>
+            <p class="text-slate-400 mt-1 leading-relaxed">
+              {{ t().theorySec2StickersDesc }}
+            </p>
+          </div>
+          <div class="p-3 bg-slate-950 rounded-xl border border-slate-800">
+            <span class="font-semibold text-fuchsia-300">{{ t().theorySec2StatesTitle }}</span>
+            <p class="text-slate-400 mt-1 leading-relaxed">
+              {{ t().theorySec2StatesDesc }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Group Structure & Order -->
+      <div class="flex flex-col gap-2">
+        <h3 class="text-base font-bold text-indigo-300">
+          {{ t().theorySec3Title }}
+        </h3>
+        <p class="text-xs text-slate-300 leading-relaxed">
+          {{ t().theorySec3Desc }}
+        </p>
+        <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 text-center font-mono text-xs text-indigo-300">
+          <app-math-view math="\mathcal{G} \le (\mathbb{Z}_3^8 \rtimes S_8) \times (\mathbb{Z}_2^{12} \rtimes S_{12})" [block]="true" />
+        </div>
+        <p class="text-xs text-slate-300 leading-relaxed">
+          {{ t().theorySec3InvariantsTitle }}
+        </p>
+        <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 space-y-1.5 text-xs font-mono text-slate-300">
+          <div>1. <app-math-view math="\sum_{i=1}^8 \Delta o(C_i) \equiv 0 \pmod 3" /> ({{ t().theorySec3Inv1 }})</div>
+          <div>2. <app-math-view math="\sum_{j=1}^{12} \Delta o(E_j) \equiv 0 \pmod 2" /> ({{ t().theorySec3Inv2 }})</div>
+          <div>3. <app-math-view math="\operatorname{sgn}(\sigma_{\text{corner}}) = \operatorname{sgn}(\tau_{\text{edge}})" /> ({{ t().theorySec3Inv3 }})</div>
+        </div>
+        <div class="text-xs text-slate-300 mt-1">
+          {{ t().theorySec3OrderDesc }}
+        </div>
+        <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 text-center font-mono text-xs text-amber-300">
+          <app-math-view math="|\mathcal{G}| = \frac{3^8 \cdot 8! \cdot 2^{12} \cdot 12!}{12} = 43{,}252{,}003{,}274{,}489{,}856{,}000" [block]="true" />
+        </div>
+      </div>
+
+      <!-- Section 4: Orbits & Stabilizers -->
+      <div class="flex flex-col gap-2">
+        <h3 class="text-base font-bold text-indigo-300">
+          {{ t().theorySec4Title }}
+        </h3>
+        <p class="text-xs text-slate-300 leading-relaxed">
+          {{ t().theorySec4Desc }}
+        </p>
+        <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 text-center font-mono text-xs text-cyan-300">
+          <app-math-view math="|G| = |\mathrm{Orb}_G(x)| \times |\mathrm{Stab}_G(x)|" [block]="true" />
+        </div>
+        <p class="text-xs text-slate-300 leading-relaxed">
+          {{ t().theorySec4IndexDesc }}
+        </p>
+        <div class="bg-slate-950 p-2 rounded-xl border border-slate-800 text-center font-mono text-xs text-emerald-300">
+          <app-math-view math="|\mathrm{Stab}(C_1)| = \frac{43{,}252{,}003{,}274{,}489{,}856{,}000}{8} \approx 5.41 \times 10^{18}" [block]="true" />
+        </div>
+      </div>
+
+      <!-- Section 5: Commutators -->
+      <div class="flex flex-col gap-2">
+        <h3 class="text-base font-bold text-indigo-300">
+          {{ t().theorySec5Title }}
+        </h3>
+        <p class="text-xs text-slate-300 leading-relaxed">
+          {{ t().theorySec5Desc }}
+        </p>
+      </div>
+
+      <!-- Footer -->
+      <div class="border-t border-slate-800 pt-4 flex justify-end">
+        <button
+          (click)="close.emit()"
+          class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 font-semibold text-xs text-white transition-all shadow-md cursor-pointer"
+        >
+          {{ t().modalCloseBtn }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
