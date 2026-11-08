@@ -1,19 +1,19 @@
-<div class="flex flex-col gap-4 animate-fade-in">
+<div class="validator-wrapper">
   <!-- Hero Header & Theory intro -->
-  <div class="bg-gradient-to-r from-slate-900/90 via-slate-900 to-slate-950 p-6 rounded-3xl border border-slate-800 shadow-2xl flex flex-col md:flex-row md:items-center justify-between gap-6">
-    <div class="flex flex-col gap-2 max-w-2xl">
-      <div class="flex items-center gap-2">
-        <span class="px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+  <div class="validator-hero">
+    <div class="hero-info">
+      <div class="hero-tags">
+        <span class="badge-orbit">
           {{ language() === 'bg' ? 'Теория на Орбитите: 1 / 12' : 'Orbit Theory: 1 / 12' }}
         </span>
-        <span class="text-xs text-slate-400 font-mono">
+        <span class="badge-coset">
           [S₄₈ : G] = 12
         </span>
       </div>
-      <h2 class="text-xl sm:text-2xl font-bold text-white tracking-tight">
+      <h2 class="hero-title">
         {{ language() === 'bg' ? 'Валидатор на Орбитата на Решението' : 'Solution Orbit Invariant Validator' }}
       </h2>
-      <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+      <p class="hero-desc">
         {{ language() === 'bg'
           ? 'Ако разглобим физически Кубчето на Рубик и го сглобим напълно случайно, вероятността полученото състояние да принадлежи на валидната орбита на групата G е едва 1 от 12 (8.33%). За да бъде решимо само чрез позволени завъртания, кубчето трябва да удовлетворява и трите фундаментални инварианта едновременно.'
           : 'If a Rubik\'s Cube is disassembled and reassembled randomly, the probability that the resulting state lies in the valid solvable orbit G is exactly 1 in 12 (8.33%). To be solvable by legal face turns, the state must simultaneously satisfy all three fundamental invariants.'
@@ -22,255 +22,272 @@
     </div>
 
     <!-- Quick Coset Probability Card -->
-    <div class="flex flex-col gap-2 bg-slate-950/80 p-4 rounded-2xl border border-slate-800 text-xs font-mono min-w-[240px]">
-      <div class="flex justify-between items-center text-slate-400">
+    <div class="coset-card">
+      <div class="coset-row">
         <span>{{ language() === 'bg' ? 'Физически състояния:' : 'Physical states:' }}</span>
-        <span class="text-slate-200 font-bold">12 · |G|</span>
+        <span style="color: #ffffff; font-weight: 700;">12 · |G|</span>
       </div>
-      <div class="flex justify-between items-center text-slate-400">
+      <div class="coset-row">
         <span>{{ language() === 'bg' ? 'Решима орбита |G|:' : 'Solvable orbit |G|:' }}</span>
-        <span class="text-emerald-400 font-bold">~4.33 × 10¹⁹</span>
+        <span style="color: var(--color-emerald); font-weight: 700;">~4.33 × 10¹⁹</span>
       </div>
-      <div class="flex justify-between items-center text-slate-400 border-t border-slate-800/80 pt-2">
+      <div class="coset-row" style="border-top: 1px solid var(--border-medium); padding-top: 0.5rem;">
         <span>{{ language() === 'bg' ? 'Вероятност:' : 'Probability:' }}</span>
-        <span class="text-amber-400 font-bold">1 / 12 (8.33%)</span>
+        <span style="color: var(--color-amber); font-weight: 700;">1 / 12 (8.33%)</span>
       </div>
     </div>
   </div>
 
   <!-- Main Result Banner: Solvable Orbit vs Unsolvable Coset -->
   <div
-    [class]="'p-6 rounded-3xl border shadow-xl flex flex-col md:flex-row items-center justify-between gap-4 transition-all ' + (
-      val().isValidOrbit
-        ? 'bg-emerald-950/20 border-emerald-500/40 shadow-emerald-900/10'
-        : 'bg-rose-950/20 border-rose-500/40 shadow-rose-900/10'
-    )"
+    class="result-banner"
+    [class.valid]="val().isValidOrbit"
+    [class.invalid]="!val().isValidOrbit"
   >
-    <div class="flex items-center gap-4">
-      <div [class]="'w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ' + (val().isValidOrbit ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400')">
+    <div class="result-main">
+      <div class="result-icon-box" [class.valid]="val().isValidOrbit" [class.invalid]="!val().isValidOrbit">
         @if (val().isValidOrbit) {
           <!-- Shield Check Icon -->
-          <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <svg style="width: 1.75rem; height: 1.75rem;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
             <path d="m9 12 2 2 4-4" />
           </svg>
         } @else {
           <!-- Alert Triangle Icon -->
-          <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <svg style="width: 1.75rem; height: 1.75rem;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
             <line x1="12" y1="9" x2="12" y2="13" />
             <line x1="12" y1="17" x2="12.01" y2="17" />
           </svg>
         }
       </div>
-      <div class="flex flex-col">
-        <span [class]="'text-lg sm:text-xl font-bold ' + (val().isValidOrbit ? 'text-emerald-300' : 'text-rose-300')">
+
+      <div>
+        <h3 class="result-title">
           {{ val().isValidOrbit
-            ? (language() === 'bg' ? 'ВАЛИДНА ОРБИТА НА РЕШЕНИЕТО (Косет 0 / 12)' : 'VALID SOLUTION ORBIT G (Coset 0 / 12)')
-            : (language() === 'bg' ? 'НЕРЕШИМО СЪСТОЯНИЕ: НЕВАЛИДЕН КОСЕТ ' + val().cosetIndex + ' / 12' : 'UNSOLVABLE STATE: INVALID COSET ' + val().cosetIndex + ' / 12')
+            ? (language() === 'bg' ? 'Валидно Решимо Състояние (Орбита на Решението)' : 'Valid Solvable Orbit (Identity Coset)')
+            : (language() === 'bg' ? 'НЕРЕШИМО СЪСТОЯНИЕ: Извън орбитата на групата G!' : 'UNSOLVABLE STATE: Outside the Legal Orbit of G!')
           }}
-        </span>
-        <p class="text-xs text-slate-300 mt-1">
+        </h3>
+        <p class="result-sub">
           {{ val().isValidOrbit
-            ? (language() === 'bg' ? 'Кубчето се намира в основната орбита G и може да бъде подредено само чрез стандартни завъртания.' : 'This cube is in the genuine Rubik group G and can be fully solved using legal moves.')
-            : (language() === 'bg' ? 'Кубчето е в паралелен косет gG! То не може да бъде решено без физическо разглобяване или корекция.' : 'This cube is stuck in a non-identity coset gG and is mathematically impossible to solve without disassembly.')
+            ? (language() === 'bg' ? 'Всички 3 алгебрични инварианта са удовлетворени. Състоянието е достижимо от наредения куб само чрез завъртания.' : 'All 3 algebraic invariants are satisfied. This configuration can be solved strictly using legal face turns.')
+            : (language() === 'bg' ? 'Кубчето се намира в един от 11-те неразрешими косета на групата. Невъзможно е да се нареди без физическо разглобяване!' : 'This configuration resides in one of the 11 unreachable cosets. It cannot be solved without physical disassembly!')
           }}
         </p>
       </div>
     </div>
-
-    @if (!val().isValidOrbit) {
-      <button
-        type="button"
-        (click)="onRepair()"
-        class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-lg shadow-emerald-600/30 transition-all flex items-center gap-2 cursor-pointer shrink-0"
-      >
-        <!-- Wrench Icon -->
-        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
-        </svg>
-        <span>{{ language() === 'bg' ? 'Възстанови валидната орбита' : 'Repair to Solvable Orbit' }}</span>
-      </button>
-    }
   </div>
 
-  <!-- The 3 Fundamental Invariants Grid -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+  <!-- The 3 Fundamental Solvability Invariants -->
+  <div class="invariants-grid">
     <!-- Invariant 1: Corner Orientation Sum -->
-    <div [class]="'p-5 rounded-3xl border flex flex-col justify-between gap-4 ' + (val().isCornerTwistValid ? 'bg-slate-900/80 border-slate-800' : 'bg-rose-950/20 border-rose-500/40')">
-      <div class="flex flex-col gap-2">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
-            mod 3
-          </span>
-          <span [class]="'text-xs font-bold ' + (val().isCornerTwistValid ? 'text-emerald-400' : 'text-rose-400')">
-            {{ val().isCornerTwistValid ? (language() === 'bg' ? 'Спазен ✓' : 'Satisfied ✓') : (language() === 'bg' ? 'Нарушен ✗' : 'Violated ✗') }}
-          </span>
-        </div>
-        <h3 class="font-bold text-slate-100 text-sm">
-          {{ language() === 'bg' ? '1. Инвариант на Върховите Ориентации' : '1. Corner Orientation Invariant' }}
-        </h3>
-        <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 text-center font-mono text-xs text-amber-300">
-          <app-math-view math="\sum_{i=0}^7 o(C_i) \equiv 0 \pmod 3" [block]="true" />
-        </div>
-        <p class="text-xs text-slate-400 leading-relaxed">
+    <div class="invariant-card" [class.ok]="val().cornerTwistSum === 0" [class.violated]="val().cornerTwistSum !== 0">
+      <div class="invariant-header">
+        <span class="invariant-badge" [class.ok]="val().cornerTwistSum === 0" [class.violated]="val().cornerTwistSum !== 0">
+          {{ val().cornerTwistSum === 0 ? (language() === 'bg' ? 'Спазен' : 'Conserved') : (language() === 'bg' ? 'Нарушен' : 'Violated') }}
+        </span>
+        <span style="font-size: 0.7rem; color: var(--text-dim); font-family: var(--font-mono);">
+          Mod 3 (ℤ₃)
+        </span>
+      </div>
+
+      <div>
+        <h4 class="invariant-title">
+          {{ language() === 'bg' ? '1. Ъглова Ориентация' : '1. Corner Orientation' }}
+        </h4>
+        <p class="invariant-desc">
           {{ language() === 'bg'
-            ? 'Всеки позволен ход променя ориентациите на върховете с кратно на 3. Невъзможно е да се завърти само един връх на място!'
-            : 'Every face turn preserves the total twist sum mod 3. Twisting a single corner independently is impossible by turns.'
+            ? 'Сумата от завъртанията на всички 8 върха трябва да се дели на 3. Единичен завъртян ъгъл е невъзможен.'
+            : 'The sum of all 8 corner twist orientations must be congruent to 0 modulo 3.'
           }}
         </p>
       </div>
-      <div class="flex items-center justify-between pt-3 border-t border-slate-800/80 text-xs font-mono">
-        <span class="text-slate-400">{{ language() === 'bg' ? 'Текуща сума:' : 'Current sum:' }}</span>
-        <span [class]="'font-bold ' + (val().isCornerTwistValid ? 'text-emerald-400' : 'text-rose-400')">
-          {{ val().cornerTwistSum }} mod 3 ({{ val().isCornerTwistValid ? 'OK' : 'Twisted' }})
-        </span>
+
+      <div class="invariant-math-box">
+        <div style="display: flex; justify-content: space-between; color: var(--text-muted); font-size: 0.7rem; margin-bottom: 0.25rem;">
+          <span>&sum; r&#7522; mod 3:</span>
+          <span [style.color]="val().cornerTwistSum === 0 ? 'var(--color-emerald)' : 'var(--color-rose)'" style="font-weight: 700;">
+            {{ val().cornerTwistSum }} &equiv; {{ val().cornerTwistSum }} (mod 3)
+          </span>
+        </div>
+        <div style="font-size: 0.7rem; color: var(--text-dim);">
+          <app-math-view math="\sum_{i=0}^7 r_i \equiv 0 \pmod 3" [block]="false" />
+        </div>
       </div>
     </div>
 
-    <!-- Invariant 2: Edge Flip Sum -->
-    <div [class]="'p-5 rounded-3xl border flex flex-col justify-between gap-4 ' + (val().isEdgeFlipValid ? 'bg-slate-900/80 border-slate-800' : 'bg-rose-950/20 border-rose-500/40')">
-      <div class="flex flex-col gap-2">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
-            mod 2
-          </span>
-          <span [class]="'text-xs font-bold ' + (val().isEdgeFlipValid ? 'text-emerald-400' : 'text-rose-400')">
-            {{ val().isEdgeFlipValid ? (language() === 'bg' ? 'Спазен ✓' : 'Satisfied ✓') : (language() === 'bg' ? 'Нарушен ✗' : 'Violated ✗') }}
-          </span>
-        </div>
-        <h3 class="font-bold text-slate-100 text-sm">
-          {{ language() === 'bg' ? '2. Инвариант на Обръщането на Ръбовете' : '2. Edge Flip Invariant' }}
-        </h3>
-        <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 text-center font-mono text-xs text-amber-300">
-          <app-math-view math="\sum_{j=0}^{11} f(E_j) \equiv 0 \pmod 2" [block]="true" />
-        </div>
-        <p class="text-xs text-slate-400 leading-relaxed">
+    <!-- Invariant 2: Edge Orientation Sum -->
+    <div class="invariant-card" [class.ok]="val().edgeFlipSum === 0" [class.violated]="val().edgeFlipSum !== 0">
+      <div class="invariant-header">
+        <span class="invariant-badge" [class.ok]="val().edgeFlipSum === 0" [class.violated]="val().edgeFlipSum !== 0">
+          {{ val().edgeFlipSum === 0 ? (language() === 'bg' ? 'Спазен' : 'Conserved') : (language() === 'bg' ? 'Нарушен' : 'Violated') }}
+        </span>
+        <span style="font-size: 0.7rem; color: var(--text-dim); font-family: var(--font-mono);">
+          Mod 2 (ℤ₂)
+        </span>
+      </div>
+
+      <div>
+        <h4 class="invariant-title">
+          {{ language() === 'bg' ? '2. Ръбова Ориентация' : '2. Edge Orientation' }}
+        </h4>
+        <p class="invariant-desc">
           {{ language() === 'bg'
-            ? 'Общият брой обърнати ръбове винаги е четен. Невъзможно е да се обърне точно един ръб на място!'
-            : 'The total number of flipped edges is always even. Flipping a single edge alone is physically unreachable.'
+            ? 'Сумата от обръщанията на всички 12 ръба трябва да е четно число (0 mod 2). Единичен обърнат ръб е невъзможен.'
+            : 'The sum of all 12 edge flip orientations must be congruent to 0 modulo 2.'
           }}
         </p>
       </div>
-      <div class="flex items-center justify-between pt-3 border-t border-slate-800/80 text-xs font-mono">
-        <span class="text-slate-400">{{ language() === 'bg' ? 'Текуща сума:' : 'Current sum:' }}</span>
-        <span [class]="'font-bold ' + (val().isEdgeFlipValid ? 'text-emerald-400' : 'text-rose-400')">
-          {{ val().edgeFlipSum }} mod 2 ({{ val().isEdgeFlipValid ? 'OK' : 'Single Flipped' }})
-        </span>
+
+      <div class="invariant-math-box">
+        <div style="display: flex; justify-content: space-between; color: var(--text-muted); font-size: 0.7rem; margin-bottom: 0.25rem;">
+          <span>&sum; w&#7522; mod 2:</span>
+          <span [style.color]="val().edgeFlipSum === 0 ? 'var(--color-emerald)' : 'var(--color-rose)'" style="font-weight: 700;">
+            {{ val().edgeFlipSum }} &equiv; {{ val().edgeFlipSum }} (mod 2)
+          </span>
+        </div>
+        <div style="font-size: 0.7rem; color: var(--text-dim);">
+          <app-math-view math="\sum_{j=0}^{11} w_j \equiv 0 \pmod 2" [block]="false" />
+        </div>
       </div>
     </div>
 
     <!-- Invariant 3: Permutation Parity -->
-    <div [class]="'p-5 rounded-3xl border flex flex-col justify-between gap-4 ' + (val().isParityValid ? 'bg-slate-900/80 border-slate-800' : 'bg-rose-950/20 border-rose-500/40')">
-      <div class="flex flex-col gap-2">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
-            sgn(σ) · sgn(τ) = +1
-          </span>
-          <span [class]="'text-xs font-bold ' + (val().isParityValid ? 'text-emerald-400' : 'text-rose-400')">
-            {{ val().isParityValid ? (language() === 'bg' ? 'Спазен ✓' : 'Satisfied ✓') : (language() === 'bg' ? 'Нарушен ✗' : 'Violated ✗') }}
-          </span>
-        </div>
-        <h3 class="font-bold text-slate-100 text-sm">
-          {{ language() === 'bg' ? '3. Инвариант на Пермутационната Четност' : '3. Permutation Parity Invariant' }}
-        </h3>
-        <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 text-center font-mono text-xs text-amber-300">
-          <app-math-view math="\operatorname{sgn}(\sigma) = \operatorname{sgn}(\tau)" [block]="true" />
-        </div>
-        <p class="text-xs text-slate-400 leading-relaxed">
+    <div class="invariant-card" [class.ok]="val().isParityValid" [class.violated]="!val().isParityValid">
+      <div class="invariant-header">
+        <span class="invariant-badge" [class.ok]="val().isParityValid" [class.violated]="!val().isParityValid">
+          {{ val().isParityValid ? (language() === 'bg' ? 'Спазен' : 'Conserved') : (language() === 'bg' ? 'Нарушен' : 'Violated') }}
+        </span>
+        <span style="font-size: 0.7rem; color: var(--text-dim); font-family: var(--font-mono);">
+          sgn(&sigma;) = sgn(&tau;)
+        </span>
+      </div>
+
+      <div>
+        <h4 class="invariant-title">
+          {{ language() === 'bg' ? '3. Четност на Пермутациите' : '3. Permutation Parity' }}
+        </h4>
+        <p class="invariant-desc">
           {{ language() === 'bg'
-            ? 'Четността на пермутацията на върховете σ трябва да съвпада с тази на ръбовете τ. Невъзможно е да се разменят само два върха или само два ръба!'
-            : 'Corner permutation σ and edge permutation τ must share parity. Transposing only 2 corners or 2 edges is impossible.'
+            ? 'Пермутацията на върховете и пермутацията на ръбовете трябва да имат еднаква четност (едновременно четни или нечетни).'
+            : 'The corner permutation sign must strictly match the edge permutation sign: sgn(σ) = sgn(τ).'
           }}
         </p>
       </div>
-      <div class="flex items-center justify-between pt-3 border-t border-slate-800/80 text-xs font-mono">
-        <span class="text-slate-400">{{ language() === 'bg' ? 'Върхове / Ръбове:' : 'Corners / Edges:' }}</span>
-        <span [class]="'font-bold ' + (val().isParityValid ? 'text-emerald-400' : 'text-rose-400')">
-          {{ val().cornerParity }} / {{ val().edgeParity }}
-        </span>
+
+      <div class="invariant-math-box">
+        <div style="display: flex; justify-content: space-between; color: var(--text-muted); font-size: 0.7rem; margin-bottom: 0.25rem;">
+          <span>sgn(&sigma;) vs sgn(&tau;):</span>
+          <span [style.color]="val().isParityValid ? 'var(--color-emerald)' : 'var(--color-rose)'" style="font-weight: 700;">
+            {{ val().cornerParity }} vs {{ val().edgeParity }}
+          </span>
+        </div>
+        <div style="font-size: 0.7rem; color: var(--text-dim);">
+          <app-math-view math="\text{sgn}(\sigma_{\text{corner}}) = \text{sgn}(\tau_{\text{edge}})" [block]="false" />
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Interactive Coset Simulator (Physical Tampering Test Lab) -->
-  <div class="bg-slate-900/90 rounded-3xl p-6 border border-slate-800 shadow-xl flex flex-col gap-4">
-    <div class="flex flex-col gap-1">
-      <div class="flex items-center gap-2">
-        <!-- Sparkles Icon -->
-        <svg class="w-4 h-4 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
-        </svg>
-        <h3 class="text-sm font-bold text-white uppercase tracking-wider">
-          {{ language() === 'bg' ? 'Лаборатория за Симулация на Нарушения (Тест на 12-те Косета)' : 'Coset Tampering Lab (Test the 12 Cosets)' }}
-        </h3>
-      </div>
-      <p class="text-xs text-slate-400">
+  <!-- Physical Tampering Simulator (Entering the 11 Unsolvable Cosets) -->
+  <div class="simulator-card">
+    <div>
+      <h3 style="font-size: 1.05rem; font-weight: 700; color: #ffffff; margin: 0;">
+        {{ language() === 'bg' ? 'Симулатор на Физическо Разглобяване (Косети на G)' : 'Physical Tampering Simulator (Cosets of G)' }}
+      </h3>
+      <p style="font-size: 0.775rem; color: var(--text-secondary); margin: 0.25rem 0 0 0;">
         {{ language() === 'bg'
-          ? 'Симулирайте физически недопустими манипулации (разглобяване, пренареждане на стикери), за да видите нагледно как кубчето напуска орбитата G и преминава в нерешим косет:'
-          : 'Simulate physical illegal manipulations (popping pieces, sticker swapping) to witness the cube leaving orbit G into an unsolvable coset:'
+          ? 'Тествайте на практика какво се случва, когато физически завъртите стикер или размените две парчета. Наблюдавайте реакцията на 3D модела вляво и как инвариантите нарушават равенствата.'
+          : 'Simulate physical manipulation by twisting an isolated piece or swapping two pieces. Observe how the 3D cube model reflects the invalid coset.'
         }}
       </p>
     </div>
 
-    <!-- Tampering Buttons Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+    <div class="sim-actions-grid">
+      <!-- Tamper Action 1: Twist Corner -->
       <button
         type="button"
         (click)="onSimulateCornerTwist()"
-        class="px-3.5 py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 text-slate-200 text-xs font-semibold transition-all hover:border-amber-500/50 flex items-center justify-center gap-2 cursor-pointer"
+        [disabled]="isAnimating()"
+        class="sim-btn"
       >
-        <span>🌀</span>
-        <span>{{ language() === 'bg' ? 'Завърти 1 връх (+1)' : 'Twist 1 Corner (+1)' }}</span>
+        <span class="sim-btn-title">
+          <span>🔄</span>
+          <span>{{ language() === 'bg' ? 'Завърти 1 ъгъл (+120°)' : 'Twist 1 Corner (+120°)' }}</span>
+        </span>
+        <span class="sim-btn-desc">
+          {{ language() === 'bg'
+            ? 'Нарушава ℤ₃ инварианта: ∑ rᵢ ≡ 1 (mod 3). Състоянието попада в косет 1.'
+            : 'Violates corner orientation mod 3. Moves state into coset 1.'
+          }}
+        </span>
       </button>
 
+      <!-- Tamper Action 2: Flip Edge -->
       <button
         type="button"
         (click)="onSimulateEdgeFlip()"
-        class="px-3.5 py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 text-slate-200 text-xs font-semibold transition-all hover:border-amber-500/50 flex items-center justify-center gap-2 cursor-pointer"
+        [disabled]="isAnimating()"
+        class="sim-btn"
       >
-        <span>🔄</span>
-        <span>{{ language() === 'bg' ? 'Обърни 1 ръб (+1)' : 'Flip 1 Edge (+1)' }}</span>
+        <span class="sim-btn-title">
+          <span>🔃</span>
+          <span>{{ language() === 'bg' ? 'Обърни 1 ръб (Flip)' : 'Flip 1 Edge' }}</span>
+        </span>
+        <span class="sim-btn-desc">
+          {{ language() === 'bg'
+            ? 'Нарушава ℤ₂ инварианта: ∑ wᵢ ≡ 1 (mod 2). Състоянието попада в косет 2.'
+            : 'Violates edge orientation mod 2. Moves state into coset 2.'
+          }}
+        </span>
       </button>
 
+      <!-- Tamper Action 3: Swap 2 Pieces -->
       <button
         type="button"
         (click)="onSimulatePieceSwap()"
-        class="px-3.5 py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 text-slate-200 text-xs font-semibold transition-all hover:border-amber-500/50 flex items-center justify-center gap-2 cursor-pointer"
+        [disabled]="isAnimating()"
+        class="sim-btn"
       >
-        <span>🔀</span>
-        <span>{{ language() === 'bg' ? 'Размени 2 върха' : 'Swap 2 Corners' }}</span>
-      </button>
-
-      <button
-        type="button"
-        (click)="onRepair()"
-        class="px-3.5 py-2.5 rounded-xl bg-emerald-600/90 hover:bg-emerald-500 border border-emerald-500 text-white text-xs font-bold transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
-      >
-        <span>✨</span>
-        <span>{{ language() === 'bg' ? 'Поправи Орбитата (G)' : 'Restore Orbit (G)' }}</span>
+        <span class="sim-btn-title">
+          <span>🔀</span>
+          <span>{{ language() === 'bg' ? 'Размени 2 ъгъла (Паритет)' : 'Swap 2 Pieces (Parity)' }}</span>
+        </span>
+        <span class="sim-btn-desc">
+          {{ language() === 'bg'
+            ? 'Прилага транспозиция (нечетна пермутация). Нарушава sgn(σ) = sgn(τ).'
+            : 'Applies an odd transposition. Violates sgn(σ) = sgn(τ).'
+          }}
+        </span>
       </button>
     </div>
 
-    <!-- 12 Cosets Visual Map Matrix -->
-    <div class="mt-2 flex flex-col gap-2">
-      <span class="text-[11px] font-mono text-slate-400 uppercase tracking-wider">
-        {{ language() === 'bg' ? 'Карта на 12-те Косета (Следствие от Теоремата на Лагранж):' : 'The 12 Cosets Map (Lagrange\'s Index Theorem):' }}
-      </span>
-      <div class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-12 gap-1.5 font-mono text-center text-xs">
-        @for (coset of cosetList; track coset.idx) {
-          <div
-            [class]="'p-2 rounded-xl border flex flex-col items-center justify-center transition-all ' + (
-              coset.idx === val().cosetIndex
-                ? (coset.idx === 0 ? 'bg-emerald-600 text-white border-emerald-400 font-bold scale-105 shadow-md shadow-emerald-600/40 ring-2 ring-emerald-400' : 'bg-rose-600 text-white border-rose-400 font-bold scale-105 shadow-md shadow-rose-600/40 ring-2 ring-rose-400')
-                : (coset.idx === 0 ? 'bg-emerald-950/30 text-emerald-400 border-emerald-800/60' : 'bg-slate-950/50 text-slate-500 border-slate-800/60')
-            )"
-          >
-            <span class="text-[10px] opacity-80">C{{ coset.idx }}</span>
-            <span class="text-xs font-bold">{{ coset.idx === 0 ? 'G (OK)' : 'Unsolv' }}</span>
-          </div>
-        }
+    <!-- Repair Action -->
+    @if (!val().isValidOrbit) {
+      <div class="repair-banner">
+        <div>
+          <span style="font-weight: 700; color: #ffffff; font-size: 0.9rem; display: block;">
+            {{ language() === 'bg' ? 'Кубчето в момента е неразрешимо!' : 'Cube is currently unsolvable!' }}
+          </span>
+          <span style="font-size: 0.75rem; color: var(--text-secondary);">
+            {{ language() === 'bg' ? 'Можете да приложите математическо възстановяване до най-близката валидна орбита.' : 'You can apply an algebraic repair back into the legal solvable orbit.' }}
+          </span>
+        </div>
+
+        <button
+          type="button"
+          (click)="onRepair()"
+          [disabled]="isAnimating()"
+          class="btn-repair"
+        >
+          <svg style="width: 1rem; height: 1rem;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+            <path d="m9 12 2 2 4-4" />
+          </svg>
+          <span>{{ language() === 'bg' ? 'Възстанови до Валидна Орбита' : 'Repair to Solvable Orbit' }}</span>
+        </button>
       </div>
-    </div>
+    }
   </div>
 </div>

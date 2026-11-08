@@ -8,6 +8,7 @@ import { LanguageService } from '../../../services/language.service';
   standalone: true,
   imports: [CommonModule, MathViewComponent],
   templateUrl: './theory-guide-modal.component.html',
+  styleUrl: './theory-guide-modal.component.css',
 })
 export class TheoryGuideModalComponent {
   private languageService = inject(LanguageService);

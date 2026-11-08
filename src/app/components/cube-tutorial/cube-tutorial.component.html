@@ -1,197 +1,236 @@
-<div class="flex flex-col gap-4 animate-fade-in">
-  <!-- Header Banner -->
-  <div class="bg-gradient-to-r from-slate-900/90 via-slate-900 to-slate-950 p-6 rounded-3xl border border-slate-800 shadow-2xl flex flex-col md:flex-row md:items-center justify-between gap-6">
-    <div class="flex flex-col gap-2 max-w-2xl">
-      <div class="flex items-center gap-2">
-        <span class="px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-          {{ language() === 'bg' ? 'Интерактивен Урок в 7 Стъпки' : '7-Step Interactive Tutorial' }}
-        </span>
-        <span class="text-xs text-slate-400 font-mono">
-          {{ language() === 'bg' ? 'Метод на Слоевете (LBL) + Теория на Групите' : 'Layer-by-Layer (LBL) + Group Theory' }}
-        </span>
-      </div>
-      <h2 class="text-xl sm:text-2xl font-bold text-white tracking-tight">
-        {{ language() === 'bg' ? 'Как да Наредим Кубчето на Рубик' : 'How to Solve the Rubik\'s Cube' }}
-      </h2>
-      <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
-        {{ language() === 'bg'
-          ? 'Това интерактивно ръководство съчетава класическия метод за начинаещи с математическата обосновка зад всяка стъпка: защо алгоритмите запазват вече наредените слоеве (чрез стабилизатори), как действат комутаторите и как се спазват фундаменталните инварианти.'
-          : 'This interactive guide combines the classical beginner\'s Layer-by-Layer method with the group-theoretic rationale behind every move: why algorithms leave solved layers invariant (via stabilizers), how commutators function, and how invariants are conserved.'
-        }}
-      </p>
-    </div>
+<!-- GUIDED SPOTLIGHT TOUR MODE (DIMMED BACKDROP + FLOATING PROMPT MODAL) -->
+@if (isGuidedMode()) {
+  <!-- Darkened Backdrop -->
+  <div class="guided-backdrop" (click)="closeGuidedMode()"></div>
 
-    <!-- Progress Overview -->
-    <div class="flex flex-col gap-2 bg-slate-950/80 p-4 rounded-2xl border border-slate-800 text-xs min-w-[220px]">
-      <div class="flex justify-between items-center text-slate-400 font-mono">
-        <span>{{ language() === 'bg' ? 'Прогрес:' : 'Progress:' }}</span>
-        <span class="text-emerald-400 font-bold">
-          {{ currentStepIndex() + 1 }} / {{ steps.length }}
-        </span>
-      </div>
-      <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
-        <div
-          class="bg-gradient-to-r from-emerald-500 to-cyan-400 h-full transition-all duration-300"
-          [style.width.%]="((currentStepIndex() + 1) / steps.length) * 100"
-        ></div>
-      </div>
-      <span class="text-[11px] text-slate-400 font-medium truncate">
-        {{ isBg ? currentStep().titleBg : currentStep().title }}
-      </span>
-    </div>
-  </div>
-
-  <!-- Step Navigation Ribbon -->
-  <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
-    @for (step of steps; track step.stepNumber; let i = $index) {
-      <button
-        type="button"
-        (click)="currentStepIndex.set(i)"
-        [class]="'p-3 rounded-2xl border text-left transition-all duration-200 flex flex-col gap-1 cursor-pointer ' + (
-          currentStepIndex() === i
-            ? 'bg-emerald-600/20 border-emerald-500/60 shadow-lg shadow-emerald-900/20 ring-1 ring-emerald-400/50'
-            : (currentStepIndex() > i
-                ? 'bg-slate-900/70 border-emerald-900/40 text-slate-300 hover:bg-slate-800/80'
-                : 'bg-slate-900/40 border-slate-800 text-slate-400 hover:bg-slate-850')
-        )"
-      >
-        <div class="flex items-center justify-between w-full">
-          <span class="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-slate-800/80 text-slate-300">
-            #{{ step.stepNumber }}
-          </span>
-          @if (currentStepIndex() > i) {
-            <span class="text-emerald-400 text-xs">✓</span>
-          }
-        </div>
-        <span class="text-xs font-bold truncate text-slate-200">
-          {{ isBg ? step.titleBg : step.title }}
-        </span>
-      </button>
-    }
-  </div>
-
-  <!-- Active Step Main Detail Card -->
-  <div class="bg-slate-900/90 rounded-3xl p-6 border border-slate-800 shadow-xl flex flex-col gap-6">
-    <!-- Top Info with Step Navigation -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center font-mono font-bold text-lg">
+  <!-- Floating Spotlight Prompt Modal -->
+  <div class="guided-modal" role="dialog" aria-modal="true">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <div class="modal-header-left">
+        <div class="step-circle">
           {{ currentStep().stepNumber }}
         </div>
-        <div class="flex flex-col">
-          <h3 class="text-lg font-bold text-white">
+        <div class="step-titles">
+          <div class="step-badge-row">
+            <span class="step-badge">
+              {{ isBg ? 'Стъпка ' + (currentStepIndex() + 1) + ' от ' + steps.length : 'Step ' + (currentStepIndex() + 1) + ' of ' + steps.length }}
+            </span>
+            <span class="step-badge" style="background: rgba(6, 182, 212, 0.15); color: #67e8f9; border-color: rgba(6, 182, 212, 0.3);">
+              {{ isBg ? 'LBL Метод' : 'LBL Method' }}
+            </span>
+          </div>
+          <h2 class="step-title-text">
             {{ isBg ? currentStep().titleBg : currentStep().title }}
-          </h3>
-          <span class="text-xs text-slate-400 font-medium">
+          </h2>
+          <p class="step-subtitle-text">
             {{ isBg ? currentStep().subtitleBg : currentStep().subtitle }}
-          </span>
+          </p>
         </div>
       </div>
 
-      <!-- Prev / Next Controls -->
-      <div class="flex items-center gap-2 self-end sm:self-auto">
+      <!-- Close Guided Mode Button -->
+      <button
+        type="button"
+        (click)="closeGuidedMode()"
+        [title]="isBg ? 'Преглед на всички стъпки' : 'View all steps'"
+        class="close-btn"
+      >
+        &times;
+      </button>
+    </div>
+
+    <!-- Progress Track & Step Dots -->
+    <div class="progress-strip">
+      <div class="progress-track">
+        <div class="progress-fill" [style.width.%]="progressPercent()"></div>
+      </div>
+      <div class="step-dots">
+        @for (s of steps; track s.stepNumber; let i = $index) {
+          <div
+            class="step-dot"
+            [class.active]="currentStepIndex() === i"
+            [class.completed]="completedSteps().has(i)"
+            (click)="currentStepIndex.set(i)"
+            [title]="isBg ? s.titleBg : s.title"
+          ></div>
+        }
+      </div>
+    </div>
+
+    <!-- Interactive Prompt Card (The Call to Action) -->
+    <div class="prompt-card">
+      <div class="prompt-banner">
+        <svg class="w-4 h-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <polygon points="10 8 16 12 10 16 10 8" />
+        </svg>
+        <span>{{ isBg ? 'Цел на стъпката' : 'Step Objective' }}</span>
+      </div>
+
+      <p class="prompt-objective">
+        {{ isBg ? currentStep().goalBg : currentStep().goal }}
+      </p>
+
+      <!-- Algorithm Moves Display -->
+      <div class="algo-display">
+        <div class="algo-label-row">
+          <span>{{ isBg ? currentStep().algorithmNameBg : currentStep().algorithmName }}</span>
+          <span>{{ currentStepMoves().length }} {{ isBg ? 'хода' : 'moves' }}</span>
+        </div>
+
+        <div class="algo-moves-list">
+          @for (m of currentStepMoves(); track $index) {
+            <span class="move-pill">{{ m }}</span>
+          }
+        </div>
+      </div>
+
+      <!-- Pro Tip -->
+      <div style="font-size: 0.775rem; color: #94a3b8; line-height: 1.45; display: flex; gap: 0.4rem;">
+        <span style="color: #fbbf24;">💡</span>
+        <span><strong>{{ isBg ? 'Съвет:' : 'Tip:' }}</strong> {{ isBg ? currentStep().tipsBg : currentStep().tips }}</span>
+      </div>
+
+      <!-- MAIN CALL TO ACTION PROMPT BUTTON -->
+      <button
+        type="button"
+        (click)="onExecuteAlgorithm()"
+        [disabled]="isAnimating() || isStepExecuting()"
+        class="action-prompt-btn"
+        [class.btn-pulsing]="!isStepExecuting() && !isAnimating()"
+      >
+        @if (isStepExecuting() || isAnimating()) {
+          <div class="spinner"></div>
+          <span>{{ isBg ? 'Въртене на 3D куба...' : 'Executing on 3D Cube...' }}</span>
+        } @else {
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3" />
+          </svg>
+          <span>
+            {{ isBg ? 'Приложи алгоритъма върху 3D куба' : 'Execute Algorithm on 3D Cube' }}
+          </span>
+        }
+      </button>
+
+      <!-- Step Completion Feedback -->
+      @if (completedSteps().has(currentStepIndex())) {
+        <div class="success-badge">
+          <span>✓</span>
+          <span>
+            {{ isBg ? 'Алгоритъмът беше приложен успешно! Премини към следващата стъпка.' : 'Algorithm executed successfully! Proceed to next step.' }}
+          </span>
+        </div>
+      }
+
+      <!-- Expandable Group Theory Note -->
+      <button type="button" (click)="toggleMathNote()" class="math-toggle-btn">
+        <span>{{ showMathNote() ? '▼' : '▶' }}</span>
+        <span>{{ isBg ? 'Защо работи това? (Алгебрична обосновка)' : 'Why does this work? (Group Theory Rationale)' }}</span>
+      </button>
+
+      @if (showMathNote()) {
+        <div class="math-note-box">
+          <p style="margin: 0; font-size: 0.775rem; line-height: 1.5;">
+            {{ isBg ? currentStep().mathExplanationBg : currentStep().mathExplanation }}
+          </p>
+        </div>
+      }
+    </div>
+
+    <!-- Modal Footer Controls -->
+    <div class="modal-footer">
+      <button type="button" (click)="onReset()" class="footer-btn">
+        <span>↺</span>
+        <span>{{ isBg ? 'Ресет на куба' : 'Reset Cube' }}</span>
+      </button>
+
+      <div style="display: flex; gap: 0.5rem;">
         <button
           type="button"
           (click)="prevStep()"
           [disabled]="currentStepIndex() === 0"
-          class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-xs font-bold text-slate-300 transition-colors flex items-center gap-1 cursor-pointer"
+          class="footer-btn"
         >
           <span>←</span>
-          <span>{{ language() === 'bg' ? 'Предишна' : 'Previous' }}</span>
+          <span>{{ isBg ? 'Предишна' : 'Previous' }}</span>
         </button>
+
         <button
           type="button"
           (click)="nextStep()"
           [disabled]="currentStepIndex() === steps.length - 1"
-          class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-xs font-bold text-white transition-colors flex items-center gap-1 shadow-md shadow-emerald-600/20 cursor-pointer"
+          class="footer-btn next-btn"
         >
-          <span>{{ language() === 'bg' ? 'Следваща' : 'Next' }}</span>
+          <span>{{ isBg ? 'Следваща' : 'Next' }}</span>
           <span>→</span>
         </button>
       </div>
     </div>
+  </div>
+}
 
-    <!-- Goal & Instructions -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <!-- Goal Box -->
-      <div class="p-4 rounded-2xl bg-slate-950/80 border border-slate-800/80 flex flex-col gap-1.5">
-        <span class="text-[11px] uppercase font-bold tracking-wider text-emerald-400 flex items-center gap-1.5">
-          <span>🎯</span>
-          <span>{{ language() === 'bg' ? 'Цел на стъпката' : 'Step Objective' }}</span>
-        </span>
-        <p class="text-xs text-slate-200 leading-relaxed">
-          {{ isBg ? currentStep().goalBg : currentStep().goal }}
-        </p>
-      </div>
-
-      <!-- Tips Box -->
-      <div class="p-4 rounded-2xl bg-slate-950/80 border border-slate-800/80 flex flex-col gap-1.5">
-        <span class="text-[11px] uppercase font-bold tracking-wider text-amber-400 flex items-center gap-1.5">
-          <span>💡</span>
-          <span>{{ language() === 'bg' ? 'Практически съвет' : 'Pro Tip' }}</span>
-        </span>
-        <p class="text-xs text-slate-300 leading-relaxed">
-          {{ isBg ? currentStep().tipsBg : currentStep().tips }}
-        </p>
-      </div>
-    </div>
-
-    <!-- Algorithm Card -->
-    <div class="p-5 rounded-2xl bg-slate-950 border border-slate-800 flex flex-col gap-3">
-      <div class="flex items-center justify-between">
-        <span class="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider">
-          {{ isBg ? currentStep().algorithmNameBg : currentStep().algorithmName }}
-        </span>
-        <span class="text-[11px] font-mono text-cyan-400 px-2 py-0.5 rounded bg-cyan-950/50 border border-cyan-800/50">
-          {{ currentStep().algorithm.split(' ').length }} {{ language() === 'bg' ? 'хода' : 'moves' }}
-        </span>
-      </div>
-
-      <!-- Algorithm Moves Display -->
-      <div class="flex flex-wrap items-center gap-2 p-3 rounded-xl bg-slate-900 border border-slate-800/80 shadow-inner">
-        @for (m of currentStepMoves(); track $index) {
-          <span class="px-3 py-1.5 rounded-lg bg-slate-800 text-white font-mono font-bold text-sm sm:text-base border border-slate-700 shadow-sm">
-            {{ m }}
-          </span>
-        }
-      </div>
-
-      <!-- Action Buttons -->
-      <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
-        <button
-          type="button"
-          (click)="onExecuteAlgorithm()"
-          [disabled]="isAnimating()"
-          class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-bold text-xs shadow-lg shadow-emerald-600/30 transition-all flex items-center gap-2 cursor-pointer"
-        >
-          <!-- Play Icon -->
-          <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
-            <polygon points="5 3 19 12 5 21 5 3" />
-          </svg>
-          <span>{{ language() === 'bg' ? 'Приложи алгоритъма върху Куба' : 'Execute Algorithm on Cube' }}</span>
-        </button>
-
-        <button
-          type="button"
-          (click)="reset.emit()"
-          [disabled]="isAnimating()"
-          class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium transition-colors flex items-center gap-1.5 cursor-pointer"
-        >
-          <span>↺</span>
-          <span>{{ language() === 'bg' ? 'Ресет до нареден куб' : 'Reset Cube' }}</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- Group Theoretical Deep Dive -->
-    <div class="p-4 rounded-2xl bg-slate-950/60 border border-slate-800/60 flex flex-col gap-2">
-      <span class="text-[11px] uppercase font-bold tracking-wider text-cyan-400 flex items-center gap-1.5">
-        <span>🔬</span>
-        <span>{{ language() === 'bg' ? 'Теория на Групите: Защо работи този алгоритъм?' : 'Group Theory: Why does this algorithm work?' }}</span>
-      </span>
-      <p class="text-xs text-slate-300 leading-relaxed">
-        {{ isBg ? currentStep().mathExplanationBg : currentStep().mathExplanation }}
+<!-- STANDARD OVERVIEW MODE (WHEN GUIDED MODAL IS CLOSED) -->
+<div class="overview-container">
+  <!-- Launch Guided Tour Banner -->
+  <div class="launch-banner">
+    <div>
+      <h2 class="banner-title">
+        {{ isBg ? 'Интерактивен Насочван Урок в 7 Стъпки' : '7-Step Guided Interactive Walkthrough' }}
+      </h2>
+      <p class="banner-desc">
+        {{
+          isBg
+            ? 'Затъмнява фона и ви води стъпка по стъпка с интерактивни модалчета и бутони за директно завъртане на 3D куба.'
+            : 'Dims the background and guides you step-by-step with interactive prompts and direct 3D cube execution.'
+        }}
       </p>
     </div>
+
+    <button type="button" (click)="startGuidedMode(0)" class="launch-btn">
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+        <polygon points="5 3 19 12 5 21 5 3" />
+      </svg>
+      <span>{{ isBg ? 'Стартирай Интерактивен Гид' : 'Launch Guided Tour' }}</span>
+    </button>
+  </div>
+
+  <!-- Steps List -->
+  <div class="steps-list">
+    @for (step of steps; track step.stepNumber; let i = $index) {
+      <div class="step-row-card" (click)="startGuidedMode(i)">
+        <div class="step-row-header">
+          <div class="step-row-left">
+            <div class="step-num-badge">
+              #{{ step.stepNumber }}
+            </div>
+            <div>
+              <h3 class="step-row-title">
+                {{ isBg ? step.titleBg : step.title }}
+              </h3>
+              <p class="step-row-sub">
+                {{ isBg ? step.subtitleBg : step.subtitle }}
+              </p>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <span class="step-row-algo">{{ step.algorithm }}</span>
+            <button
+              type="button"
+              class="footer-btn next-btn"
+              style="padding: 0.4rem 0.75rem; font-size: 0.75rem;"
+            >
+              <span>{{ isBg ? 'Отвори модал' : 'Open Prompt' }}</span>
+              <span>&rarr;</span>
+            </button>
+          </div>
+        </div>
+
+        <p style="font-size: 0.8rem; color: #cbd5e1; margin: 0; line-height: 1.45;">
+          {{ isBg ? step.goalBg : step.goal }}
+        </p>
+      </div>
+    }
   </div>
 </div>

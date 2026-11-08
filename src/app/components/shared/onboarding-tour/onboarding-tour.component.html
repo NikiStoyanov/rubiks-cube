@@ -1,0 +1,136 @@
+@if (isTourOpen()) {
+  <div class="tour-backdrop">
+    <!-- Modal Card Container -->
+    <div class="tour-card">
+      <!-- Top Colored Accent Bar -->
+      <div class="tour-accent-bar"></div>
+
+      <!-- Header with Title, Step Badge & Close Button -->
+      <div class="tour-header">
+        <div>
+          <div class="tour-badge-row">
+            <span class="tour-step-badge">
+              {{ language() === 'bg' ? currentStep().badgeBg : currentStep().badge }}
+            </span>
+            <span class="tour-step-count">
+              {{ t().tourStepCount }} {{ currentStepIndex() + 1 }} / {{ steps.length }}
+            </span>
+          </div>
+          <h2 class="tour-title">
+            {{ language() === 'bg' ? currentStep().titleBg : currentStep().title }}
+          </h2>
+          <p class="tour-sub">
+            {{ language() === 'bg' ? currentStep().subtitleBg : currentStep().subtitle }}
+          </p>
+        </div>
+
+        <button
+          type="button"
+          (click)="closeTour()"
+          class="tour-close-btn"
+          [title]="t().tourSkipBtn"
+        >
+          <!-- Close X Icon -->
+          <svg style="width: 1.25rem; height: 1.25rem;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 6 6 18" />
+            <path d="m6 6 12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Main Body Content -->
+      <div class="tour-body">
+        <!-- Mathematical Formula Banner if present -->
+        @if (currentStep().formula) {
+          <div class="concept-banner">
+            <span class="concept-tag">
+              {{ language() === 'bg' ? currentStep().conceptBg : currentStep().concept }}
+            </span>
+            <app-math-view [math]="currentStep().formula!" [block]="false" />
+          </div>
+        }
+
+        <!-- Human-Readable Explanation -->
+        <div class="tour-explain-text">
+          {{ language() === 'bg' ? currentStep().explanationBg : currentStep().explanation }}
+        </div>
+
+        <!-- Practical / Engineering Takeaway Card -->
+        <div class="takeaway-card">
+          <div class="takeaway-title">
+            <svg style="width: 1rem; height: 1rem; color: var(--color-amber);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" />
+              <path d="M9 18h6" />
+              <path d="M10 22h4" />
+            </svg>
+            <span>{{ t().tourTakeawayLabel }}</span>
+          </div>
+          <p style="margin: 0; line-height: 1.5; color: var(--text-secondary);">
+            {{ language() === 'bg' ? currentStep().takeawayBg : currentStep().takeaway }}
+          </p>
+        </div>
+
+        <!-- Interactive Demo Button if step has one -->
+        @if (currentStep().demoMove) {
+          <div class="demo-btn-row">
+            <button
+              type="button"
+              (click)="onExecuteDemo(currentStep().demoMove)"
+              class="btn-demo"
+            >
+              <svg style="width: 1rem; height: 1rem;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="5 3 19 12 5 21 5 3" />
+              </svg>
+              <span>{{ language() === 'bg' ? currentStep().demoMoveLabelBg : currentStep().demoMoveLabel }}</span>
+            </button>
+            <span style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono);">
+              Watch 3D cube update in real time!
+            </span>
+          </div>
+        }
+      </div>
+
+      <!-- Footer: Step Dots & Navigation Buttons -->
+      <div class="tour-footer">
+        <!-- Step Navigation Indicator Dots -->
+        <div class="dots-group">
+          @for (s of steps; track s.step; let idx = $index) {
+            <button
+              type="button"
+              (click)="goToStep(idx)"
+              class="dot-btn"
+              [class.active]="currentStepIndex() === idx"
+              [title]="'Go to step ' + (idx + 1)"
+            ></button>
+          }
+        </div>
+
+        <!-- Next / Previous / Finish Action Buttons -->
+        <div class="footer-nav-actions">
+          @if (currentStepIndex() > 0) {
+            <button
+              type="button"
+              (click)="prevStep()"
+              class="btn-tour-secondary"
+            >
+              {{ t().tourPrevBtn }}
+            </button>
+          }
+
+          <button
+            type="button"
+            (click)="nextStep()"
+            class="btn-tour-primary"
+          >
+            <span>
+              {{ currentStepIndex() === steps.length - 1 ? t().tourFinishBtn : t().tourNextBtn }}
+            </span>
+            <svg style="width: 1rem; height: 1rem;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="m9 18 6-6-6-6" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

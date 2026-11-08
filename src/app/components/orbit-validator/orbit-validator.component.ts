@@ -1,14 +1,10 @@
-import { Component, computed, inject, input, output } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CubeState } from '../../types/cube';
 import { LanguageService } from '../../services/language.service';
-import { 
-  validateSolutionOrbit, 
-  OrbitValidationResult, 
-  simulateCornerTwist, 
-  simulateEdgeFlip, 
-  simulatePieceSwap, 
-  repairToValidOrbit 
+import { CubeStateService } from '../../services/cube-state.service';
+import {
+  validateSolutionOrbit,
+  OrbitValidationResult,
 } from '../../math/rubikGroup';
 import { MathViewComponent } from '../shared/math-view/math-view.component';
 
@@ -17,15 +13,15 @@ import { MathViewComponent } from '../shared/math-view/math-view.component';
   standalone: true,
   imports: [CommonModule, MathViewComponent],
   templateUrl: './orbit-validator.component.html',
+  styleUrl: './orbit-validator.component.css',
 })
 export class OrbitValidatorComponent {
-  private languageService = inject(LanguageService);
+  private readonly languageService = inject(LanguageService);
+  private readonly cubeStateService = inject(CubeStateService);
+
   readonly language = this.languageService.language;
-
-  cubeState = input.required<CubeState>();
-  isAnimating = input<boolean>(false);
-
-  stateChange = output<{ state: CubeState; action: 'twist' | 'flip' | 'swap' | 'repair' }>();
+  readonly cubeState = this.cubeStateService.cubeState;
+  readonly isAnimating = this.cubeStateService.isAnimating;
 
   readonly val = computed<OrbitValidationResult>(() => {
     return validateSolutionOrbit(this.cubeState());
@@ -34,22 +30,18 @@ export class OrbitValidatorComponent {
   readonly cosetList = Array.from({ length: 12 }, (_, i) => ({ idx: i }));
 
   onSimulateCornerTwist(): void {
-    const next = simulateCornerTwist(this.cubeState(), 0, 1);
-    this.stateChange.emit({ state: next, action: 'twist' });
+    this.cubeStateService.tamperState('twist');
   }
 
   onSimulateEdgeFlip(): void {
-    const next = simulateEdgeFlip(this.cubeState(), 0);
-    this.stateChange.emit({ state: next, action: 'flip' });
+    this.cubeStateService.tamperState('flip');
   }
 
   onSimulatePieceSwap(): void {
-    const next = simulatePieceSwap(this.cubeState());
-    this.stateChange.emit({ state: next, action: 'swap' });
+    this.cubeStateService.tamperState('swap');
   }
 
   onRepair(): void {
-    const next = repairToValidOrbit(this.cubeState());
-    this.stateChange.emit({ state: next, action: 'repair' });
+    this.cubeStateService.tamperState('repair');
   }
 }

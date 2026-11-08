@@ -1,0 +1,134 @@
+<div class="hud-card">
+  <!-- Top Bar: Title, Move Badge, and Expand/Collapse Toggle -->
+  <div class="hud-top-bar">
+    <div class="hud-title-wrap">
+      <!-- Activity/Function Icon -->
+      <span class="hud-pulse-dot">
+        <span class="pulse-ring"></span>
+        <span class="pulse-core"></span>
+      </span>
+      <span class="hud-title">
+        {{ t().hudTitle }}
+      </span>
+    </div>
+
+    <!-- Active Move Badge -->
+    <div class="hud-actions">
+      <div class="hud-move-badge">
+        <app-math-view [math]="currentMoveTex()" [block]="false" />
+      </div>
+
+      <button
+        type="button"
+        (click)="toggleExpand()"
+        class="hud-toggle-btn"
+        [title]="isExpanded() ? 'Collapse' : 'Expand'"
+      >
+        <svg
+          [class.rotated]="isExpanded()"
+          class="toggle-arrow"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  @if (isExpanded()) {
+    <!-- Main Math Metrics Grid (3 dynamic columns) -->
+    <div class="hud-metrics-grid">
+      <!-- Metric 1: Element Order ord(g) -->
+      <div class="metric-card">
+        <div class="metric-header">
+          <span>{{ t().hudOrder }}</span>
+          <span class="metric-header-tag" style="color: var(--color-indigo);">k = {{ orderText() }}</span>
+        </div>
+        <div class="metric-body">
+          <span class="metric-value-lg" style="color: var(--color-cyan);">{{ orderText() }}</span>
+          <span class="metric-sub-label">
+            {{ orderText() === 1 ? 'identity e' : t().hudOrderDesc }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Metric 2: Orbit Reachability -->
+      <div class="metric-card">
+        <div class="metric-header">
+          <span>{{ t().hudOrbitSize }}</span>
+          <span class="metric-header-tag" style="color: var(--color-emerald);">{{ activePieceName() }}</span>
+        </div>
+        <div class="metric-body">
+          <span class="metric-value-lg" style="color: var(--color-emerald);">
+            {{ orbitPieces().length }} / {{ selectedPieceType() === 'corner' ? 8 : 12 }}
+          </span>
+          <span class="metric-sub-label">
+            {{ selectedPieceType() === 'corner' ? 'corners' : 'edges' }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Metric 3: Permutation Parity -->
+      <div class="metric-card">
+        <div class="metric-header">
+          <span>{{ t().hudParity }}</span>
+          <span class="metric-header-tag" [style.color]="analysis()?.parity === 'odd' ? 'var(--color-amber)' : 'var(--color-indigo)'">
+            {{ analysis()?.parity === 'odd' ? 'sgn = -1' : 'sgn = +1' }}
+          </span>
+        </div>
+        <div class="metric-body">
+          <span
+            class="parity-tag"
+            [class.parity-odd]="analysis()?.parity === 'odd'"
+            [class.parity-even]="analysis()?.parity !== 'odd'"
+          >
+            {{ analysis()?.parity === 'odd' ? 'Odd (Нечетна)' : 'Even (Четна)' }}
+          </span>
+          <span class="metric-sub-label">
+            {{ isSolved() ? 'e ∈ A₈' : 'conserved' }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Real-time Disjoint Cycle Notation Ribbon -->
+    <div class="cycles-ribbon">
+      <div class="cycles-header">
+        <span>{{ t().hudCycles }}</span>
+        <span style="color: var(--text-dim); font-family: var(--font-mono); font-size: 0.65rem;">{{ lastMove() }}</span>
+      </div>
+
+      <!-- Corner cycles -->
+      <div class="cycles-row" style="color: #a5b4fc;">
+        <span class="cycle-type-label">C:</span>
+        <app-math-view [math]="cornerCyclesFormatted()" [block]="false" />
+      </div>
+
+      <!-- Edge cycles -->
+      <div class="cycles-row" style="color: #6ee7b7;">
+        <span class="cycle-type-label">E:</span>
+        <app-math-view [math]="edgeCyclesFormatted()" [block]="false" />
+      </div>
+    </div>
+
+    <!-- Plain Language Translation Card for Non-Specialists -->
+    <div class="plain-explain-card">
+      <svg class="plain-explain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" y1="16" x2="12" y2="12" />
+        <line x1="12" y1="8" x2="12.01" y2="8" />
+      </svg>
+      <div>
+        <span class="plain-explain-title">
+          {{ t().hudPlainExplainTitle }}
+        </span>
+        <span>
+          {{ humanExplanation() }}
+        </span>
+      </div>
+    </div>
+  }
+</div>

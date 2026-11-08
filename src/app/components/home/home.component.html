@@ -1,0 +1,246 @@
+<div class="home-container">
+  <!-- Hero Welcome Card -->
+  <section class="hero-card">
+    <div class="hero-glow"></div>
+    <div class="hero-header">
+      <div class="hero-tags">
+        <span class="tag tag-indigo">Group Theory Laboratory</span>
+        <span class="tag tag-cyan">3D WebGL Simulation</span>
+        <span class="tag tag-amber">G &le; S&#8324;&#8328;</span>
+      </div>
+
+      <h2 class="hero-title">
+        {{ isBg ? 'Изследване на Груповите Действия върху Кубчето на Рубик' : "Rubik's Cube Group Actions Explorer" }}
+      </h2>
+
+      <p class="hero-desc">
+        {{
+          isBg
+            ? 'Интерактивна платформа, свързваща абстрактната алгебра и 3D визуализацията. Изследвайте симетрии, циклични разлагания на пермутации, инварианти на разрешимост и поетапно решаване чрез теория на групите.'
+            : 'An interactive platform bridging abstract algebra and 3D visualization. Explore group actions G ↷ X, disjoint permutation cycles, solution orbit invariants, and a step-by-step group-theoretic solving method.'
+        }}
+      </p>
+
+      <!-- Key Algebraic Stats Strip -->
+      <div class="stats-grid">
+        <div class="stat-item">
+          <span class="stat-val">4.325 &times; 10&#185;&#8313;</span>
+          <span class="stat-label">{{ isBg ? 'Ред на групата |G|' : 'Group Order |G|' }}</span>
+        </div>
+
+        <div class="stat-item">
+          <span class="stat-val">&#123;U, D, L, R, F, B&#125;</span>
+          <span class="stat-label">{{ isBg ? '6 Генератора' : '6 Generators' }}</span>
+        </div>
+
+        <div class="stat-item">
+          <span class="stat-val">1 / 12</span>
+          <span class="stat-label">{{ isBg ? 'Фактор на разрешимост' : 'Orbit Solvability Factor' }}</span>
+        </div>
+
+        <div class="stat-item">
+          <span class="stat-val">20 moves</span>
+          <span class="stat-label">{{ isBg ? 'Число на Бог (HTM)' : "God's Number (HTM)" }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Quick Toolbar -->
+  <section class="quick-toolbar">
+    <div class="toolbar-info">
+      <div class="toolbar-icon">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+        </svg>
+      </div>
+      <div>
+        <h3 class="toolbar-title">{{ isBg ? 'Бързи действия' : 'Quick Actions' }}</h3>
+        <p class="toolbar-desc">
+          {{ isBg ? 'Манипулирайте директно 3D куба вляво' : 'Manipulate the persistent 3D cube on the left' }}
+        </p>
+      </div>
+    </div>
+
+    <div class="toolbar-actions">
+      <button type="button" (click)="onScramble()" class="action-pill-btn">
+        <svg class="w-3.5 h-3.5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
+        </svg>
+        <span>{{ isBg ? 'Разбъркай' : 'Scramble' }}</span>
+      </button>
+
+      <button type="button" (click)="onReset()" class="action-pill-btn">
+        <svg class="w-3.5 h-3.5 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+          <path d="M3 3v5h5" />
+        </svg>
+        <span>{{ isBg ? 'Ресет (e)' : 'Reset (e)' }}</span>
+      </button>
+
+      <button type="button" (click)="onOpenTour()" class="action-pill-btn primary">
+        <svg class="w-3.5 h-3.5 text-amber-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+        </svg>
+        <span>{{ isBg ? 'Интерактивен Тур' : 'Interactive Tour' }}</span>
+      </button>
+
+      <button type="button" (click)="onOpenTheory()" class="action-pill-btn">
+        <svg class="w-3.5 h-3.5 text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="16" x2="12" y2="12" />
+          <line x1="12" y1="8" x2="12.01" y2="8" />
+        </svg>
+        <span>{{ isBg ? 'Теория & Формули' : 'Theory & Formulas' }}</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- Core Functional Modules -->
+  <div>
+    <h3 class="section-title">
+      <svg class="w-3.5 h-3.5 text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect width="7" height="7" x="3" y="3" rx="1" />
+        <rect width="7" height="7" x="14" y="3" rx="1" />
+        <rect width="7" height="7" x="14" y="14" rx="1" />
+        <rect width="7" height="7" x="3" y="14" rx="1" />
+      </svg>
+      <span>{{ isBg ? 'Основни Модули на Платформата' : 'Core Application Modules' }}</span>
+    </h3>
+
+    <div class="modules-grid">
+      <!-- Card 1: Math Concepts -->
+      <div class="module-card card-math">
+        <div>
+          <div class="module-header">
+            <div class="icon-box icon-math">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 4h16v3h-2l-6 5 6 5h2v3H4v-3h2l5-5-5-5H4Z" />
+              </svg>
+            </div>
+            <div>
+              <h4 class="module-title">{{ isBg ? 'Математически Концепции' : 'Math Concepts' }}</h4>
+              <p class="module-subtitle">G &le; S&#8324;&#8328; &amp; Group Actions</p>
+            </div>
+          </div>
+
+          <ul class="feature-list" style="margin-top: 1rem;">
+            <li class="feature-item">
+              <span class="feature-bullet">&bull;</span>
+              <span><strong>{{ isBg ? 'Орбити &amp; Стабилизатори:' : 'Orbits &amp; Stabilizers:' }}</strong> {{ isBg ? 'Теорема за орбита-стабилизатор |G| = |Orb(x)| · |Stab(x)|' : 'Verify |G| = |Orb(x)| · |Stab(x)|' }}</span>
+            </li>
+            <li class="feature-item">
+              <span class="feature-bullet">&bull;</span>
+              <span><strong>{{ isBg ? 'Циклични разлагания:' : 'Cycle Notation:' }}</strong> {{ isBg ? 'Разлагане на пермутации в непресичащи се цикли и четност' : 'Disjoint permutation cycles and parity analysis' }}</span>
+            </li>
+            <li class="feature-item">
+              <span class="feature-bullet">&bull;</span>
+              <span><strong>{{ isBg ? 'Ред &amp; Свидетел на Коши:' : 'Order &amp; Cauchy Witness:' }}</strong> {{ isBg ? 'Изчисление на ord(g) и елементи от прости редове' : 'Compute ord(g) and Cauchy prime order elements' }}</span>
+            </li>
+            <li class="feature-item">
+              <span class="feature-bullet">&bull;</span>
+              <span><strong>{{ isBg ? 'Подгрупи:' : 'Subgroups:' }}</strong> {{ isBg ? 'Генерирани подгрупи ⟨R, U⟩, Слайс група и етапи на Тистлетуейт' : 'Explore ⟨R, U⟩, slice subgroup, and Thistlethwaite stages' }}</span>
+            </li>
+          </ul>
+        </div>
+
+        <a routerLink="/math" class="card-action-btn btn-math">
+          <span>{{ isBg ? 'Към Математическия Лаб' : 'Explore Math Concepts' }}</span>
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </a>
+      </div>
+
+      <!-- Card 2: Orbit Validator -->
+      <div class="module-card card-validator">
+        <div>
+          <div class="module-header">
+            <div class="icon-box icon-validator">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+                <path d="m9 12 2 2 4-4" />
+              </svg>
+            </div>
+            <div>
+              <h4 class="module-title">{{ isBg ? 'Валидатор на Орбитата' : 'Orbit Validator' }}</h4>
+              <p class="module-subtitle">Solvability Invariants &amp; Cosets</p>
+            </div>
+          </div>
+
+          <ul class="feature-list" style="margin-top: 1rem;">
+            <li class="feature-item">
+              <span class="feature-bullet">&bull;</span>
+              <span><strong>{{ isBg ? 'Ъглова ориентация:' : 'Corner Twists:' }}</strong> &sum; r&#7522; &equiv; 0 (mod 3)</span>
+            </li>
+            <li class="feature-item">
+              <span class="feature-bullet">&bull;</span>
+              <span><strong>{{ isBg ? 'Ръбова ориентация:' : 'Edge Flips:' }}</strong> &sum; w&#7522; &equiv; 0 (mod 2)</span>
+            </li>
+            <li class="feature-item">
+              <span class="feature-bullet">&bull;</span>
+              <span><strong>{{ isBg ? 'Четност на пермутациите:' : 'Permutation Parity:' }}</strong> sgn(&sigma;) = sgn(&tau;)</span>
+            </li>
+            <li class="feature-item">
+              <span class="feature-bullet">&bull;</span>
+              <span><strong>{{ isBg ? 'Симулатор на неразрешимост:' : '12 Coset Simulator:' }}</strong> {{ isBg ? 'Тествайте единични завъртания и възстановете валидна орбита' : 'Tamper pieces to explore invalid cosets & repair' }}</span>
+            </li>
+          </ul>
+        </div>
+
+        <a routerLink="/validator" class="card-action-btn btn-validator">
+          <span>{{ isBg ? 'Към Валидатора' : 'Launch Orbit Validator' }}</span>
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </a>
+      </div>
+
+      <!-- Card 3: Cube Tutorial -->
+      <div class="module-card card-tutorial">
+        <div>
+          <div class="module-header">
+            <div class="icon-box icon-tutorial">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
+                <path d="M6 6h10" />
+                <path d="M6 10h10" />
+              </svg>
+            </div>
+            <div>
+              <h4 class="module-title">{{ isBg ? 'Интерактивен Урок' : 'Cube Tutorial' }}</h4>
+              <p class="module-subtitle">7-Step Group-Theoretic Solution</p>
+            </div>
+          </div>
+
+          <ul class="feature-list" style="margin-top: 1rem;">
+            <li class="feature-item">
+              <span class="feature-bullet">&bull;</span>
+              <span><strong>{{ isBg ? '7 Етапа на редукция:' : '7 Reduction Steps:' }}</strong> {{ isBg ? 'Бял кръст &rarr; Първи пласт &rarr; Среден пласт &rarr; OLL &rarr; PLL' : 'White Cross &rarr; Layer 1 &rarr; F2L &rarr; OLL &rarr; PLL' }}</span>
+            </li>
+            <li class="feature-item">
+              <span class="feature-bullet">&bull;</span>
+              <span><strong>{{ isBg ? 'Комутатори &amp; Конюгати:' : 'Commutators &amp; Conjugates:' }}</strong> {{ isBg ? 'Алгебрична обосновка на всяка стъпка: [A, B] = A B A⁻¹ B⁻¹' : 'Algebraic basis for each step: g = c [a, b] c⁻¹' }}</span>
+            </li>
+            <li class="feature-item">
+              <span class="feature-bullet">&bull;</span>
+              <span><strong>{{ isBg ? 'Интерактивно изпълнение:' : 'Live Execution:' }}</strong> {{ isBg ? 'Бутон за директно прилагане на алгоритмите върху 3D куба' : 'Apply algorithms directly to the 3D cube with one click' }}</span>
+            </li>
+            <li class="feature-item">
+              <span class="feature-bullet">&bull;</span>
+              <span><strong>{{ isBg ? 'Интерактивни съвети:' : 'Hints &amp; Visuals:' }}</strong> {{ isBg ? 'Визуални насоки и съвети за всяка позиция' : 'Visual guides and notations for every case' }}</span>
+            </li>
+          </ul>
+        </div>
+
+        <a routerLink="/tutorial" class="card-action-btn btn-tutorial">
+          <span>{{ isBg ? 'Към Интерактивния Урок' : 'Start Cube Tutorial' }}</span>
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+

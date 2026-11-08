@@ -8,6 +8,7 @@ export interface Translations {
   solvedBadge: string;
   theoryGuideBtn: string;
   languageName: string;
+  pageHome: string;
   pageMath: string;
   pageValidator: string;
   pageTutorial: string;
@@ -127,6 +128,32 @@ export interface Translations {
   canonicalHeading: string;
   applyPatternBtn: string;
 
+  // Onboarding Tour
+  tourBtn: string;
+  tourTitle: string;
+  tourSubtitle: string;
+  tourStepCount: string;
+  tourPrevBtn: string;
+  tourNextBtn: string;
+  tourFinishBtn: string;
+  tourSkipBtn: string;
+  tourTryMoveBtn: string;
+  tourTakeawayLabel: string;
+
+  // Live Math HUD
+  hudTitle: string;
+  hudCurrentMove: string;
+  hudOrder: string;
+  hudOrderDesc: string;
+  hudCycles: string;
+  hudOrbitSize: string;
+  hudParity: string;
+  hudPlainExplainTitle: string;
+  hudIdentityExplain: string;
+  hudSingleTurnExplain: string;
+  hudCommutatorExplain: string;
+  hudGeneralExplain: string;
+
   // Theory Modal
   modalTitle: string;
   modalCloseBtn: string;
@@ -166,6 +193,7 @@ export const translations: Record<Language, Translations> = {
     solvedBadge: 'Solved Identity State (e)',
     theoryGuideBtn: 'Theory Guide',
     languageName: 'Български',
+    pageHome: 'Overview',
     pageMath: 'Math Concepts',
     pageValidator: 'Orbit Validator',
     pageTutorial: 'Cube Tutorial',
@@ -304,6 +332,32 @@ export const translations: Record<Language, Translations> = {
     theorySec4IndexDesc: 'Because the group action on corners is transitive, |Orb(x)| = 8. Therefore, the subgroup of moves fixing a specific corner has size:',
     theorySec5Title: '5. Commutators and 3-Cycles',
     theorySec5Desc: 'The commutator [A, B] = A B A⁻¹ B⁻¹ isolates changes. When the supports of A and B intersect in exactly 1 element, [A, B] induces a pure 3-cycle. Since 3-cycles generate the alternating group A_n, the commutator subgroup [G, G] is the mathematical engine of all cube algorithms!',
+
+    // Onboarding Tour
+    tourBtn: 'Quick Tour',
+    tourTitle: 'Interactive Tour: Rubik Algebra for Everyone',
+    tourSubtitle: 'How the Rubik’s Cube demonstrates Abstract Algebra in 5 easy steps',
+    tourStepCount: 'Step',
+    tourPrevBtn: 'Previous',
+    tourNextBtn: 'Next Step',
+    tourFinishBtn: 'Start Exploring!',
+    tourSkipBtn: 'Skip Tour',
+    tourTryMoveBtn: 'Try this move!',
+    tourTakeawayLabel: 'Key Takeaway for Engineers & Leaders:',
+
+    // Live Math HUD
+    hudTitle: 'Live Algebraic Feedback',
+    hudCurrentMove: 'Current Move g ∈ G',
+    hudOrder: 'Element Order ord(g)',
+    hudOrderDesc: 'repeats return cube to initial state',
+    hudCycles: 'Disjoint Cycles Decomposition',
+    hudOrbitSize: 'Orbit Reachability',
+    hudParity: 'Permutation Parity',
+    hudPlainExplainTitle: 'Plain Language "Translation":',
+    hudIdentityExplain: 'The cube is currently in identity state (e). All 54 stickers and 20 movable pieces match their home positions.',
+    hudSingleTurnExplain: 'You rotated a single face. Exactly 4 corners and 4 edges moved in closed 4-cycles, leaving the other 18 pieces completely untouched in the stabilizer.',
+    hudCommutatorExplain: 'A commutator or sequence was applied. Notice how it isolates changes, swapping targeted pieces while keeping most of the cube invariant.',
+    hudGeneralExplain: 'A transformation occurred. The math engine tracked every cycle, permutation parity, and element order purely in algebraic memory.',
   },
   bg: {
     appTitle: 'Групови действия върху Кубчето на Рубик',
@@ -312,6 +366,7 @@ export const translations: Record<Language, Translations> = {
     solvedBadge: 'Решено състояние / Идентитет (e)',
     theoryGuideBtn: 'Теоретично ръководство',
     languageName: 'English',
+    pageHome: 'Преглед',
     pageMath: 'Математически Концепции',
     pageValidator: 'Валидатор на Орбитата',
     pageTutorial: 'Интерактивен Урок',
@@ -450,5 +505,31 @@ export const translations: Record<Language, Translations> = {
     theorySec4IndexDesc: 'Тъй като действието на групата върху върховете е транзитивно, |Orb(x)| = 8. Следователно подгрупата от движения, фиксиращи даден връх, има мощност:',
     theorySec5Title: '5. Комутатори и 3-цикли',
     theorySec5Desc: 'Комутаторът [A, B] = A B A⁻¹ B⁻¹ изолира промените. Когато носителите на A и B се пресичат в точно 1 елемент, [A, B] индуцира чист 3-цикъл. Тъй като 3-циклите пораждат алтерниращата група A_n, комутаторната подгрупа [G, G] е математическият двигател на всички алгоритми!',
+
+    // Onboarding Tour
+    tourBtn: 'Обиколка за неспециалисти',
+    tourTitle: 'Интерактивна обиколка: Алгебрата за всеки',
+    tourSubtitle: 'Как Кубчето на Рубик демонстрира абстрактна алгебра в 5 лесни стъпки',
+    tourStepCount: 'Стъпка',
+    tourPrevBtn: 'Предишна',
+    tourNextBtn: 'Следваща стъпка',
+    tourFinishBtn: 'Да започваме!',
+    tourSkipBtn: 'Пропусни',
+    tourTryMoveBtn: 'Изпробвай този ход!',
+    tourTakeawayLabel: 'Ключов извод за инженери и лидери:',
+
+    // Live Math HUD
+    hudTitle: 'Алгебрично състояние на живо',
+    hudCurrentMove: 'Последен ход g ∈ G',
+    hudOrder: 'Ред на елемента ord(g)',
+    hudOrderDesc: 'повторения връщат кубчето в изходно състояние',
+    hudCycles: 'Разлагане на цикли',
+    hudOrbitSize: 'Достижимост на орбитата',
+    hudParity: 'Четност на пермутацията',
+    hudPlainExplainTitle: 'Превод на човешки език:',
+    hudIdentityExplain: 'Кубчето е в наредено състояние (идентитет e). Всички 54 стикера и 20 подвижни парчета съвпадат с началната си позиция.',
+    hudSingleTurnExplain: 'Завъртяхте една стена. Точно 4 върха и 4 ръба смениха местата си в затворени 4-цикли, докато останалите 18 парчета останаха незасегнати в стабилизатора.',
+    hudCommutatorExplain: 'Приложен беше комутатор или последователност. Забележете как той изолира промените, разменяйки точно таргетираните парчета, запазвайки останалото непокътнато.',
+    hudGeneralExplain: 'Извърши се трансформация. Алгебричният двигател изчисли всеки цикъл, четност и ред на елемента директно в паметта.',
   },
 };

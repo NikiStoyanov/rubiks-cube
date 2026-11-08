@@ -8,6 +8,7 @@ import { LanguageService } from '../../../services/language.service';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './controls-3d.component.html',
+  styleUrl: './controls-3d.component.css',
 })
 export class Controls3DComponent {
   private languageService = inject(LanguageService);
