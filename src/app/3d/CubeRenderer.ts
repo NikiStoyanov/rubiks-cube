@@ -11,7 +11,7 @@ import {
   Net2DFaces,
   PieceType
 } from '../types/cube';
-import { FACE_COLORS, INITIAL_CORNERS, INITIAL_EDGES, INITIAL_CENTERS } from '../math/rubikGroup';
+import { FACE_COLORS, INITIAL_CORNERS, INITIAL_EDGES, INITIAL_CENTERS, RubikGroupAlgebra } from '../math/rubikGroup';
 
 export interface HighlightConfig {
   selectedPieceType?: 'corner' | 'edge' | 'all';
@@ -68,6 +68,15 @@ export class RubiksCube3D {
   private raycaster = new THREE.Raycaster();
   private mouse = new THREE.Vector2();
   public onPieceClick?: (pieceType: 'corner' | 'edge', pieceId: number, name: string) => void;
+  public onStickerClick?: (event: {
+    face: FaceName;
+    row: number;
+    col: number;
+    pieceType: 'corner' | 'edge' | 'center';
+    pieceId: number;
+    materialIndex: number;
+    bodyMesh: THREE.Mesh;
+  }) => void;
 
   constructor(container: HTMLElement) {
     this.container = container;
@@ -110,6 +119,7 @@ export class RubiksCube3D {
     // Event listeners
     window.addEventListener('resize', this.handleResize);
     this.renderer.domElement.addEventListener('pointerdown', this.handlePointerDown);
+    window.addEventListener('pointerup', this.handlePointerUp);
 
     this.animate = this.animate.bind(this);
     this.animate();
@@ -373,8 +383,93 @@ export class RubiksCube3D {
       c.currentCoord = { ...c.defaultCoord };
       c.mesh.quaternion.identity();
       c.mesh.rotation.set(0, 0, 0);
+
+      const bodyMesh = c.mesh.children[0] as THREE.Mesh;
+      if (bodyMesh && Array.isArray(bodyMesh.material)) {
+        const mats = bodyMesh.material as THREE.MeshStandardMaterial[];
+        const { x, y, z } = c.defaultCoord;
+        if (x === 1) mats[0].color.setStyle(FACE_COLORS.R);
+        if (x === -1) mats[1].color.setStyle(FACE_COLORS.L);
+        if (y === 1) mats[2].color.setStyle(FACE_COLORS.U);
+        if (y === -1) mats[3].color.setStyle(FACE_COLORS.D);
+        if (z === 1) mats[4].color.setStyle(FACE_COLORS.F);
+        if (z === -1) mats[5].color.setStyle(FACE_COLORS.B);
+      }
     }
     this.updateCubiePositions();
+  }
+
+  // Apply arbitrary custom CubeState to 3D meshes by resetting coords and painting facelets
+  public applyCustomState(state: CubeState): void {
+    this.clearCycleArrows();
+    this.resetToIdentity();
+    const net = RubikGroupAlgebra.compute2DNet(state);
+    this.applyNetColors(net);
+  }
+
+  // Directly paint 3D outer facelet stickers according to a 2D Net
+  public applyNetColors(net: Net2DFaces): void {
+    for (const c of this.cubieMeshes) {
+      const bodyMesh = c.mesh.children[0] as THREE.Mesh;
+      if (!bodyMesh || !Array.isArray(bodyMesh.material)) continue;
+      const mats = bodyMesh.material as THREE.MeshStandardMaterial[];
+      const { x, y, z } = c.defaultCoord;
+
+      const setMat = (idx: number, hex?: string) => {
+        if (hex && mats[idx]) {
+          mats[idx].color.set(hex);
+          mats[idx].needsUpdate = true;
+        }
+      };
+
+      // +X: R face (index 0)
+      if (x === 1) {
+        const r = 1 - y;
+        const col = 1 - z;
+        setMat(0, net.R?.[r]?.[col]?.color);
+      }
+      // -X: L face (index 1)
+      if (x === -1) {
+        const r = 1 - y;
+        const col = z + 1;
+        setMat(1, net.L?.[r]?.[col]?.color);
+      }
+      // +Y: U face (index 2)
+      if (y === 1) {
+        const r = z + 1;
+        const col = x + 1;
+        setMat(2, net.U?.[r]?.[col]?.color);
+      }
+      // -Y: D face (index 3)
+      if (y === -1) {
+        const r = 1 - z;
+        const col = x + 1;
+        setMat(3, net.D?.[r]?.[col]?.color);
+      }
+      // +Z: F face (index 4)
+      if (z === 1) {
+        const r = 1 - y;
+        const col = x + 1;
+        setMat(4, net.F?.[r]?.[col]?.color);
+      }
+      // -Z: B face (index 5)
+      if (z === -1) {
+        const r = 1 - y;
+        const col = 1 - x;
+        setMat(5, net.B?.[r]?.[col]?.color);
+      }
+    }
+  }
+
+  // Paint a single sticker on a cubie mesh immediately
+  public paintStickerMesh(bodyMesh: THREE.Mesh, materialIndex: number, colorHex: string): void {
+    if (bodyMesh && Array.isArray(bodyMesh.material) && materialIndex >= 0 && materialIndex < 6) {
+      const mat = bodyMesh.material[materialIndex] as THREE.MeshStandardMaterial;
+      if (mat && mat.color) {
+        mat.color.set(colorHex);
+        mat.needsUpdate = true;
+      }
+    }
   }
 
   // Physical tampering simulation methods for Orbit Validator
@@ -845,29 +940,157 @@ export class RubiksCube3D {
     }
   }
 
-  private handlePointerDown = (event: PointerEvent): void => {
+  private pointerDownPos = { x: 0, y: 0 };
+  private pointerDownTarget: {
+    face: FaceName;
+    row: number;
+    col: number;
+    pieceType: 'corner' | 'edge' | 'center';
+    pieceId: number;
+    materialIndex: number;
+    bodyMesh: THREE.Mesh;
+    name: string;
+  } | null = null;
+
+  private getStickerAtPointer(clientX: number, clientY: number) {
+    if (!this.container || !this.renderer?.domElement) return null;
     const rect = this.renderer.domElement.getBoundingClientRect();
-    this.mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-    this.mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+    if (
+      clientX < rect.left ||
+      clientX > rect.right ||
+      clientY < rect.top ||
+      clientY > rect.bottom
+    ) {
+      return null;
+    }
 
-    this.raycaster.setFromCamera(this.mouse, this.camera);
-    const intersects = this.raycaster.intersectObjects(this.cubeGroup.children, true);
+    const mouse = new THREE.Vector2(
+      ((clientX - rect.left) / rect.width) * 2 - 1,
+      -((clientY - rect.top) / rect.height) * 2 + 1
+    );
 
-    if (intersects.length > 0) {
-      let current: THREE.Object3D | null = intersects[0].object;
-      while (current && current.parent !== this.cubeGroup && current.parent !== this.pivotGroup) {
-        current = current.parent;
+    const raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(mouse, this.camera);
+
+    // Only raycast against the actual body meshes of the cubies (child 0), ignoring outlineMesh and highlightBox
+    const bodyMeshes: THREE.Mesh[] = [];
+    for (const c of this.cubieMeshes) {
+      const bm = c.mesh.children[0] as THREE.Mesh;
+      if (bm) bodyMeshes.push(bm);
+    }
+
+    const intersects = raycaster.intersectObjects(bodyMeshes, false);
+    if (intersects.length === 0) return null;
+
+    const hit = intersects[0];
+    const bodyMesh = hit.object as THREE.Mesh;
+    const cubieGroup = bodyMesh.parent as THREE.Group;
+    if (!cubieGroup || !cubieGroup.userData) return null;
+
+    const info = this.cubieMeshes.find((cm) => cm.mesh === cubieGroup);
+    if (!info || !hit.face) return null;
+
+    const { pieceType, pieceId } = cubieGroup.userData;
+
+    // Normal in world coordinates gives face orientation
+    const normalMatrix = new THREE.Matrix3().getNormalMatrix(bodyMesh.matrixWorld);
+    const worldNormal = hit.face.normal.clone().applyMatrix3(normalMatrix).normalize();
+
+    let faceName: FaceName | null = null;
+    if (Math.abs(worldNormal.y) > 0.55) {
+      faceName = worldNormal.y > 0 ? 'U' : 'D';
+    } else if (Math.abs(worldNormal.z) > 0.55) {
+      faceName = worldNormal.z > 0 ? 'F' : 'B';
+    } else if (Math.abs(worldNormal.x) > 0.55) {
+      faceName = worldNormal.x > 0 ? 'R' : 'L';
+    }
+
+    if (!faceName) return null;
+
+    // Determine material index from group or local normal
+    let materialIndex = hit.face.materialIndex ?? -1;
+    if (materialIndex < 0 && hit.face.normal) {
+      const ln = hit.face.normal;
+      if (ln.x > 0.5) materialIndex = 0;
+      else if (ln.x < -0.5) materialIndex = 1;
+      else if (ln.y > 0.5) materialIndex = 2;
+      else if (ln.y < -0.5) materialIndex = 3;
+      else if (ln.z > 0.5) materialIndex = 4;
+      else if (ln.z < -0.5) materialIndex = 5;
+    }
+
+    const spacing = 1.0 + this.explodeFactor * 0.7;
+    const x = info.currentCoord ? info.currentCoord.x : Math.round(cubieGroup.position.x / spacing);
+    const y = info.currentCoord ? info.currentCoord.y : Math.round(cubieGroup.position.y / spacing);
+    const z = info.currentCoord ? info.currentCoord.z : Math.round(cubieGroup.position.z / spacing);
+
+    let row = 0;
+    let col = 0;
+
+    if (faceName === 'U') {
+      row = z + 1;
+      col = x + 1;
+    } else if (faceName === 'D') {
+      row = 1 - z;
+      col = x + 1;
+    } else if (faceName === 'F') {
+      row = 1 - y;
+      col = x + 1;
+    } else if (faceName === 'B') {
+      row = 1 - y;
+      col = 1 - x;
+    } else if (faceName === 'L') {
+      row = 1 - y;
+      col = z + 1;
+    } else if (faceName === 'R') {
+      row = 1 - y;
+      col = 1 - z;
+    }
+
+    const name =
+      pieceType === 'corner'
+        ? INITIAL_CORNERS[pieceId]?.name || 'Corner'
+        : INITIAL_EDGES[pieceId]?.name || 'Edge';
+
+    return {
+      face: faceName,
+      row,
+      col,
+      pieceType,
+      pieceId,
+      materialIndex,
+      bodyMesh,
+      name,
+    };
+  }
+
+  private handlePointerDown = (event: PointerEvent): void => {
+    if (event.button !== 0 && event.button !== undefined) return;
+    this.pointerDownPos = { x: event.clientX, y: event.clientY };
+    this.pointerDownTarget = this.getStickerAtPointer(event.clientX, event.clientY);
+  };
+
+  private handlePointerUp = (event: PointerEvent): void => {
+    if (event.button !== 0 && event.button !== undefined) return;
+    const dx = event.clientX - this.pointerDownPos.x;
+    const dy = event.clientY - this.pointerDownPos.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+
+    // If pointer was dragged significantly (camera rotation), ignore click
+    if (dist > 18) {
+      this.pointerDownTarget = null;
+      return;
+    }
+
+    const target = this.pointerDownTarget || this.getStickerAtPointer(event.clientX, event.clientY);
+    this.pointerDownTarget = null;
+
+    if (target) {
+      if (this.onStickerClick) {
+        this.onStickerClick(target);
       }
-
-      if (current && current.userData && this.onPieceClick) {
-        const { pieceType, pieceId } = current.userData;
-        if (pieceType === 'corner' || pieceType === 'edge') {
-          const name =
-            pieceType === 'corner'
-              ? INITIAL_CORNERS[pieceId]?.name || 'Corner'
-              : INITIAL_EDGES[pieceId]?.name || 'Edge';
-          this.onPieceClick(pieceType, pieceId, name);
-        }
+      if (this.onPieceClick) {
+        this.onPieceClick(target.pieceType, target.pieceId, target.name);
       }
     }
   };
@@ -930,6 +1153,7 @@ export class RubiksCube3D {
     }
     window.removeEventListener('resize', this.handleResize);
     this.renderer.domElement.removeEventListener('pointerdown', this.handlePointerDown);
+    window.removeEventListener('pointerup', this.handlePointerUp);
     this.controls.dispose();
     this.renderer.dispose();
     if (this.renderer.domElement.parentElement) {

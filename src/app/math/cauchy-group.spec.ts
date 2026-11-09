@@ -284,5 +284,59 @@ describe("Group Theory: Rubik's Cube & Cauchy's Theorem Suite", () => {
       expect(net.L[1][1].color).toBe(FACE_COLORS.L);
       expect(net.R[1][1].color).toBe(FACE_COLORS.R);
     });
+
+    it('accurately reconstructs CubeState from 2D Net for identity state', () => {
+      const net = RubikGroupAlgebra.compute2DNet(initial);
+      const reconstructed = RubikGroupAlgebra.reconstructFrom2DNet(net);
+
+      expect(reconstructed.success).toBe(true);
+      expect(reconstructed.isValidColorCount).toBe(true);
+      expect(reconstructed.state).toBeDefined();
+      expect(reconstructed.orbitValidation?.isValidOrbit).toBe(true);
+      expect(reconstructed.orbitValidation?.cosetIndex).toBe(0);
+    });
+
+    it('accurately reconstructs CubeState from scrambled moves', () => {
+      const moves = RubikGroupAlgebra.parseAlgorithm("R U R' U'");
+      const scrambled = RubikGroupAlgebra.applyAlgorithm(initial, moves);
+      const net = RubikGroupAlgebra.compute2DNet(scrambled);
+      const reconstructed = RubikGroupAlgebra.reconstructFrom2DNet(net);
+
+      expect(reconstructed.success).toBe(true);
+      expect(reconstructed.orbitValidation?.isValidOrbit).toBe(true);
+      expect(reconstructed.orbitValidation?.cornerTwistSum).toBe(0);
+      expect(reconstructed.orbitValidation?.edgeFlipSum).toBe(0);
+    });
+
+    it('detects physical corner twist in reconstructed net', () => {
+      const twisted = RubikGroupAlgebra.simulateCornerTwist(initial, 0, 1);
+      const net = RubikGroupAlgebra.compute2DNet(twisted);
+      const reconstructed = RubikGroupAlgebra.reconstructFrom2DNet(net);
+
+      expect(reconstructed.success).toBe(true);
+      expect(reconstructed.orbitValidation?.isValidOrbit).toBe(false);
+      expect(reconstructed.orbitValidation?.cornerTwistSum).toBe(1);
+    });
+
+    it('detects physical edge flip in reconstructed net', () => {
+      const flipped = RubikGroupAlgebra.simulateEdgeFlip(initial, 0);
+      const net = RubikGroupAlgebra.compute2DNet(flipped);
+      const reconstructed = RubikGroupAlgebra.reconstructFrom2DNet(net);
+
+      expect(reconstructed.success).toBe(true);
+      expect(reconstructed.orbitValidation?.isValidOrbit).toBe(false);
+      expect(reconstructed.orbitValidation?.edgeFlipSum).toBe(1);
+    });
+
+    it('rejects net with invalid color count', () => {
+      const net = RubikGroupAlgebra.compute2DNet(initial);
+      // Turn a Yellow sticker on D face into White
+      net.D[0][0].color = FACE_COLORS.U;
+      const reconstructed = RubikGroupAlgebra.reconstructFrom2DNet(net);
+
+      expect(reconstructed.success).toBe(false);
+      expect(reconstructed.isValidColorCount).toBe(false);
+      expect(reconstructed.errors.length).toBeGreaterThan(0);
+    });
   });
 });

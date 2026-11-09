@@ -1,236 +1,521 @@
-<!-- GUIDED SPOTLIGHT TOUR MODE (DIMMED BACKDROP + FLOATING PROMPT MODAL) -->
-@if (isGuidedMode()) {
-  <!-- Darkened Backdrop -->
-  <div class="guided-backdrop" (click)="closeGuidedMode()"></div>
+<div class="tutorial-container">
+  <!-- Top Navigation & Progress Header -->
+  <div class="tutorial-header-card">
+    <div class="header-top-row">
+      <div class="header-left">
+        <span class="academy-badge">🎓 {{ isBg ? 'Академия за начинаещи' : 'Beginner Academy' }}</span>
+        <span class="step-counter-badge">
+          {{ isBg ? 'Стъпка ' + (currentStepIndex() + 1) + ' от ' + steps.length : 'Step ' + (currentStepIndex() + 1) + ' of ' + steps.length }}
+        </span>
+      </div>
 
-  <!-- Floating Spotlight Prompt Modal -->
-  <div class="guided-modal" role="dialog" aria-modal="true">
-    <!-- Modal Header -->
-    <div class="modal-header">
-      <div class="modal-header-left">
-        <div class="step-circle">
-          {{ currentStep().stepNumber }}
-        </div>
-        <div class="step-titles">
-          <div class="step-badge-row">
-            <span class="step-badge">
-              {{ isBg ? 'Стъпка ' + (currentStepIndex() + 1) + ' от ' + steps.length : 'Step ' + (currentStepIndex() + 1) + ' of ' + steps.length }}
-            </span>
-            <span class="step-badge" style="background: rgba(6, 182, 212, 0.15); color: #67e8f9; border-color: rgba(6, 182, 212, 0.3);">
-              {{ isBg ? 'LBL Метод' : 'LBL Method' }}
-            </span>
-          </div>
-          <h2 class="step-title-text">
-            {{ isBg ? currentStep().titleBg : currentStep().title }}
-          </h2>
-          <p class="step-subtitle-text">
-            {{ isBg ? currentStep().subtitleBg : currentStep().subtitle }}
+      <div class="header-right">
+        <button
+          type="button"
+          (click)="toggleSolver()"
+          class="badge-btn badge-solver"
+          [class.active-solver]="showSolver()"
+          [title]="isBg ? 'Изчисли стъпките за нареждане от текущото състояние' : 'Calculate solve steps from current state'"
+        >
+          🧩 {{ showSolver() ? (isBg ? 'Скрий Решителя' : 'Hide Solver') : (isBg ? 'Реши моето кубче' : 'Solve My Cube') }}
+        </button>
+
+        <button
+          type="button"
+          (click)="toggleNotationGuide()"
+          class="badge-btn badge-notation"
+          [title]="isBg ? 'Справочник за означенията на ходовете' : 'Move notation reference'"
+        >
+          📖 {{ isBg ? 'Нотация' : 'Notation' }}
+        </button>
+
+        <button
+          type="button"
+          (click)="onReset()"
+          class="badge-btn badge-reset"
+          [title]="isBg ? 'Ресет на куба към наредено състояние' : 'Reset cube to solved'"
+        >
+          ↺ {{ isBg ? 'Ресет' : 'Reset' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- 7-Step Navigation Tabs Strip -->
+    <div class="step-nav-strip">
+      @for (s of steps; track s.stepNumber; let i = $index) {
+        <button
+          type="button"
+          class="step-nav-tab"
+          [class.active]="currentStepIndex() === i"
+          [class.completed]="completedSteps().has(i)"
+          (click)="selectStep(i)"
+          [title]="isBg ? s.titleBg : s.title"
+        >
+          <span class="nav-tab-num">{{ s.stepNumber }}</span>
+          <span class="nav-tab-title">{{ isBg ? s.titleBg : s.title }}</span>
+          @if (completedSteps().has(i)) {
+            <span class="nav-tab-check">✓</span>
+          }
+        </button>
+      }
+    </div>
+
+    <!-- Overall Progress Bar -->
+    <div class="progress-track">
+      <div class="progress-fill" [style.width.%]="progressPercent()"></div>
+    </div>
+  </div>
+
+  <!-- Interactive Solver Overview Panel -->
+  @if (showSolver() && solveResult(); as sol) {
+    <div class="tutorial-solver-card animate-fade-in">
+      <div class="solver-card-header">
+        <div class="solver-card-titles">
+          <span class="solver-badge">🧩 {{ isBg ? 'Анализ на твоето кубче' : 'Current State Solution' }}</span>
+          <h3 class="solver-heading">
+            {{ isBg ? 'Следващи стъпки до пълно нареждане' : 'Next Steps to Complete Solution' }}
+          </h3>
+          <p class="solver-sub">
+            @if (sol.totalMoves === 0) {
+              {{ isBg ? 'Кубчето вече е напълно наредено в начално състояние!' : 'The cube is already completely solved!' }}
+            } @else {
+              {{ isBg
+                ? 'Необходими са още ' + sol.totalMoves + ' хода в ' + sol.stages.length + ' етапа за пълно нареждане от тази позиция.'
+                : 'Requires ' + sol.totalMoves + ' moves across ' + sol.stages.length + ' stages to solve from this position.'
+              }}
+            }
           </p>
         </div>
+        <button type="button" (click)="toggleSolver()" class="btn-close-solver" [title]="isBg ? 'Затвори' : 'Close'">✕</button>
       </div>
 
-      <!-- Close Guided Mode Button -->
-      <button
-        type="button"
-        (click)="closeGuidedMode()"
-        [title]="isBg ? 'Преглед на всички стъпки' : 'View all steps'"
-        class="close-btn"
-      >
-        &times;
-      </button>
-    </div>
+      @if (sol.totalMoves > 0) {
+        <div class="solver-stages-list">
+          @for (stage of sol.stages; track stage.stageNumber) {
+            <div class="solver-stage-row">
+              <div class="stage-row-left">
+                <span class="stage-row-num">#{{ stage.stageNumber }}</span>
+                <div class="stage-row-text">
+                  <div class="stage-row-title">{{ isBg ? stage.nameBg : stage.nameEn }}</div>
+                  <div class="stage-row-goal">{{ isBg ? stage.goalBg : stage.goalEn }}</div>
+                  @if (stage.moves.length > 0) {
+                    <div class="stage-row-moves">
+                      <span class="stage-algo-text">{{ stage.algoString }}</span>
+                      <span class="stage-count">({{ stage.moves.length }}h)</span>
+                    </div>
+                  } @else {
+                    <div class="stage-row-done-badge">✓ {{ isBg ? 'Вече нареден на това кубче' : 'Already solved' }}</div>
+                  }
+                </div>
+              </div>
 
-    <!-- Progress Track & Step Dots -->
-    <div class="progress-strip">
-      <div class="progress-track">
-        <div class="progress-fill" [style.width.%]="progressPercent()"></div>
-      </div>
-      <div class="step-dots">
-        @for (s of steps; track s.stepNumber; let i = $index) {
-          <div
-            class="step-dot"
-            [class.active]="currentStepIndex() === i"
-            [class.completed]="completedSteps().has(i)"
-            (click)="currentStepIndex.set(i)"
-            [title]="isBg ? s.titleBg : s.title"
-          ></div>
-        }
-      </div>
-    </div>
-
-    <!-- Interactive Prompt Card (The Call to Action) -->
-    <div class="prompt-card">
-      <div class="prompt-banner">
-        <svg class="w-4 h-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10" />
-          <polygon points="10 8 16 12 10 16 10 8" />
-        </svg>
-        <span>{{ isBg ? 'Цел на стъпката' : 'Step Objective' }}</span>
-      </div>
-
-      <p class="prompt-objective">
-        {{ isBg ? currentStep().goalBg : currentStep().goal }}
-      </p>
-
-      <!-- Algorithm Moves Display -->
-      <div class="algo-display">
-        <div class="algo-label-row">
-          <span>{{ isBg ? currentStep().algorithmNameBg : currentStep().algorithmName }}</span>
-          <span>{{ currentStepMoves().length }} {{ isBg ? 'хода' : 'moves' }}</span>
-        </div>
-
-        <div class="algo-moves-list">
-          @for (m of currentStepMoves(); track $index) {
-            <span class="move-pill">{{ m }}</span>
+              <div class="stage-row-right">
+                <button
+                  type="button"
+                  (click)="jumpToStage(stage.stageNumber)"
+                  class="btn-jump-stage"
+                >
+                  {{ isBg ? 'Към урок #' + stage.stageNumber : 'Go to step #' + stage.stageNumber }} →
+                </button>
+              </div>
+            </div>
           }
         </div>
+      }
+    </div>
+  }
+
+  <!-- Active Step Interactive Card -->
+  <div class="step-content-card">
+    <!-- Step Header -->
+    <div class="step-hero">
+      <div class="step-hero-badge">
+        {{ currentStep().stepNumber }}
+      </div>
+      <div class="step-hero-text">
+        <div style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.2rem;">
+          <h2 class="step-hero-title">
+            {{ isBg ? currentStep().titleBg : currentStep().title }}
+          </h2>
+          <span class="method-tag">{{ isBg ? 'LBL Метод' : 'LBL' }}</span>
+        </div>
+        <p class="step-hero-subtitle">
+          {{ isBg ? currentStep().subtitleBg : currentStep().subtitle }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Sub-Cases Selector Chips (If step has variants) -->
+    @if (currentStep().cases && currentStep().cases.length > 0) {
+      <div class="cases-box">
+        <div class="cases-header-row">
+          <span class="cases-title">{{ isBg ? 'Изберете вашия случай (форма на кубчето):' : 'Select your case / pattern:' }}</span>
+          <span class="cases-counter">{{ selectedCaseIndex() + 1 }} / {{ currentStep().cases.length }}</span>
+        </div>
+
+        <div class="cases-chips-row">
+          @for (c of currentStep().cases; track c.id; let cIdx = $index) {
+            <button
+              type="button"
+              class="case-chip"
+              [class.active]="selectedCaseIndex() === cIdx"
+              (click)="selectCase(cIdx)"
+            >
+              <span class="case-chip-dot"></span>
+              <span>{{ isBg ? c.nameBg : c.name }}</span>
+            </button>
+          }
+        </div>
+
+        @if (currentCase(); as activeC) {
+          <div class="case-info-bar">
+            💡 <strong>{{ isBg ? 'Как да разпознаете:' : 'Recognition:' }}</strong>
+            {{ isBg ? activeC.descriptionBg : activeC.description }}
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Goal Description -->
+    <div class="goal-box">
+      <div class="goal-header">
+        <span class="goal-icon">🎯</span>
+        <span class="goal-title">{{ isBg ? 'Цел на стъпката' : 'Step Objective' }}</span>
+      </div>
+      <p class="goal-text">
+        {{ isBg ? currentStep().goalBg : currentStep().goal }}
+      </p>
+    </div>
+
+    <!-- Algorithm Sequence Display with Step-by-Step Highlight -->
+    <div class="algorithm-card">
+      <div class="algo-header-row">
+        <span class="algo-name-tag">
+          {{ isBg ? currentStep().algorithmNameBg : currentStep().algorithmName }}
+        </span>
+        <span class="algo-step-count">
+          {{ currentMoveIndex() }} / {{ currentStepMoves().length }} {{ isBg ? 'хода' : 'moves' }}
+        </span>
       </div>
 
-      <!-- Pro Tip -->
-      <div style="font-size: 0.775rem; color: #94a3b8; line-height: 1.45; display: flex; gap: 0.4rem;">
-        <span style="color: #fbbf24;">💡</span>
-        <span><strong>{{ isBg ? 'Съвет:' : 'Tip:' }}</strong> {{ isBg ? currentStep().tipsBg : currentStep().tips }}</span>
-      </div>
-
-      <!-- MAIN CALL TO ACTION PROMPT BUTTON -->
-      <button
-        type="button"
-        (click)="onExecuteAlgorithm()"
-        [disabled]="isAnimating() || isStepExecuting()"
-        class="action-prompt-btn"
-        [class.btn-pulsing]="!isStepExecuting() && !isAnimating()"
-      >
-        @if (isStepExecuting() || isAnimating()) {
-          <div class="spinner"></div>
-          <span>{{ isBg ? 'Въртене на 3D куба...' : 'Executing on 3D Cube...' }}</span>
-        } @else {
-          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-            <polygon points="5 3 19 12 5 21 5 3" />
-          </svg>
-          <span>
-            {{ isBg ? 'Приложи алгоритъма върху 3D куба' : 'Execute Algorithm on 3D Cube' }}
+      <div class="algo-pills-row">
+        @for (m of currentStepMoves(); track $index; let mIdx = $index) {
+          <span
+            class="move-pill"
+            [class.past]="mIdx < currentMoveIndex()"
+            [class.current]="mIdx === currentMoveIndex()"
+            [class.future]="mIdx > currentMoveIndex()"
+          >
+            {{ m }}
           </span>
         }
-      </button>
+      </div>
+    </div>
 
-      <!-- Step Completion Feedback -->
-      @if (completedSteps().has(currentStepIndex())) {
-        <div class="success-badge">
-          <span>✓</span>
-          <span>
-            {{ isBg ? 'Алгоритъмът беше приложен успешно! Премини към следващата стъпка.' : 'Algorithm executed successfully! Proceed to next step.' }}
-          </span>
+    <!-- CRITICAL ACTION: LOAD PRACTICE POSITION ONTO 3D CUBE -->
+    <button
+      type="button"
+      (click)="setupPracticeCase()"
+      [disabled]="isAnimating()"
+      class="btn-setup-case"
+    >
+      <span class="setup-icon">🎯</span>
+      <div class="setup-text">
+        <span class="setup-title">
+          {{ isBg ? 'Зареди тестова ситуация за тази стъпка' : 'Load Practice Situation on 3D Cube' }}
+        </span>
+        <span class="setup-subtitle">
+          {{ isBg ? 'Настройва физическия 3D модел в точната позиция за упражнение' : 'Physically arranges 3D cube into the exact situation so you can practice' }}
+        </span>
+      </div>
+    </button>
+
+    <!-- STEP-BY-STEP PLAYER CONTROLLER TOOLBAR -->
+    <div class="player-toolbar-card">
+      <div class="toolbar-top">
+        <span class="toolbar-title">
+          {{ isBg ? 'Интерактивен контролер:' : 'Step Controller:' }}
+        </span>
+        <button
+          type="button"
+          class="mode-switch-btn"
+          (click)="togglePracticeMode()"
+        >
+          {{ isPracticeMode() ? (isBg ? '👁️ Премини в Плейър' : '👁️ Switch to Player') : (isBg ? '🎮 Опитай сам' : '🎮 Practice Mode') }}
+        </button>
+      </div>
+
+      @if (!isPracticeMode()) {
+        <!-- Guided Player / Stepper -->
+        <div class="player-buttons-row">
+          <button
+            type="button"
+            class="player-action-btn"
+            (click)="executePrevMove()"
+            [disabled]="isAnimating() || currentMoveIndex() <= 0"
+            [title]="isBg ? 'Върни един ход назад' : 'Step back'"
+          >
+            <span>⏮️</span>
+            <span>{{ isBg ? 'Назад' : 'Prev' }}</span>
+          </button>
+
+          <button
+            type="button"
+            class="player-action-btn play-btn"
+            (click)="toggleAutoPlay()"
+            [disabled]="isAnimating()"
+          >
+            <span>{{ isAutoPlaying() ? '⏸️' : '▶️' }}</span>
+            <span>{{ isAutoPlaying() ? (isBg ? 'Пауза' : 'Pause') : (isBg ? 'Авто' : 'Auto') }}</span>
+          </button>
+
+          <button
+            type="button"
+            class="player-action-btn next-btn"
+            (click)="executeNextMove()"
+            [disabled]="isAnimating() || currentMoveIndex() >= currentStepMoves().length"
+            [title]="isBg ? 'Изпълни следващия ход' : 'Next move'"
+          >
+            <span>{{ isBg ? 'Следващ ход' : 'Next Move' }}</span>
+            <span>⏭️</span>
+          </button>
+
+          <!-- Speed Toggles -->
+          <div class="speed-group">
+            <button
+              type="button"
+              class="speed-btn"
+              [class.active]="playbackSpeed() === 0.5"
+              (click)="setPlaybackSpeed(0.5)"
+            >
+              0.5x
+            </button>
+            <button
+              type="button"
+              class="speed-btn"
+              [class.active]="playbackSpeed() === 1"
+              (click)="setPlaybackSpeed(1)"
+            >
+              1x
+            </button>
+            <button
+              type="button"
+              class="speed-btn"
+              [class.active]="playbackSpeed() === 1.5"
+              (click)="setPlaybackSpeed(1.5)"
+            >
+              1.5x
+            </button>
+          </div>
+        </div>
+      } @else {
+        <!-- Manual Practice Move Pad -->
+        <div class="manual-pad">
+          <div class="manual-target-row">
+            <span>{{ isBg ? 'Следващ очакван ход:' : 'Expected next move:' }}</span>
+            <span class="expected-pill">
+              {{ currentStepMoves()[currentMoveIndex()] || (isBg ? 'Завършено! 🎉' : 'Done! 🎉') }}
+            </span>
+          </div>
+
+          <div class="manual-keys-grid">
+            @for (key of manualMoveKeys; track key) {
+              <button
+                type="button"
+                class="move-key-btn"
+                [disabled]="isAnimating() || currentMoveIndex() >= currentStepMoves().length"
+                (click)="onManualMove(key)"
+              >
+                {{ key }}
+              </button>
+            }
+          </div>
+
+          <div class="manual-bottom-actions">
+            <button
+              type="button"
+              class="manual-sub-btn"
+              (click)="executePrevMove()"
+              [disabled]="isAnimating() || currentMoveIndex() <= 0"
+            >
+              <span>⏮️</span>
+              <span>{{ isBg ? 'Отмени ход' : 'Undo move' }}</span>
+            </button>
+            <button
+              type="button"
+              class="manual-sub-btn"
+              (click)="setupPracticeCase()"
+              [disabled]="isAnimating()"
+            >
+              <span>🔄</span>
+              <span>{{ isBg ? 'Рестартирай ситуацията' : 'Reload case' }}</span>
+            </button>
+          </div>
         </div>
       }
+    </div>
 
-      <!-- Expandable Group Theory Note -->
+    <!-- Live Practice Feedback Banner -->
+    @if (practiceFeedback(); as fb) {
+      <div class="feedback-banner" [class.success]="fb.success" [class.warning]="!fb.success">
+        <span>{{ fb.success ? '✨' : '⚠️' }}</span>
+        <span>{{ fb.message }}</span>
+      </div>
+    }
+
+    <!-- Full Algorithm Quick Execution Button -->
+    <button
+      type="button"
+      (click)="onExecuteAlgorithm()"
+      [disabled]="isAnimating() || isStepExecuting()"
+      class="full-execute-btn"
+    >
+      @if (isStepExecuting() || (isAnimating() && !isAutoPlaying())) {
+        <div class="spinner"></div>
+        <span>{{ isBg ? 'Въртене на 3D куба...' : 'Executing on 3D Cube...' }}</span>
+      } @else {
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+          <polygon points="5 3 19 12 5 21 5 3" />
+        </svg>
+        <span>{{ isBg ? 'Изпълни целия алгоритъм наведнъж' : 'Execute Full Algorithm at Once' }}</span>
+      }
+    </button>
+
+    <!-- Step Completion Badge -->
+    @if (completedSteps().has(currentStepIndex())) {
+      <div class="success-banner">
+        <span>✓</span>
+        <span>
+          {{ isBg ? 'Браво! Стъпката е завършена успешно. Продължете към следващата!' : 'Great job! Step solved successfully. Proceed to next step!' }}
+        </span>
+      </div>
+    }
+
+    <!-- Pro Tip Card -->
+    <div class="tip-card">
+      <span class="tip-icon">💡</span>
+      <div class="tip-content">
+        <strong>{{ isBg ? 'Съвет:' : 'Tip:' }}</strong>
+        <span>{{ isBg ? currentStep().tipsBg : currentStep().tips }}</span>
+      </div>
+    </div>
+
+    <!-- Group Theory Algebraic Note -->
+    <div class="math-section">
       <button type="button" (click)="toggleMathNote()" class="math-toggle-btn">
         <span>{{ showMathNote() ? '▼' : '▶' }}</span>
-        <span>{{ isBg ? 'Защо работи това? (Алгебрична обосновка)' : 'Why does this work? (Group Theory Rationale)' }}</span>
+        <span>{{ isBg ? 'Защо работи това? (Алгебрична обосновка от теория на групите)' : 'Why does this work? (Group Theory Rationale)' }}</span>
       </button>
 
       @if (showMathNote()) {
-        <div class="math-note-box">
-          <p style="margin: 0; font-size: 0.775rem; line-height: 1.5;">
+        <div class="math-content-box">
+          <p style="margin: 0; line-height: 1.55;">
             {{ isBg ? currentStep().mathExplanationBg : currentStep().mathExplanation }}
           </p>
         </div>
       }
     </div>
 
-    <!-- Modal Footer Controls -->
-    <div class="modal-footer">
-      <button type="button" (click)="onReset()" class="footer-btn">
+    <!-- Card Navigation Footer -->
+    <div class="step-footer">
+      <button
+        type="button"
+        (click)="prevStep()"
+        [disabled]="currentStepIndex() === 0"
+        class="nav-btn"
+      >
+        <span>←</span>
+        <span>{{ isBg ? 'Предишна стъпка' : 'Previous Step' }}</span>
+      </button>
+
+      <button
+        type="button"
+        (click)="nextStep()"
+        [disabled]="currentStepIndex() === steps.length - 1"
+        class="nav-btn next-step"
+      >
+        <span>{{ isBg ? 'Следваща стъпка' : 'Next Step' }}</span>
+        <span>→</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- INTERACTIVE 3D NOTATION GUIDE MODAL / DRAWER -->
+@if (showNotationGuide()) {
+  <div class="notation-modal-backdrop" (click)="toggleNotationGuide()"></div>
+  <div class="notation-modal" role="dialog" aria-modal="true">
+    <div class="notation-header">
+      <div>
+        <h3 class="notation-title">
+          📖 {{ isBg ? 'Справочник за Нотацията на Рубик Куб' : 'Rubik\'s Cube Notation Guide' }}
+        </h3>
+        <p class="notation-subtitle">
+          {{
+            isBg
+              ? 'Стандартна международна нотация (Сингмастър). Натиснете „▶ Тествай“, за да видите завъртането в 3D.'
+              : 'Standard Singmaster notation. Click "▶ Test" to see the move rotate live in 3D.'
+          }}
+        </p>
+      </div>
+      <button type="button" class="close-btn" (click)="toggleNotationGuide()">&times;</button>
+    </div>
+
+    <!-- Rule Explanation Cards -->
+    <div class="notation-summary-cards">
+      <div class="notation-rule-card">
+        <span class="rule-symbol">X</span>
+        <div>
+          <strong>{{ isBg ? 'Буква без апостроф (R, U, F)' : 'Bare letter (R, U, F)' }}</strong>
+          <p>{{ isBg ? 'Завъртане на съответната страна по часовника на 90°.' : '90° clockwise rotation of the face.' }}</p>
+        </div>
+      </div>
+      <div class="notation-rule-card">
+        <span class="rule-symbol">X'</span>
+        <div>
+          <strong>{{ isBg ? 'Буква с апостроф Prime (R\', U\', F\')' : 'Prime letter (R\', U\', F\')' }}</strong>
+          <p>{{ isBg ? 'Завъртане обратно на часовника на 90°.' : '90° counter-clockwise rotation of the face.' }}</p>
+        </div>
+      </div>
+      <div class="notation-rule-card">
+        <span class="rule-symbol">X2</span>
+        <div>
+          <strong>{{ isBg ? 'Буква с двойка (U2, R2, F2)' : 'Double turn (U2, R2, F2)' }}</strong>
+          <p>{{ isBg ? 'Двойно завъртане на 180°.' : '180° half-turn rotation.' }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notation Move Cards Grid -->
+    <div class="notation-grid">
+      @for (item of notationList; track item.code) {
+        <div class="notation-card">
+          <div class="notation-card-top">
+            <span class="notation-badge">{{ item.badge }}</span>
+            <span class="notation-card-name">{{ isBg ? item.nameBg : item.nameEn }}</span>
+          </div>
+          <p class="notation-card-desc">{{ isBg ? item.descBg : item.descEn }}</p>
+          <button
+            type="button"
+            class="notation-test-btn"
+            [disabled]="isAnimating()"
+            (click)="testNotationMove(item.code)"
+          >
+            <span>▶</span>
+            <span>{{ isBg ? 'Тествай в 3D' : 'Test on 3D Cube' }}</span>
+          </button>
+        </div>
+      }
+    </div>
+
+    <div class="notation-footer">
+      <button type="button" class="badge-btn badge-reset" (click)="onReset()">
         <span>↺</span>
         <span>{{ isBg ? 'Ресет на куба' : 'Reset Cube' }}</span>
       </button>
-
-      <div style="display: flex; gap: 0.5rem;">
-        <button
-          type="button"
-          (click)="prevStep()"
-          [disabled]="currentStepIndex() === 0"
-          class="footer-btn"
-        >
-          <span>←</span>
-          <span>{{ isBg ? 'Предишна' : 'Previous' }}</span>
-        </button>
-
-        <button
-          type="button"
-          (click)="nextStep()"
-          [disabled]="currentStepIndex() === steps.length - 1"
-          class="footer-btn next-btn"
-        >
-          <span>{{ isBg ? 'Следваща' : 'Next' }}</span>
-          <span>→</span>
-        </button>
-      </div>
+      <button type="button" class="nav-btn next-step" (click)="toggleNotationGuide()">
+        <span>{{ isBg ? 'Затвори справочника' : 'Close Guide' }}</span>
+      </button>
     </div>
   </div>
 }
-
-<!-- STANDARD OVERVIEW MODE (WHEN GUIDED MODAL IS CLOSED) -->
-<div class="overview-container">
-  <!-- Launch Guided Tour Banner -->
-  <div class="launch-banner">
-    <div>
-      <h2 class="banner-title">
-        {{ isBg ? 'Интерактивен Насочван Урок в 7 Стъпки' : '7-Step Guided Interactive Walkthrough' }}
-      </h2>
-      <p class="banner-desc">
-        {{
-          isBg
-            ? 'Затъмнява фона и ви води стъпка по стъпка с интерактивни модалчета и бутони за директно завъртане на 3D куба.'
-            : 'Dims the background and guides you step-by-step with interactive prompts and direct 3D cube execution.'
-        }}
-      </p>
-    </div>
-
-    <button type="button" (click)="startGuidedMode(0)" class="launch-btn">
-      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-        <polygon points="5 3 19 12 5 21 5 3" />
-      </svg>
-      <span>{{ isBg ? 'Стартирай Интерактивен Гид' : 'Launch Guided Tour' }}</span>
-    </button>
-  </div>
-
-  <!-- Steps List -->
-  <div class="steps-list">
-    @for (step of steps; track step.stepNumber; let i = $index) {
-      <div class="step-row-card" (click)="startGuidedMode(i)">
-        <div class="step-row-header">
-          <div class="step-row-left">
-            <div class="step-num-badge">
-              #{{ step.stepNumber }}
-            </div>
-            <div>
-              <h3 class="step-row-title">
-                {{ isBg ? step.titleBg : step.title }}
-              </h3>
-              <p class="step-row-sub">
-                {{ isBg ? step.subtitleBg : step.subtitle }}
-              </p>
-            </div>
-          </div>
-
-          <div style="display: flex; align-items: center; gap: 0.75rem;">
-            <span class="step-row-algo">{{ step.algorithm }}</span>
-            <button
-              type="button"
-              class="footer-btn next-btn"
-              style="padding: 0.4rem 0.75rem; font-size: 0.75rem;"
-            >
-              <span>{{ isBg ? 'Отвори модал' : 'Open Prompt' }}</span>
-              <span>&rarr;</span>
-            </button>
-          </div>
-        </div>
-
-        <p style="font-size: 0.8rem; color: #cbd5e1; margin: 0; line-height: 1.45;">
-          {{ isBg ? step.goalBg : step.goal }}
-        </p>
-      </div>
-    }
-  </div>
-</div>

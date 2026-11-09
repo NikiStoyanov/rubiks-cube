@@ -79,9 +79,15 @@
 /* =========================================================
    BASE STYLES
    ========================================================= */
+::selection {
+  background-color: var(--color-indigo);
+  color: #ffffff;
+}
+
 body {
   margin: 0;
   padding: 0;
+  min-height: 100vh;
   font-family: var(--font-sans);
   background-color: var(--bg-canvas);
   color: var(--text-primary);

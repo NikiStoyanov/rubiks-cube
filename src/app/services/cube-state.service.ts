@@ -9,6 +9,7 @@ import {
   PieceType,
   AppPage,
   SubgroupPreset,
+  FaceName,
 } from '../types/cube';
 import {
   RubikGroupAlgebra,
@@ -17,7 +18,10 @@ import {
   INITIAL_CORNERS,
   INITIAL_EDGES,
   SUBGROUP_PRESETS,
+  FACE_COLORS,
+  FACE_NAMES,
 } from '../math/group-algebra';
+import { CubeSolver, type SolveResult, type SolverStage } from '../math/cube-solver';
 
 export type ActiveTab = 'orbit' | 'stabilizer' | 'cycles' | 'order' | 'subgroups';
 
@@ -68,6 +72,11 @@ export class CubeStateService {
   readonly isTourOpen = signal<boolean>(
     typeof localStorage !== 'undefined' && !localStorage.getItem('rubik_tour_seen')
   );
+  readonly is3DPaintMode = signal<boolean>(false);
+  readonly activeBrushColor = signal<FaceName>('U');
+  readonly customNet = signal<Net2DFaces>(
+    RubikGroupAlgebra.compute2DNet(RubikGroupAlgebra.createIdentityState())
+  );
 
   // ==========================================
   // 3D ANIMATION DISPATCH STREAM (RxJS Subject)
@@ -85,6 +94,14 @@ export class CubeStateService {
   private readonly tamperRequestSubject = new Subject<'twist' | 'flip' | 'swap' | 'repair'>();
   private readonly resetRequestSubject = new Subject<void>();
   private readonly scrambleRequestSubject = new Subject<StandardMove[]>();
+  private readonly customStateRequestSubject = new Subject<CubeState>();
+  private readonly netSyncSubject = new Subject<Net2DFaces>();
+  private readonly stickerPaintRequestSubject = new Subject<{
+    face: FaceName;
+    row: number;
+    col: number;
+    color: string;
+  }>();
 
   readonly moveRequest$: Observable<{ move: StandardMove; onComplete?: () => void }> =
     this.moveRequestSubject.asObservable();
@@ -96,6 +113,16 @@ export class CubeStateService {
     this.resetRequestSubject.asObservable();
   readonly scrambleRequest$: Observable<StandardMove[]> =
     this.scrambleRequestSubject.asObservable();
+  readonly customStateRequest$: Observable<CubeState> =
+    this.customStateRequestSubject.asObservable();
+  readonly netSync$: Observable<Net2DFaces> =
+    this.netSyncSubject.asObservable();
+  readonly stickerPaintRequest$: Observable<{
+    face: FaceName;
+    row: number;
+    col: number;
+    color: string;
+  }> = this.stickerPaintRequestSubject.asObservable();
 
   // ==========================================
   // REACTIVE COMPUTED SIGNALS (DERIVED STATE)
@@ -180,7 +207,7 @@ export class CubeStateService {
   /**
    * Apply a standard move algebraically and emit animation event.
    */
-  applyMove(move: StandardMove): void {
+  applyMove(move: StandardMove, onComplete?: () => void): void {
     const current = this.cubeState();
     const next = RubikGroupAlgebra.applyMove(current, move);
 
@@ -189,7 +216,7 @@ export class CubeStateService {
     this.lastMove.set(move);
     this.moveHistory.update((h) => [...h, move]);
 
-    this.moveRequestSubject.next({ move });
+    this.moveRequestSubject.next({ move, onComplete });
   }
 
   /**
@@ -230,6 +257,135 @@ export class CubeStateService {
     this.lastMove.set('e (Identity)');
     this.moveHistory.set([]);
     this.resetRequestSubject.next();
+  }
+
+  /**
+   * Directly sets a custom physical CubeState (from physical piece input or 2D net painter).
+   */
+  setCustomCubeState(state: CubeState, label = 'Physical Cube Input'): void {
+    const current = this.cubeState();
+    this.previousState.set(current);
+    this.cubeState.set(RubikGroupAlgebra.cloneState(state));
+    this.lastMove.set(label);
+    this.moveHistory.update((h) => [...h, label]);
+    this.customStateRequestSubject.next(state);
+  }
+
+  /**
+   * Sets up a practice situation on the cube starting cleanly from identity.
+   * Resets 3D renderer to solved state, then applies the setup moves instantly.
+   */
+  setupPracticePosition(algoOrMoves: string | readonly StandardMove[], label = 'Practice Setup'): void {
+    const moves = typeof algoOrMoves === 'string'
+      ? RubikGroupAlgebra.parseAlgorithm(algoOrMoves)
+      : [...algoOrMoves];
+    const identity = RubikGroupAlgebra.createIdentityState();
+    const nextState = RubikGroupAlgebra.applyAlgorithm(identity, moves);
+
+    this.previousState.set(identity);
+    this.cubeState.set(nextState);
+    this.lastMove.set(label);
+    this.moveHistory.set(moves);
+
+    // Reset 3D renderer to identity, then apply the setup moves instantly
+    this.resetRequestSubject.next();
+    this.scrambleRequestSubject.next(moves);
+  }
+
+  /**
+   * Solves a cube state (or current state) using human LBL / CFOP stages.
+   */
+  solveState(state: CubeState): SolveResult {
+    return CubeSolver.solve(state);
+  }
+
+  solveCurrentCube(): SolveResult {
+    return CubeSolver.solve(this.cubeState());
+  }
+
+  /**
+   * Loads a custom physical cube state into the 3D model with physical mesh coordinates,
+   * so that subsequent face turns animate smoothly.
+   */
+  loadCustomPhysicalCube(state: CubeState, solutionMoves: readonly StandardMove[], label = 'Моето кубче'): void {
+    const scrambleMoves = RubikGroupAlgebra.invertAlgorithm(solutionMoves);
+    this.setupPracticePosition(scrambleMoves, label);
+  }
+
+  toggle3DPaintMode(): void {
+    this.is3DPaintMode.update((v) => !v);
+  }
+
+  set3DPaintMode(enabled: boolean): void {
+    this.is3DPaintMode.set(enabled);
+  }
+
+  setActiveBrushColor(color: FaceName): void {
+    this.activeBrushColor.set(color);
+  }
+
+  paintSticker(face: FaceName, row: number, col: number, colorOverride?: string): void {
+    const brush = this.activeBrushColor();
+    const color = colorOverride || FACE_COLORS[brush];
+
+    this.customNet.update((net) => {
+      const copy: Net2DFaces = {
+        U: net.U.map((r) => r.map((c) => ({ ...c }))),
+        D: net.D.map((r) => r.map((c) => ({ ...c }))),
+        F: net.F.map((r) => r.map((c) => ({ ...c }))),
+        B: net.B.map((r) => r.map((c) => ({ ...c }))),
+        L: net.L.map((r) => r.map((c) => ({ ...c }))),
+        R: net.R.map((r) => r.map((c) => ({ ...c }))),
+      };
+
+      if (copy[face]?.[row]?.[col]) {
+        copy[face][row][col].color = color;
+      }
+      return copy;
+    });
+
+    // Broadcast both the updated net to 3D and notify listeners
+    this.netSyncSubject.next(this.customNet());
+    this.stickerPaintRequestSubject.next({ face, row, col, color });
+  }
+
+  setCustomNet(net: Net2DFaces): void {
+    this.customNet.set(net);
+    this.netSyncSubject.next(net);
+  }
+
+  resetCustomNetToSolved(): void {
+    const solvedNet = RubikGroupAlgebra.compute2DNet(RubikGroupAlgebra.createIdentityState());
+    this.setCustomNet(solvedNet);
+  }
+
+  clearCustomNetToBlank(): void {
+    const blankColor = '#334155';
+    const net = this.customNet();
+    const copy: Net2DFaces = {
+      U: net.U.map((r) => r.map((c) => ({ ...c }))),
+      D: net.D.map((r) => r.map((c) => ({ ...c }))),
+      F: net.F.map((r) => r.map((c) => ({ ...c }))),
+      B: net.B.map((r) => r.map((c) => ({ ...c }))),
+      L: net.L.map((r) => r.map((c) => ({ ...c }))),
+      R: net.R.map((r) => r.map((c) => ({ ...c }))),
+    };
+
+    for (const fn of FACE_NAMES) {
+      for (let r = 0; r < 3; r++) {
+        for (let c = 0; c < 3; c++) {
+          if (r !== 1 || c !== 1) {
+            copy[fn][r][c].color = blankColor;
+          }
+        }
+      }
+    }
+    this.setCustomNet(copy);
+  }
+
+  syncNetTo3D(net: Net2DFaces): void {
+    this.customNet.set(net);
+    this.netSyncSubject.next(net);
   }
 
   /**

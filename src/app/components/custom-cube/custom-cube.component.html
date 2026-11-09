@@ -1,0 +1,927 @@
+<div class="custom-cube-container">
+  <!-- Header Card -->
+  <header class="header-card">
+    <div class="header-top">
+      <div>
+        <div class="header-badge">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
+            <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
+            <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
+            <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
+            <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" />
+          </svg>
+          <span>{{ isBg() ? 'Физическо Въвеждане' : 'Physical State Input' }}</span>
+        </div>
+        <h2 class="header-title">
+          {{ isBg() ? 'Въвеждане на Физическо Кубче' : 'Physical Cube Custom State Input' }}
+        </h2>
+        <p class="header-subtitle">
+          {{ isBg()
+            ? 'Въведете цветовете от вашето реално кубче на Рубик стикер по стикер или проверете състоянието му парче по парче.'
+            : "Input colors from your real physical Rubik's cube sticker by sticker, or inspect piece by piece."
+          }}
+        </p>
+      </div>
+
+      <!-- Mode Switcher Pill -->
+      <div class="mode-pill">
+        <button
+          type="button"
+          (click)="activeMode.set('2d')"
+          class="mode-btn"
+          [class.active]="activeMode() === '2d'"
+        >
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect width="18" height="18" x="3" y="3" rx="2" />
+            <path d="M3 9h18" />
+            <path d="M3 15h18" />
+            <path d="M9 3v18" />
+            <path d="M15 3v18" />
+          </svg>
+          <span>{{ isBg() ? '2D Разгъвка с Палитра' : '2D Net Painter' }}</span>
+        </button>
+
+        <button
+          type="button"
+          (click)="activeMode.set('pieces')"
+          class="mode-btn"
+          [class.active]="activeMode() === 'pieces'"
+        >
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+          </svg>
+          <span>{{ isBg() ? 'По Парчета (Върхове & Ръбове)' : 'Piece-by-Piece' }}</span>
+        </button>
+
+        <button
+          type="button"
+          (click)="toggle3DPaint()"
+          class="mode-btn paint-3d-toggle-btn"
+          [class.active-3d-paint]="is3DPaintMode()"
+        >
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
+            <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
+            <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
+            <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
+            <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" />
+          </svg>
+          <span>{{ is3DPaintMode() ? (isBg() ? '3D Четка (Вкл)' : '3D Paint (On)') : (isBg() ? 'Оцвети в 3D' : 'Paint in 3D') }}</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Live Status & Validation Banner -->
+  @if (applySuccess()) {
+    <div class="status-banner ok animate-fade-in">
+      <div class="banner-icon-box ok">
+        <svg class="w-5 h-5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="20 6 9 17 4 12" />
+        </svg>
+      </div>
+      <div style="flex: 1;">
+        <h4 class="banner-title ok">
+          {{ isBg() ? 'Състоянието беше приложено успешно към 3D куба!' : 'State applied successfully to the 3D cube!' }}
+        </h4>
+        <p class="banner-desc">
+          {{ isBg()
+            ? 'Сега кубчето вляво отразява вашето физическо кубче. Можете да го въртите, да пускате ходове или да използвате уроците за решаване.'
+            : 'The 3D cube on the left now matches your physical cube. You can turn faces, run algorithms, or follow the tutorial.'
+          }}
+        </p>
+      </div>
+    </div>
+  }
+
+  @if (reconstruction().success && orbitValidation()?.isValidOrbit) {
+    <!-- Fully Solvable Valid Orbit Banner -->
+    <div class="status-banner ok">
+      <div class="banner-icon-box ok">
+        <svg class="w-5 h-5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+          <path d="m9 12 2 2 4-4" />
+        </svg>
+      </div>
+      <div style="flex: 1;">
+        <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+          <h4 class="banner-title ok">
+            {{ isBg() ? 'Напълно Валидно и Решимо Кубче (Принадлежи към G)' : 'Valid & Solvable Cube (Belongs to G)' }}
+          </h4>
+          <span class="badge-pill ok">
+            {{ isBg() ? 'Решимо в 100% от ходовете' : '100% Legally Solvable' }}
+          </span>
+        </div>
+        <p class="banner-desc">
+          {{ isBg()
+            ? 'Всички 3 инварианта на Рубик са спазени: сумата на завъртанията на върховете е 0 (mod 3), сумата на обръщанията на ръбовете е 0 (mod 2), а четността на върховете съвпада с четността на ръбовете.'
+            : 'All 3 Rubik invariants are conserved: corner twist sum ≡ 0 (mod 3), edge flip sum ≡ 0 (mod 2), and permutation parity sgn(σ) = sgn(τ).'
+          }}
+        </p>
+      </div>
+      <div class="banner-actions">
+        <button
+          type="button"
+          (click)="toggleSolver()"
+          class="btn-banner-solver"
+          [class.active-solver]="showSolver()"
+        >
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+          </svg>
+          <span>{{ showSolver() ? (isBg() ? 'Скрий Решението' : 'Hide Solver') : (isBg() ? '🧩 Реши моето кубче (Стъпка по стъпка)' : '🧩 Solve My Cube (Step-by-Step)') }}</span>
+        </button>
+
+        <button type="button" (click)="applyToCube()" class="btn-banner-primary">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          <span>{{ isBg() ? 'Зареди в 3D Куба' : 'Apply to 3D Cube' }}</span>
+        </button>
+        <a routerLink="/validator" class="btn-banner-secondary">
+          <span>{{ isBg() ? 'Провери във Валидатора' : 'Inspect in Validator' }}</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Interactive Step-by-Step Solver Section -->
+    @if (showSolver() && solveResult()) {
+      <div class="solver-section-card animate-fade-in">
+        <!-- Solver Card Header -->
+        <div class="solver-top-bar">
+          <div class="solver-title-group">
+            <div class="solver-badge">
+              <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+              </svg>
+              <span>{{ isBg() ? 'Стъпка по Стъпка Нареждане' : 'Step-by-Step Solve Guide' }}</span>
+            </div>
+            <h3 class="solver-card-title">
+              {{ isBg() ? 'Как да наредите точно вашето въведено кубче' : 'How to Solve Your Exact Entered Cube' }}
+            </h3>
+            <p class="solver-card-subtitle">
+              {{ isBg()
+                ? 'Решението е изчислено по класическия LBL метод (7 етапа). Можете да изпълнявате ходовете един по един или автоматично в 3D модела.'
+                : 'Solution computed using the canonical 7-stage Layer-by-Layer (LBL) method matching human tutorials.'
+              }}
+            </p>
+          </div>
+
+          <!-- Total Stats & Reload Button -->
+          <div class="solver-stats-box">
+            <div class="solver-stat-pill">
+              <span class="stat-num">{{ solveResult()?.totalMoves }}</span>
+              <span class="stat-lbl">{{ isBg() ? 'общо хода' : 'total moves' }}</span>
+            </div>
+            <div class="solver-stat-pill">
+              <span class="stat-num">{{ solveResult()?.stages?.length }}</span>
+              <span class="stat-lbl">{{ isBg() ? 'етапа' : 'stages' }}</span>
+            </div>
+            <button
+              type="button"
+              (click)="reloadIn3D()"
+              class="btn-solver-reload"
+              [title]="isBg() ? 'Рестартирай 3D куба в начално състояние' : 'Restart 3D cube to initial position'"
+            >
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="1 4 1 10 7 10" />
+                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+              </svg>
+              <span>{{ isBg() ? 'Рестарт на позицията' : 'Reset Position' }}</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="solver-progress-container">
+          <div class="progress-info-row">
+            <span class="progress-lbl">
+              {{ isBg() ? 'Прогрес на нареждането:' : 'Solving Progress:' }}
+              <strong>{{ currentMoveIndex() }} / {{ solveResult()?.totalMoves }} {{ isBg() ? 'хода' : 'moves' }}</strong>
+            </span>
+            <span class="progress-percent">{{ solveProgressPercent() }}%</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" [style.width.%]="solveProgressPercent()"></div>
+          </div>
+        </div>
+
+        <!-- 7-Stage Rail Tabs -->
+        <div class="solver-stage-rail">
+          @for (st of solveResult()?.stages; track st.stageNumber; let i = $index) {
+            <button
+              type="button"
+              (click)="selectStage(i)"
+              class="stage-rail-pill"
+              [class.active]="activeStageIndex() === i"
+              [class.is-done]="st.moves.length === 0"
+            >
+              <span class="pill-step-num">#{{ st.stageNumber }}</span>
+              <span class="pill-name">{{ isBg() ? st.nameBg.split(':')[1]?.trim() || st.nameBg : st.nameEn.split(':')[1]?.trim() || st.nameEn }}</span>
+              @if (st.moves.length === 0) {
+                <span class="pill-check-icon" [title]="isBg() ? 'Вече нареден' : 'Already solved'">✓</span>
+              } @else {
+                <span class="pill-move-count">{{ st.moves.length }}h</span>
+              }
+            </button>
+          }
+        </div>
+
+        <!-- Active Stage Main Card -->
+        @if (activeStage(); as currStage) {
+          <div class="active-stage-view animate-fade-in">
+            <div class="stage-view-header">
+              <div>
+                <span class="stage-tag">
+                  {{ isBg() ? 'Етап ' + currStage.stageNumber + ' от 7' : 'Stage ' + currStage.stageNumber + ' of 7' }}
+                </span>
+                <h4 class="stage-main-title">
+                  {{ isBg() ? currStage.nameBg : currStage.nameEn }}
+                </h4>
+                <p class="stage-goal-desc">
+                  <strong>{{ isBg() ? 'Цел: ' : 'Goal: ' }}</strong>
+                  {{ isBg() ? currStage.goalBg : currStage.goalEn }}
+                </p>
+              </div>
+
+              <a
+                routerLink="/tutorial"
+                class="btn-open-tutorial-link"
+                [title]="isBg() ? 'Научи принципите на този етап в Академията' : 'Learn principles in Tutorial'"
+              >
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                </svg>
+                <span>{{ isBg() ? 'Урок за този етап' : 'Tutorial Academy' }}</span>
+              </a>
+            </div>
+
+            <!-- Algorithm Display Box -->
+            <div class="algo-display-box">
+              <div class="algo-box-top">
+                <span class="algo-box-label">
+                  {{ isBg() ? 'Последователност от ходове за изпълнение:' : 'Sequence of moves to execute:' }}
+                </span>
+                @if (currStage.moves.length > 0) {
+                  <span class="algo-moves-badge">{{ currStage.moves.length }} {{ isBg() ? 'хода' : 'moves' }}</span>
+                }
+              </div>
+
+              @if (currStage.moves.length === 0) {
+                <div class="stage-already-solved-msg">
+                  <svg class="w-5 h-5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  <span>
+                    {{ isBg()
+                      ? 'Този етап вече е нареден на твоето кубче! Не са необходими допълнителни ходове за него.'
+                      : 'This stage is already solved on your cube! No moves needed.'
+                    }}
+                  </span>
+                </div>
+              } @else {
+                <div class="algo-pills-row">
+                  @for (m of currStage.moves; track $index; let mIdx = $index) {
+                    <div class="algo-move-pill" [class.is-face-prime]="m.includes('\'')" [class.is-face-double]="m.includes('2')">
+                      {{ m }}
+                    </div>
+                  }
+                </div>
+              }
+
+              <!-- Bulgarian Explanation Note -->
+              <div class="stage-explanation-box">
+                <div class="explanation-icon">💡</div>
+                <div class="explanation-text">
+                  <p><strong>{{ isBg() ? 'Обяснение: ' : 'Explanation: ' }}</strong>{{ isBg() ? currStage.explanationBg : currStage.explanationEn }}</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Interactive Controller Bar -->
+            <div class="solver-controller-bar">
+              <div class="controller-buttons-group">
+                <button
+                  type="button"
+                  (click)="stepBackward()"
+                  [disabled]="currentMoveIndex() <= 0"
+                  class="btn-step-ctrl"
+                  [title]="isBg() ? 'Върни 1 ход назад' : 'Step back 1 move'"
+                >
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="15 18 9 12 15 6" />
+                  </svg>
+                  <span>{{ isBg() ? 'Предишен ход' : 'Step Back' }}</span>
+                </button>
+
+                <button
+                  type="button"
+                  (click)="toggleAutoPlay()"
+                  class="btn-autoplay-ctrl"
+                  [class.is-playing]="isAutoPlaying()"
+                >
+                  @if (isAutoPlaying()) {
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="6" y="4" width="4" height="16" />
+                      <rect x="14" y="4" width="4" height="16" />
+                    </svg>
+                    <span>{{ isBg() ? 'Пауза' : 'Pause' }}</span>
+                  } @else {
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polygon points="5 3 19 12 5 21 5 3" />
+                    </svg>
+                    <span>{{ isBg() ? 'Пусни Автоматично' : 'Auto Play' }}</span>
+                  }
+                </button>
+
+                <button
+                  type="button"
+                  (click)="stepForward()"
+                  [disabled]="currentMoveIndex() >= (solveResult()?.allMoves?.length || 0)"
+                  class="btn-step-ctrl"
+                  [title]="isBg() ? 'Изпълни 1 ход напред в 3D куба' : 'Step forward 1 move on 3D cube'"
+                >
+                  <span>{{ isBg() ? 'Следващ ход' : 'Step Next' }}</span>
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Speed Selector Pills -->
+              <div class="speed-selector-group">
+                <span class="speed-label">{{ isBg() ? 'Скорост:' : 'Speed:' }}</span>
+                @for (spd of [0.5, 1, 1.5, 2]; track spd) {
+                  <button
+                    type="button"
+                    (click)="setSpeed(spd)"
+                    class="speed-btn"
+                    [class.active]="playbackSpeed() === spd"
+                  >
+                    {{ spd }}x
+                  </button>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  } @else if (reconstruction().success && !orbitValidation()?.isValidOrbit) {
+    <!-- Physically Reconstructed but Tampered / Unsolvable Coset Banner -->
+    <div class="status-banner error">
+      <div class="banner-icon-box error">
+        <svg class="w-5 h-5 text-rose-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="8" x2="12" y2="12" />
+          <line x1="12" y1="16" x2="12.01" y2="16" />
+        </svg>
+      </div>
+      <div style="flex: 1;">
+        <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+          <h4 class="banner-title error">
+            {{ isBg() ? 'Физически Разглобено / Нерешимо Състояние (Невалиден Coset)' : 'Physically Tampered / Unsolvable Coset' }}
+          </h4>
+          <span class="badge-pill error">
+            {{ isBg() ? 'Нерешимо само с въртене' : 'Unsolvable with standard moves' }}
+          </span>
+        </div>
+        <p class="banner-desc">
+          {{ isBg()
+            ? 'Кубчето е сглобено правилно по парчета, но е в един от 11-те нерешими класа на неразложимост. Открити нарушения:'
+            : 'All pieces exist, but the cube is trapped in one of the 11 unsolvable cosets. Invariants violated:'
+          }}
+        </p>
+        <ul class="error-sublist">
+          @if (!orbitValidation()?.isCornerTwistValid) {
+            <li>
+              &bull; <strong>{{ isBg() ? 'Ъглова ориентация:' : 'Corner Twists:' }}</strong>
+              &sum; v&#7522; &equiv; {{ orbitValidation()?.cornerTwistSum }} &ne; 0 (mod 3) —
+              {{ isBg() ? 'Има поне един физически завъртян ъгъл на ръка.' : 'At least one corner was manually twisted.' }}
+            </li>
+          }
+          @if (!orbitValidation()?.isEdgeFlipValid) {
+            <li>
+              &bull; <strong>{{ isBg() ? 'Ръбова ориентация:' : 'Edge Flips:' }}</strong>
+              &sum; w&#7522; &equiv; {{ orbitValidation()?.edgeFlipSum }} &ne; 0 (mod 2) —
+              {{ isBg() ? 'Има поне един физически обърнат ръб на ръка.' : 'At least one edge was manually flipped.' }}
+            </li>
+          }
+          @if (!orbitValidation()?.isParityValid) {
+            <li>
+              &bull; <strong>{{ isBg() ? 'Четност на пермутациите:' : 'Permutation Parity:' }}</strong>
+              sgn(&sigma;)={{ orbitValidation()?.cornerParity }} &ne; sgn(&tau;)={{ orbitValidation()?.edgeParity }} —
+              {{ isBg() ? 'Две парчета са разменени физически на ръка.' : 'Two pieces were manually swapped.' }}
+            </li>
+          }
+        </ul>
+      </div>
+      <div class="banner-actions">
+        <button type="button" (click)="applyToCube()" class="btn-banner-primary">
+          <span>{{ isBg() ? 'Зареди въпреки това в 3D' : 'Load into 3D Anyway' }}</span>
+        </button>
+        <a routerLink="/validator" class="btn-banner-secondary">
+          <span>{{ isBg() ? 'Детайли във Валидатора' : 'Inspect Coset Invariants' }}</span>
+        </a>
+      </div>
+    </div>
+  } @else {
+    <!-- Incomplete or Invalid Input Banner -->
+    <div class="status-banner warning">
+      <div class="banner-icon-box warning">
+        <svg class="w-5 h-5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+          <line x1="12" y1="9" x2="12" y2="13" />
+          <line x1="12" y1="17" x2="12.01" y2="17" />
+        </svg>
+      </div>
+      <div style="flex: 1;">
+        <h4 class="banner-title warning">
+          {{ isBg() ? 'Въвеждането не е завършено' : 'Incomplete or Invalid State' }}
+        </h4>
+        <p class="banner-desc">
+          {{ isBg()
+            ? 'Всеки цвят трябва да присъства точно 9 пъти и всички 20 подвижни парчета (8 ъгъла и 12 ръба) трябва да са физически валидни.'
+            : 'Each color must appear exactly 9 times and all 20 movable pieces (8 corners and 12 edges) must form physically valid color combinations.'
+          }}
+        </p>
+        @if (reconstruction().errors.length > 0) {
+          <ul class="error-sublist">
+            @for (err of reconstruction().errors.slice(0, 3); track $index) {
+              <li>&bull; {{ err }}</li>
+            }
+            @if (reconstruction().errors.length > 3) {
+              <li>&bull; {{ isBg() ? '... и още ' + (reconstruction().errors.length - 3) + ' забележки' : '... and ' + (reconstruction().errors.length - 3) + ' more issues' }}</li>
+            }
+          </ul>
+        }
+      </div>
+      <div class="banner-actions">
+        <button type="button" (click)="resetToSolved()" class="btn-banner-secondary">
+          <span>{{ isBg() ? 'Запълни с Подредено' : 'Fill Solved' }}</span>
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- Main Work Area -->
+  @if (activeMode() === '2d') {
+    <!-- MODE 1: 2D NET PAINTER -->
+    <section class="net-painter-section">
+      <!-- Color Palette & Quick Tools Toolbar -->
+      <div class="palette-card">
+        <div class="palette-top">
+          <div>
+            <h3 class="palette-title">
+              {{ isBg() ? '1. Изберете цвят за нанасяне (Четка)' : '1. Choose Active Color Brush' }}
+            </h3>
+            <p class="palette-desc">
+              {{ isBg()
+                ? 'Кликнете върху цвят, след което кликайте по стикерите на разгъвката по-долу.'
+                : 'Select a brush color, then click stickers on the unfolded 2D cube net below.'
+              }}
+            </p>
+          </div>
+
+          <!-- Quick Action Buttons -->
+          <div class="palette-quick-actions">
+            <button
+              type="button"
+              (click)="resetToSolved()"
+              [title]="isBg() ? 'Запълни всички стикери в решено състояние' : 'Reset all facelets to solved'"
+              class="tool-btn"
+            >
+              <svg class="w-3.5 h-3.5 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                <path d="M3 3v5h5" />
+              </svg>
+              <span>{{ isBg() ? 'Подредено' : 'Solved' }}</span>
+            </button>
+
+            <button
+              type="button"
+              (click)="clearToBlank()"
+              [title]="isBg() ? 'Изчисти всички стикери в сиво за въвеждане от нулата' : 'Clear all stickers to neutral grey'"
+              class="tool-btn"
+            >
+              <svg class="w-3.5 h-3.5 text-rose-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 6h18" />
+                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+              </svg>
+              <span>{{ isBg() ? 'Изчисти' : 'Clear' }}</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Color Palette Buttons Grid -->
+        <div class="palette-swatches">
+          @for (item of palette; track item.face) {
+            <button
+              type="button"
+              (click)="selectColor(item.face)"
+              class="swatch-btn"
+              [class.active]="activeColor() === item.face"
+            >
+              <span class="swatch-color" [style.background-color]="item.color"></span>
+              <div class="swatch-info">
+                <span class="swatch-name">{{ isBg() ? item.nameBg : item.nameEn }}</span>
+                <span
+                  class="swatch-count"
+                  [class.ok]="colorCounts()[item.face] === 9"
+                  [class.overflow]="colorCounts()[item.face] > 9"
+                  [class.underflow]="colorCounts()[item.face] < 9"
+                >
+                  {{ colorCounts()[item.face] }} / 9
+                  @if (colorCounts()[item.face] === 9) {
+                    &check;
+                  }
+                </span>
+              </div>
+            </button>
+          }
+        </div>
+
+        <!-- Presets Row -->
+        <div class="presets-row">
+          <span class="presets-label">{{ isBg() ? 'Тестови Шаблони:' : 'Presets:' }}</span>
+          <div class="presets-chips">
+            <button type="button" (click)="loadPreset('solved')" class="preset-chip">
+              {{ isBg() ? '🎯 Решено' : '🎯 Solved' }}
+            </button>
+            <button type="button" (click)="loadPreset('scramble')" class="preset-chip">
+              {{ isBg() ? '🎲 Разбъркано' : '🎲 Scrambled' }}
+            </button>
+            <button type="button" (click)="loadPreset('twist')" class="preset-chip warning">
+              {{ isBg() ? '🔄 Завъртян ъгъл (+120°)' : '🔄 Corner Twist' }}
+            </button>
+            <button type="button" (click)="loadPreset('flip')" class="preset-chip warning">
+              {{ isBg() ? '🔀 Обърнат ръб' : '🔀 Edge Flip' }}
+            </button>
+            <button type="button" (click)="loadPreset('swap')" class="preset-chip warning">
+              {{ isBg() ? '⚡ Разменени 2 върха' : '⚡ Corner Swap' }}
+            </button>
+            <button type="button" (click)="loadPreset('superflip')" class="preset-chip">
+              {{ isBg() ? '✨ Superflip' : '✨ Superflip' }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Unfolded 2D Cube Net Interactive Grid -->
+      <div class="net-grid-card">
+        <div class="net-grid-header">
+          <h3 class="palette-title">
+            {{ isBg() ? '2. Интерактивна Разгъвка (6-те Стени)' : '2. Interactive 2D Cube Net' }}
+          </h3>
+          <span style="font-size: 0.75rem; color: var(--text-dim);">
+            {{ isBg()
+              ? 'Центровете (маркирани с 🔒) са фиксирани и определят коя страна къде се намира'
+              : 'Centers (marked with 🔒) are fixed and define face orientations'
+            }}
+          </span>
+        </div>
+
+        <!-- Cross Layout Container:
+             Row 0: [Empty] [   U   ] [Empty] [Empty]
+             Row 1: [   L ] [   F   ] [   R ] [   B ]
+             Row 2: [Empty] [   D   ] [Empty] [Empty]
+        -->
+        <div class="cube-cross-wrapper">
+          <!-- Row 0: Up Face -->
+          <div class="cross-row">
+            <div class="cross-cell-empty"></div>
+            <div class="cross-face-box">
+              <span class="face-title-tag">U &bull; {{ isBg() ? 'Горе (Бяло)' : 'Up (White)' }}</span>
+              <div class="face-3x3-grid">
+                @for (r of [0, 1, 2]; track r) {
+                  @for (c of [0, 1, 2]; track c) {
+                    <button
+                      type="button"
+                      (click)="paintFacelet('U', r, c)"
+                      class="facelet-btn"
+                      [style.background-color]="editableNet().U[r][c].color"
+                      [class.is-center]="r === 1 && c === 1"
+                    >
+                      @if (r === 1 && c === 1) {
+                        <span class="center-lock-icon">🔒 U</span>
+                      }
+                    </button>
+                  }
+                }
+              </div>
+            </div>
+            <div class="cross-cell-empty"></div>
+            <div class="cross-cell-empty"></div>
+          </div>
+
+          <!-- Row 1: Left, Front, Right, Back Faces -->
+          <div class="cross-row">
+            <!-- Left Face -->
+            <div class="cross-face-box">
+              <span class="face-title-tag">L &bull; {{ isBg() ? 'Ляво (Оранж)' : 'Left (Orange)' }}</span>
+              <div class="face-3x3-grid">
+                @for (r of [0, 1, 2]; track r) {
+                  @for (c of [0, 1, 2]; track c) {
+                    <button
+                      type="button"
+                      (click)="paintFacelet('L', r, c)"
+                      class="facelet-btn"
+                      [style.background-color]="editableNet().L[r][c].color"
+                      [class.is-center]="r === 1 && c === 1"
+                    >
+                      @if (r === 1 && c === 1) {
+                        <span class="center-lock-icon">🔒 L</span>
+                      }
+                    </button>
+                  }
+                }
+              </div>
+            </div>
+
+            <!-- Front Face -->
+            <div class="cross-face-box">
+              <span class="face-title-tag">F &bull; {{ isBg() ? 'Отпред (Зелено)' : 'Front (Green)' }}</span>
+              <div class="face-3x3-grid">
+                @for (r of [0, 1, 2]; track r) {
+                  @for (c of [0, 1, 2]; track c) {
+                    <button
+                      type="button"
+                      (click)="paintFacelet('F', r, c)"
+                      class="facelet-btn"
+                      [style.background-color]="editableNet().F[r][c].color"
+                      [class.is-center]="r === 1 && c === 1"
+                    >
+                      @if (r === 1 && c === 1) {
+                        <span class="center-lock-icon">🔒 F</span>
+                      }
+                    </button>
+                  }
+                }
+              </div>
+            </div>
+
+            <!-- Right Face -->
+            <div class="cross-face-box">
+              <span class="face-title-tag">R &bull; {{ isBg() ? 'Дясно (Червено)' : 'Right (Red)' }}</span>
+              <div class="face-3x3-grid">
+                @for (r of [0, 1, 2]; track r) {
+                  @for (c of [0, 1, 2]; track c) {
+                    <button
+                      type="button"
+                      (click)="paintFacelet('R', r, c)"
+                      class="facelet-btn"
+                      [style.background-color]="editableNet().R[r][c].color"
+                      [class.is-center]="r === 1 && c === 1"
+                    >
+                      @if (r === 1 && c === 1) {
+                        <span class="center-lock-icon">🔒 R</span>
+                      }
+                    </button>
+                  }
+                }
+              </div>
+            </div>
+
+            <!-- Back Face -->
+            <div class="cross-face-box">
+              <span class="face-title-tag">B &bull; {{ isBg() ? 'Отзад (Синьо)' : 'Back (Blue)' }}</span>
+              <div class="face-3x3-grid">
+                @for (r of [0, 1, 2]; track r) {
+                  @for (c of [0, 1, 2]; track c) {
+                    <button
+                      type="button"
+                      (click)="paintFacelet('B', r, c)"
+                      class="facelet-btn"
+                      [style.background-color]="editableNet().B[r][c].color"
+                      [class.is-center]="r === 1 && c === 1"
+                    >
+                      @if (r === 1 && c === 1) {
+                        <span class="center-lock-icon">🔒 B</span>
+                      }
+                    </button>
+                  }
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 2: Down Face -->
+          <div class="cross-row">
+            <div class="cross-cell-empty"></div>
+            <div class="cross-face-box">
+              <span class="face-title-tag">D &bull; {{ isBg() ? 'Долу (Жълто)' : 'Down (Yellow)' }}</span>
+              <div class="face-3x3-grid">
+                @for (r of [0, 1, 2]; track r) {
+                  @for (c of [0, 1, 2]; track c) {
+                    <button
+                      type="button"
+                      (click)="paintFacelet('D', r, c)"
+                      class="facelet-btn"
+                      [style.background-color]="editableNet().D[r][c].color"
+                      [class.is-center]="r === 1 && c === 1"
+                    >
+                      @if (r === 1 && c === 1) {
+                        <span class="center-lock-icon">🔒 D</span>
+                      }
+                    </button>
+                  }
+                }
+              </div>
+            </div>
+            <div class="cross-cell-empty"></div>
+            <div class="cross-cell-empty"></div>
+          </div>
+        </div>
+
+        <!-- Helpful Orientation Tip -->
+        <div class="guide-tip-box">
+          <svg class="w-4 h-4 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="16" x2="12" y2="12" />
+            <line x1="12" y1="8" x2="12.01" y2="8" />
+          </svg>
+          <span>
+            {{ isBg()
+              ? 'Съвет за въвеждане: Дръжте вашето физическо кубче така, че бялата стена да е отгоре, а зелената – към вас. Тогава разгъвката отговаря точно на това, което виждате.'
+              : 'Physical Tip: Hold your cube with White on Top (U) and Green on Front (F). The 2D unfolded cross matches this orientation exactly.'
+            }}
+          </span>
+        </div>
+      </div>
+    </section>
+  } @else {
+    <!-- MODE 2: PIECE-BY-PIECE INSPECTOR -->
+    <section class="pieces-section">
+      <div class="pieces-layout">
+        <!-- Column 1: Corners (8 pieces) -->
+        <div class="pieces-card">
+          <div class="pieces-card-header">
+            <h3 class="palette-title">
+              {{ isBg() ? '8-те Върха (Corners) — Орбита в S₈' : '8 Corners — Orbit in S₈' }}
+            </h3>
+            <span style="font-size: 0.75rem; color: var(--text-dim);">
+              &sum; v&#7522; &equiv; {{ orbitValidation()?.cornerTwistSum ?? '?' }} (mod 3)
+            </span>
+          </div>
+
+          <div class="pieces-list">
+            @for (c of cornerPiecesList(); track c.id) {
+              <div class="piece-item-card">
+                <div class="piece-item-header">
+                  <div>
+                    <span class="piece-title">{{ c.name }}</span>
+                    <span class="piece-pos-tag">
+                      {{ isBg() ? 'Позиция: слот #' + c.pos : 'Slot #' + c.pos }}
+                    </span>
+                  </div>
+                  <span
+                    class="piece-twist-badge"
+                    [class.ok]="c.orientation === 0"
+                    [class.violated]="c.orientation !== 0"
+                  >
+                    {{ c.twistName }}
+                  </span>
+                </div>
+
+                <div class="piece-swatches-row">
+                  @for (f of c.faces; track f) {
+                    <span
+                      class="mini-swatch"
+                      [style.background-color]="faceColors[f]"
+                      [title]="'Face ' + f"
+                    >
+                      {{ f }}
+                    </span>
+                  }
+                </div>
+
+                <div class="piece-actions-row">
+                  <button
+                    type="button"
+                    (click)="twistCornerInPlace(c.id, 1)"
+                    class="btn-mini-twist"
+                  >
+                    <span>{{ isBg() ? 'Завърти +120°' : 'Twist +120°' }}</span>
+                  </button>
+                  <button
+                    type="button"
+                    (click)="twistCornerInPlace(c.id, 2)"
+                    class="btn-mini-twist"
+                  >
+                    <span>{{ isBg() ? 'Завърти +240°' : 'Twist +240°' }}</span>
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Column 2: Edges (12 pieces) -->
+        <div class="pieces-card">
+          <div class="pieces-card-header">
+            <h3 class="palette-title">
+              {{ isBg() ? '12-те Ръба (Edges) — Орбита в S₁₂' : '12 Edges — Orbit in S₁₂' }}
+            </h3>
+            <span style="font-size: 0.75rem; color: var(--text-dim);">
+              &sum; w&#7522; &equiv; {{ orbitValidation()?.edgeFlipSum ?? '?' }} (mod 2)
+            </span>
+          </div>
+
+          <div class="pieces-list">
+            @for (e of edgePiecesList(); track e.id) {
+              <div class="piece-item-card">
+                <div class="piece-item-header">
+                  <div>
+                    <span class="piece-title">{{ e.name }}</span>
+                    <span class="piece-pos-tag">
+                      {{ isBg() ? 'Позиция: слот #' + e.pos : 'Slot #' + e.pos }}
+                    </span>
+                  </div>
+                  <span
+                    class="piece-twist-badge"
+                    [class.ok]="e.orientation === 0"
+                    [class.violated]="e.orientation !== 0"
+                  >
+                    {{ e.flipName }}
+                  </span>
+                </div>
+
+                <div class="piece-swatches-row">
+                  @for (f of e.faces; track f) {
+                    <span
+                      class="mini-swatch"
+                      [style.background-color]="faceColors[f]"
+                      [title]="'Face ' + f"
+                    >
+                      {{ f }}
+                    </span>
+                  }
+                </div>
+
+                <div class="piece-actions-row">
+                  <button
+                    type="button"
+                    (click)="flipEdgeInPlace(e.id)"
+                    class="btn-mini-twist"
+                  >
+                    <span>{{ isBg() ? 'Обърни ръба (Flip)' : 'Flip Edge' }}</span>
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </section>
+  }
+
+  <!-- Footer Actions Floating Bar -->
+  <footer class="footer-actions-card">
+    <div style="display: flex; align-items: center; gap: 0.75rem;">
+      <span class="footer-state-indicator" [class.ok]="isSolvable()" [class.violated]="!isSolvable()">
+        {{ isSolvable()
+          ? (isBg() ? 'Готово за прилагане към 3D симулатора' : 'Ready to apply to 3D cube')
+          : (isBg() ? 'Невалидно/Нерешимо състояние' : 'Unsolvable or incomplete state')
+        }}
+      </span>
+    </div>
+
+    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+      <button
+        type="button"
+        (click)="toggleSolver()"
+        [disabled]="!isSolvable()"
+        class="btn-banner-solver"
+        [class.active-solver]="showSolver()"
+      >
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+        </svg>
+        <span>{{ showSolver() ? (isBg() ? 'Скрий Решението' : 'Hide Solver') : (isBg() ? '🧩 Реши моето кубче' : '🧩 Solve My Cube') }}</span>
+      </button>
+
+      <button
+        type="button"
+        (click)="applyToCube()"
+        [disabled]="!reconstruction().success"
+        class="btn-apply-main"
+      >
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="20 6 9 17 4 12" />
+        </svg>
+        <span>{{ isBg() ? 'Приложи към 3D Симулатора' : 'Apply to 3D Simulator' }}</span>
+      </button>
+
+      <a routerLink="/validator" class="btn-inspect-link">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+        </svg>
+        <span>{{ isBg() ? 'Валидатор' : 'Validator' }}</span>
+      </a>
+    </div>
+  </footer>
+</div>
+

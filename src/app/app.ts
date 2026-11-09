@@ -7,6 +7,7 @@ import {
   NgZone,
   inject,
   signal,
+  computed,
   effect,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -14,7 +15,9 @@ import { RouterOutlet, RouterLink, RouterLinkActive, Router, NavigationEnd } fro
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs';
 import { RubiksCube3D } from './3d/CubeRenderer';
-import { CubeState, StandardMove, ViewMode, PieceType, AppPage } from './types/cube';
+import { CubeState, StandardMove, ViewMode, PieceType, AppPage, FaceName } from './types/cube';
+import { FACE_COLORS, FACE_NAMES, RubikGroupAlgebra } from './math/group-algebra';
+import { CubeSolver, type SolveResult, type SolverStage } from './math/cube-solver';
 import { LanguageService } from './services/language.service';
 import { CubeStateService, ActiveTab } from './services/cube-state.service';
 import { Controls3DComponent } from './components/cube/controls-3d/controls-3d.component';
@@ -71,12 +74,37 @@ export class App implements AfterViewInit, OnDestroy {
   readonly isAnimating = this.cubeStateService.isAnimating;
   readonly isTheoryOpen = this.cubeStateService.isTheoryOpen;
   readonly isTourOpen = this.cubeStateService.isTourOpen;
+  readonly is3DPaintMode = this.cubeStateService.is3DPaintMode;
+  readonly activeBrushColor = this.cubeStateService.activeBrushColor;
+  readonly faceNames = FACE_NAMES;
+  readonly faceColors = FACE_COLORS;
 
   // Delegated Computed Signals
   readonly orbitPieces = this.cubeStateService.orbitPieces;
   readonly analysis = this.cubeStateService.analysis;
   readonly isSolved = this.cubeStateService.isSolved;
   readonly activePieceName = this.cubeStateService.activePieceName;
+
+  // Global Solver Modal State
+  readonly isSolveModalOpen = signal<boolean>(false);
+  readonly solveResult = signal<SolveResult | null>(null);
+  readonly activeSolveStageIndex = signal<number>(0);
+  readonly currentSolveMoveIndex = signal<number>(0);
+  readonly isSolveAutoPlaying = signal<boolean>(false);
+  readonly solvePlaybackSpeed = signal<number>(1);
+  private solveAutoPlayTimer: any = null;
+
+  readonly activeSolveStage = computed<SolverStage | null>(() => {
+    const res = this.solveResult();
+    if (!res || !res.stages.length) return null;
+    return res.stages[this.activeSolveStageIndex()] ?? null;
+  });
+
+  readonly solveProgressPercent = computed<number>(() => {
+    const res = this.solveResult();
+    if (!res || res.totalMoves === 0) return 0;
+    return Math.min(100, Math.round((this.currentSolveMoveIndex() / res.totalMoves) * 100));
+  });
 
   constructor() {
     // Synchronize current route with activePage in CubeStateService
@@ -179,6 +207,19 @@ export class App implements AfterViewInit, OnDestroy {
           });
         };
 
+        renderer.onStickerClick = (event) => {
+          this.ngZone.run(() => {
+            if (this.cubeStateService.is3DPaintMode()) {
+              const brush = this.cubeStateService.activeBrushColor();
+              const color = this.getFaceColor(brush);
+              if (event.materialIndex >= 0) {
+                renderer.paintStickerMesh(event.bodyMesh, event.materialIndex, color);
+              }
+              this.cubeStateService.paintSticker(event.face, event.row, event.col, color);
+            }
+          });
+        };
+
         this.ngZone.run(() => {
           this.cubeRenderer.set(renderer);
           this.updateHighlights();
@@ -240,10 +281,30 @@ export class App implements AfterViewInit, OnDestroy {
         }
       })
     );
+
+    this.subs.add(
+      this.cubeStateService.customStateRequest$.subscribe((state) => {
+        const renderer = this.cubeRenderer();
+        if (renderer) {
+          renderer.applyCustomState(state);
+          this.updateHighlights();
+        }
+      })
+    );
+
+    this.subs.add(
+      this.cubeStateService.netSync$.subscribe((net) => {
+        const renderer = this.cubeRenderer();
+        if (renderer) {
+          renderer.applyNetColors(net);
+        }
+      })
+    );
   }
 
   ngOnDestroy(): void {
     this.subs.unsubscribe();
+    this.stopSolveAutoPlay();
     const renderer = this.cubeRenderer();
     if (renderer) {
       renderer.destroy();
@@ -348,11 +409,149 @@ export class App implements AfterViewInit, OnDestroy {
     this.cubeStateService.closeTheory();
   }
 
+  getFaceColor(face: FaceName): string {
+    return FACE_COLORS[face];
+  }
+
+  setBrushColor(face: FaceName): void {
+    this.cubeStateService.setActiveBrushColor(face);
+  }
+
+  toggle3DPaintMode(): void {
+    this.cubeStateService.toggle3DPaintMode();
+  }
+
+  exit3DPaintMode(): void {
+    this.cubeStateService.set3DPaintMode(false);
+  }
+
   openTour(): void {
     this.cubeStateService.openTour();
   }
 
   closeTour(): void {
     this.cubeStateService.closeTour();
+  }
+
+  // ==========================================
+  // SOLVER MODAL ACTIONS
+  // ==========================================
+
+  openSolveModal(): void {
+    const result = this.cubeStateService.solveCurrentCube();
+    this.solveResult.set(result);
+    this.activeSolveStageIndex.set(0);
+    this.currentSolveMoveIndex.set(0);
+    this.isSolveModalOpen.set(true);
+  }
+
+  closeSolveModal(): void {
+    this.stopSolveAutoPlay();
+    this.isSolveModalOpen.set(false);
+  }
+
+  selectSolveStage(index: number): void {
+    this.activeSolveStageIndex.set(index);
+  }
+
+  stepForwardSolve(): void {
+    const res = this.solveResult();
+    if (!res) return;
+    const idx = this.currentSolveMoveIndex();
+    if (idx >= res.allMoves.length) return;
+
+    const move = res.allMoves[idx];
+    this.cubeStateService.applyMove(move);
+    this.currentSolveMoveIndex.set(idx + 1);
+
+    let countSoFar = 0;
+    for (let i = 0; i < res.stages.length; i++) {
+      countSoFar += res.stages[i].moves.length;
+      if (idx + 1 >= countSoFar && i + 1 < res.stages.length) {
+        this.activeSolveStageIndex.set(i + 1);
+      }
+    }
+  }
+
+  stepBackwardSolve(): void {
+    const res = this.solveResult();
+    if (!res) return;
+    const idx = this.currentSolveMoveIndex();
+    if (idx <= 0) return;
+
+    const prevMove = res.allMoves[idx - 1];
+    const inverted = RubikGroupAlgebra.invertAlgorithm(prevMove)[0] as StandardMove;
+    this.cubeStateService.applyMove(inverted);
+    this.currentSolveMoveIndex.set(idx - 1);
+
+    let countSoFar = 0;
+    for (let i = 0; i < res.stages.length; i++) {
+      countSoFar += res.stages[i].moves.length;
+      if (idx - 1 < countSoFar) {
+        this.activeSolveStageIndex.set(i);
+        break;
+      }
+    }
+  }
+
+  toggleSolveAutoPlay(): void {
+    if (this.isSolveAutoPlaying()) {
+      this.stopSolveAutoPlay();
+    } else {
+      this.startSolveAutoPlay();
+    }
+  }
+
+  startSolveAutoPlay(): void {
+    const res = this.solveResult();
+    if (!res || this.currentSolveMoveIndex() >= res.allMoves.length) {
+      return;
+    }
+    this.isSolveAutoPlaying.set(true);
+    this.executeNextSolveAutoPlayMove();
+  }
+
+  private executeNextSolveAutoPlayMove(): void {
+    if (!this.isSolveAutoPlaying()) return;
+    const res = this.solveResult();
+    if (!res || this.currentSolveMoveIndex() >= res.allMoves.length) {
+      this.stopSolveAutoPlay();
+      return;
+    }
+
+    const move = res.allMoves[this.currentSolveMoveIndex()];
+    this.cubeStateService.applyMove(move, () => {
+      this.currentSolveMoveIndex.update((i) => i + 1);
+
+      let countSoFar = 0;
+      for (let i = 0; i < res.stages.length; i++) {
+        countSoFar += res.stages[i].moves.length;
+        if (this.currentSolveMoveIndex() >= countSoFar && i + 1 < res.stages.length) {
+          this.activeSolveStageIndex.set(i + 1);
+        }
+      }
+
+      if (this.currentSolveMoveIndex() >= res.allMoves.length) {
+        this.stopSolveAutoPlay();
+        return;
+      }
+
+      const delay = Math.max(150, Math.round(500 / this.solvePlaybackSpeed()));
+      this.solveAutoPlayTimer = setTimeout(() => {
+        this.executeNextSolveAutoPlayMove();
+      }, delay);
+    });
+  }
+
+  stopSolveAutoPlay(): void {
+    this.isSolveAutoPlaying.set(false);
+    if (this.solveAutoPlayTimer) {
+      clearTimeout(this.solveAutoPlayTimer);
+      this.solveAutoPlayTimer = null;
+    }
+  }
+
+  setSolvePlaybackSpeed(speed: number): void {
+    this.solvePlaybackSpeed.set(speed);
   }
 }

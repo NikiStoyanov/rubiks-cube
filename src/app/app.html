@@ -59,9 +59,39 @@
         </svg>
         <span>{{ t().pageTutorial }}</span>
       </a>
+
+      <!-- Page 4: Physical Cube Input -->
+      <a routerLink="/custom" routerLinkActive="active nav-tab-custom" class="nav-tab">
+        <!-- Palette / Edit Grid Icon -->
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
+          <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
+          <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
+          <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
+          <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" />
+        </svg>
+        <span>{{ t().pageCustomCube }}</span>
+      </a>
     </nav>
 
     <div class="header-actions">
+      <!-- Quick Solve Button in Top Header -->
+      <button
+        type="button"
+        (click)="openSolveModal()"
+        [title]="language() === 'bg' ? 'Реши кубчето стъпка по стъпка' : 'Solve cube step by step'"
+        class="btn-solve-header"
+      >
+        <svg class="w-3.5 h-3.5 text-amber-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+          <path d="M5 3v4"/>
+          <path d="M19 17v4"/>
+        </svg>
+        <span>{{ language() === 'bg' ? 'Реши кубчето' : 'Solve' }}</span>
+      </button>
+
       <!-- Interactive Quick Tour Button -->
       <button (click)="openTour()" [title]="t().tourBtn" class="btn-tour">
         <!-- Sparkles / Compass Icon -->
@@ -118,6 +148,9 @@
     <a routerLink="/tutorial" routerLinkActive="active" class="mobile-tab-link">
       <span>{{ t().pageTutorial }}</span>
     </a>
+    <a routerLink="/custom" routerLinkActive="active" class="mobile-tab-link">
+      <span>{{ t().pageCustomCube }}</span>
+    </a>
   </div>
 
   <!-- Main Workspace Layout (Rubik's Cube 3D Application) -->
@@ -162,6 +195,23 @@
         </div>
 
         <div class="viewport-top-right">
+          <!-- 3D Paint Mode Toggle -->
+          <button
+            type="button"
+            (click)="toggle3DPaintMode()"
+            [title]="language() === 'bg' ? '3D Оцветяване на модела' : '3D Paint on Cube'"
+            class="icon-btn"
+            [class.active-paint-icon]="is3DPaintMode()"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
+              <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
+              <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
+              <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
+              <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" />
+            </svg>
+          </button>
+
           @if (viewMode() === '3d') {
           <button (click)="handleResetCamera()" [title]="t().resetCameraTitle" class="icon-btn">
             <!-- Compass Icon -->
@@ -174,9 +224,45 @@
           }
         </div>
 
+        <!-- 3D Paint Floating Mini-Toolbar when active -->
+        @if (is3DPaintMode()) {
+        <div class="paint-3d-toolbar animate-fade-in">
+          <div class="paint-3d-badge">
+            <span class="paint-swatch-dot" [style.background-color]="getFaceColor(activeBrushColor())"></span>
+            <span class="paint-brush-label">{{ language() === 'bg' ? '3D Четка: ' : '3D Brush: ' }} {{ activeBrushColor() }}</span>
+          </div>
+
+          <div class="paint-pills-row">
+            @for (fn of faceNames; track fn) {
+              <button
+                type="button"
+                (click)="setBrushColor(fn)"
+                class="pill-color-btn"
+                [class.active]="activeBrushColor() === fn"
+                [style.background-color]="getFaceColor(fn)"
+                [title]="fn"
+              ></button>
+            }
+          </div>
+
+          <span class="paint-3d-instruction">
+            {{ language() === 'bg' ? 'Кликнете върху стикер от 3D куба' : 'Click any 3D sticker to paint' }}
+          </span>
+
+          <button
+            type="button"
+            (click)="exit3DPaintMode()"
+            class="btn-close-paint"
+            [title]="language() === 'bg' ? 'Затвори 3D оцветяване' : 'Close 3D Paint'"
+          >
+            &times;
+          </button>
+        </div>
+        }
+
         <!-- 3D Canvas Mount -->
         <div #cubeContainer class="canvas-mount" [class.active]="viewMode() === '3d'"
-          [class.inactive]="viewMode() !== '3d'"></div>
+          [class.inactive]="viewMode() !== '3d'" [class.paint-mode]="is3DPaintMode()"></div>
 
         <!-- 2D Net View Mount -->
         <div class="net-mount" [class.active]="viewMode() === '2d'" [class.inactive]="viewMode() !== '2d'">
@@ -207,7 +293,7 @@
       <!-- 3D Controls (Face turns, slice turns, explode, speed) -->
       <app-controls-3d [explodeFactor]="explodeFactor()" [animSpeed]="animSpeed()" [showCycleArrows]="showCycleArrows()"
         [isAnimating]="isAnimating()" (move)="handleApplyMove($event)" (reset)="handleReset()"
-        (scramble)="handleScramble()" (explodeChange)="handleExplodeChange($event)"
+        (scramble)="handleScramble()" (solve)="openSolveModal()" (explodeChange)="handleExplodeChange($event)"
         (speedChange)="handleSpeedChange($event)" (toggleCycleArrows)="setShowCycleArrows($event)"
         (resetCamera)="handleResetCamera()" />
     </section>
@@ -223,4 +309,197 @@
 
   <!-- Interactive Onboarding Tour Modal -->
   <app-onboarding-tour />
+
+  <!-- Interactive Solve Modal Dialog -->
+  @if (isSolveModalOpen()) {
+    <div class="solve-modal-backdrop animate-fade-in" (click)="closeSolveModal()">
+      <div class="solve-modal-card" (click)="$event.stopPropagation()">
+        <!-- Modal Top Bar -->
+        <div class="solve-modal-header">
+          <div class="solve-modal-header-left">
+            <span class="solve-modal-badge">
+              <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+              </svg>
+              <span>{{ language() === 'bg' ? 'Стъпки до нареждане (LBL Метод)' : 'Layer-by-Layer Solution Guide' }}</span>
+            </span>
+            <h3 class="solve-modal-title">
+              {{ isSolved()
+                ? (language() === 'bg' ? 'Кубчето вече е напълно наредено!' : 'Cube is already completely solved!')
+                : (language() === 'bg' ? 'Как да наредите текущото кубче' : 'How to Solve Current Cube')
+              }}
+            </h3>
+          </div>
+          <button type="button" (click)="closeSolveModal()" class="solve-modal-close-btn" title="Затвори">&times;</button>
+        </div>
+
+        @if (solveResult(); as sol) {
+          @if (sol.totalMoves === 0 || isSolved()) {
+            <div class="solve-already-done-card">
+              <div class="solve-done-icon">🎉</div>
+              <h4 class="solve-done-title">
+                {{ language() === 'bg' ? 'Поздравления! Кубчето е в начално състояние (e).' : 'Congratulations! Cube is in identity state (e).' }}
+              </h4>
+              <p class="solve-done-desc">
+                {{ language() === 'bg'
+                  ? 'Всички 8 върха и 12 ръба са на съответните си места с правилна ориентация. За да изпробвате решаването, разбъркайте кубчето с бутона „Разбъркай“ или въведете ваше физическо кубче!'
+                  : 'All corners and edges are placed and oriented. To test solving, scramble the cube or enter your physical cube!'
+                }}
+              </p>
+              <div class="solve-done-actions">
+                <button type="button" (click)="handleScramble(); closeSolveModal()" class="btn-scramble-modal">
+                  {{ language() === 'bg' ? '🎲 Разбъркай кубчето' : '🎲 Scramble Cube' }}
+                </button>
+              </div>
+            </div>
+          } @else {
+            <!-- Stats & Progress Bar -->
+            <div class="solve-modal-stats-row">
+              <div class="solve-stat-item">
+                <span class="solve-stat-val">{{ sol.totalMoves }}</span>
+                <span class="solve-stat-lbl">{{ language() === 'bg' ? 'хода общо' : 'total moves' }}</span>
+              </div>
+              <div class="solve-stat-item">
+                <span class="solve-stat-val">{{ sol.stages.length }}</span>
+                <span class="solve-stat-lbl">{{ language() === 'bg' ? 'етапа' : 'stages' }}</span>
+              </div>
+              <div class="solve-stat-item" style="flex: 1;">
+                <div class="solve-progress-meta">
+                  <span>{{ language() === 'bg' ? 'Изпълнени ходове:' : 'Executed moves:' }} <strong>{{ currentSolveMoveIndex() }} / {{ sol.totalMoves }}</strong></span>
+                  <span class="solve-progress-pct">{{ solveProgressPercent() }}%</span>
+                </div>
+                <div class="solve-modal-track">
+                  <div class="solve-modal-fill" [style.width.%]="solveProgressPercent()"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 7 Stages Rail Tabs -->
+            <div class="solve-stages-tabs">
+              @for (st of sol.stages; track st.stageNumber; let i = $index) {
+                <button
+                  type="button"
+                  (click)="selectSolveStage(i)"
+                  class="solve-stage-tab"
+                  [class.active]="activeSolveStageIndex() === i"
+                  [class.is-empty]="st.moves.length === 0"
+                >
+                  <span class="stage-tab-num">#{{ st.stageNumber }}</span>
+                  <span class="stage-tab-name">{{ language() === 'bg' ? st.nameBg.split(':')[1]?.trim() || st.nameBg : st.nameEn.split(':')[1]?.trim() || st.nameEn }}</span>
+                  @if (st.moves.length === 0) {
+                    <span class="stage-tab-ok">✓</span>
+                  } @else {
+                    <span class="stage-tab-count">{{ st.moves.length }}h</span>
+                  }
+                </button>
+              }
+            </div>
+
+            <!-- Active Stage Details Card -->
+            @if (activeSolveStage(); as currStage) {
+              <div class="solve-stage-detail-box">
+                <div class="stage-detail-header">
+                  <div>
+                    <span class="stage-detail-num">{{ language() === 'bg' ? 'Етап ' + currStage.stageNumber + ' от 7' : 'Stage ' + currStage.stageNumber + ' of 7' }}</span>
+                    <h4 class="stage-detail-title">{{ language() === 'bg' ? currStage.nameBg : currStage.nameEn }}</h4>
+                    <p class="stage-detail-goal">
+                      <strong>{{ language() === 'bg' ? 'Цел: ' : 'Goal: ' }}</strong>
+                      {{ language() === 'bg' ? currStage.goalBg : currStage.goalEn }}
+                    </p>
+                  </div>
+                  <a
+                    routerLink="/tutorial"
+                    (click)="closeSolveModal()"
+                    class="btn-stage-academy-link"
+                  >
+                    📖 {{ language() === 'bg' ? 'Урок в Академията' : 'Tutorial' }}
+                  </a>
+                </div>
+
+                <!-- Sequence of moves -->
+                <div class="stage-algo-display">
+                  <div class="algo-display-title">
+                    {{ language() === 'bg' ? 'Ходове за този етап:' : 'Moves for this stage:' }}
+                    @if (currStage.moves.length > 0) {
+                      <span class="algo-pill-count">{{ currStage.moves.length }} {{ language() === 'bg' ? 'хода' : 'moves' }}</span>
+                    }
+                  </div>
+
+                  @if (currStage.moves.length === 0) {
+                    <div class="stage-already-done-notice">
+                      ✓ {{ language() === 'bg' ? 'Този етап вече е нареден на текущото кубче!' : 'This stage is already solved!' }}
+                    </div>
+                  } @else {
+                    <div class="stage-algo-pills">
+                      @for (m of currStage.moves; track $index) {
+                        <span class="stage-pill-move" [class.is-prime]="m.includes('\'')" [class.is-double]="m.includes('2')">
+                          {{ m }}
+                        </span>
+                      }
+                    </div>
+                  }
+
+                  <div class="stage-hint-text">
+                    💡 {{ language() === 'bg' ? currStage.explanationBg : currStage.explanationEn }}
+                  </div>
+                </div>
+
+                <!-- Playback Controllers -->
+                <div class="solve-modal-controls">
+                  <div class="solve-modal-buttons">
+                    <button
+                      type="button"
+                      (click)="stepBackwardSolve()"
+                      [disabled]="currentSolveMoveIndex() <= 0"
+                      class="btn-solve-step"
+                    >
+                      ⏮ {{ language() === 'bg' ? 'Предишен ход' : 'Step Back' }}
+                    </button>
+
+                    <button
+                      type="button"
+                      (click)="toggleSolveAutoPlay()"
+                      class="btn-solve-play"
+                      [class.is-active]="isSolveAutoPlaying()"
+                    >
+                      @if (isSolveAutoPlaying()) {
+                        ⏸ {{ language() === 'bg' ? 'Пауза' : 'Pause' }}
+                      } @else {
+                        ▶ {{ language() === 'bg' ? 'Пусни Автоматично' : 'Auto Play' }}
+                      }
+                    </button>
+
+                    <button
+                      type="button"
+                      (click)="stepForwardSolve()"
+                      [disabled]="currentSolveMoveIndex() >= sol.allMoves.length"
+                      class="btn-solve-step"
+                    >
+                      {{ language() === 'bg' ? 'Следващ ход' : 'Next Step' }} ⏭
+                    </button>
+                  </div>
+
+                  <!-- Speed Selector -->
+                  <div class="solve-speed-row">
+                    <span class="speed-txt">{{ language() === 'bg' ? 'Скорост:' : 'Speed:' }}</span>
+                    @for (spd of [0.5, 1, 1.5, 2]; track spd) {
+                      <button
+                        type="button"
+                        (click)="setSolvePlaybackSpeed(spd)"
+                        class="solve-spd-btn"
+                        [class.active]="solvePlaybackSpeed() === spd"
+                      >
+                        {{ spd }}x
+                      </button>
+                    }
+                  </div>
+                </div>
+              </div>
+            }
+          }
+        }
+      </div>
+    </div>
+  }
 </div>
+(no newline at end of file)

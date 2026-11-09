@@ -13,6 +13,23 @@
 
     <div class="header-actions">
       <button
+        type="button"
+        (click)="toggle3DPaint()"
+        class="btn-paint-toggle"
+        [class.active]="is3DPaintMode()"
+        [title]="language() === 'bg' ? 'Включи/изключи 3D оцветяване на модела' : 'Toggle 3D model painting'"
+      >
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
+          <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
+          <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
+          <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
+          <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" />
+        </svg>
+        <span>{{ is3DPaintMode() ? (language() === 'bg' ? '3D Четка (Вкл)' : '3D Paint (On)') : (language() === 'bg' ? '3D Четка' : '3D Paint') }}</span>
+      </button>
+
+      <button
         (click)="resetCamera.emit()"
         [title]="t().resetCameraTitle"
         class="btn-icon-sm"
@@ -22,6 +39,18 @@
           <circle cx="12" cy="12" r="10" />
           <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
         </svg>
+      </button>
+
+      <button
+        (click)="solve.emit()"
+        [disabled]="isAnimating() || isSolved()"
+        [title]="language() === 'bg' ? 'Реши кубчето стъпка по стъпка' : 'Solve cube step by step'"
+        class="btn-solve"
+      >
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+        </svg>
+        <span>{{ language() === 'bg' ? 'Реши' : 'Solve' }}</span>
       </button>
 
       <button

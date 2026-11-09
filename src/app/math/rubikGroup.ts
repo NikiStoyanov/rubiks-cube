@@ -22,11 +22,13 @@ import {
   BASE_TURNS,
   FaceTurnDef,
   OrbitValidationResult,
+  ReconstructionResult,
   RubikGroupAlgebra,
   CauchyTheoremWitness,
   SUBGROUP_PRESETS,
   ALGORITHM_PRESETS,
   TutorialStep,
+  TutorialCase,
   TUTORIAL_STEPS,
 } from './group-algebra';
 
@@ -46,8 +48,10 @@ export {
 export type {
   FaceTurnDef,
   OrbitValidationResult,
+  ReconstructionResult,
   CauchyTheoremWitness,
   TutorialStep,
+  TutorialCase,
 };
 
 export function createInitialCubeState(): CubeState {

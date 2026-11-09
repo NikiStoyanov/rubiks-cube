@@ -84,7 +84,7 @@ export type TargetSetType = 'corners' | 'edges' | 'stickers' | 'states';
 
 export type ViewMode = '3d' | '2d';
 
-export type AppPage = 'home' | 'math' | 'validator' | 'tutorial';
+export type AppPage = 'home' | 'math' | 'validator' | 'tutorial' | 'custom';
 
 export interface Facelet2D {
   face: FaceName;

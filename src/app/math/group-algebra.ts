@@ -15,8 +15,8 @@ import {
 import { Permutation } from './permutation';
 
 export const FACE_COLORS: Record<FaceName, string> = {
-  U: '#f8fafc', // White
-  D: '#eab308', // Yellow
+  U: '#eab308', // Yellow (Top face in standard speedcubing & CFOP/LBL)
+  D: '#f8fafc', // White (Bottom face / First Layer)
   F: '#22c55e', // Green
   B: '#3b82f6', // Blue
   L: '#f97316', // Orange
@@ -82,13 +82,13 @@ export const BASE_TURNS: Record<FaceName, FaceTurnDef> = {
   },
   F: {
     cornerCycle: [0, 1, 5, 4],
-    cornerDeltaO: [1, 2, 1, 2],
+    cornerDeltaO: [2, 1, 2, 1],
     edgeCycle: [0, 5, 8, 4],
     edgeFlip: [1, 1, 1, 1],
   },
   B: {
     cornerCycle: [2, 3, 7, 6],
-    cornerDeltaO: [1, 2, 1, 2],
+    cornerDeltaO: [2, 1, 2, 1],
     edgeCycle: [2, 7, 10, 6],
     edgeFlip: [1, 1, 1, 1],
   },
@@ -134,6 +134,22 @@ export interface OrbitValidationResult {
   totalPhysicalStates: string;
   validOrbitStates: string;
   solvabilityProbability: string;
+}
+
+export interface ReconstructionResult {
+  success: boolean;
+  state?: CubeState;
+  errors: string[];
+  colorCounts: Record<FaceName, number>;
+  isValidColorCount: boolean;
+  orbitValidation?: OrbitValidationResult;
+  invalidPieces: {
+    type: 'corner' | 'edge';
+    slotName: string;
+    faces: FaceName[];
+    colors: string[];
+    reason: string;
+  }[];
 }
 
 /**
@@ -989,6 +1005,271 @@ export class RubikGroupAlgebra {
 
     return net as Net2DFaces;
   }
+
+  /**
+   * Reconstructs an algebraic CubeState from a 2D Net of facelet colors.
+   * Performs full physical cubology validation:
+   * 1. 9 stickers per color
+   * 2. Physical piece validity (valid color pairs/triplets)
+   * 3. Bijective placement (no duplicate pieces)
+   * 4. Invariant testing (corner twists, edge flips, permutation parity)
+   */
+  static reconstructFrom2DNet(net: Net2DFaces): ReconstructionResult {
+    const errors: string[] = [];
+    const invalidPieces: ReconstructionResult['invalidPieces'] = [];
+
+    // Helper to map color hex/string to FaceName based on centers or standard FACE_COLORS
+    const colorToFaceName = (color: string): FaceName | null => {
+      const col = color.toLowerCase();
+      for (const fn of FACE_NAMES) {
+        if (FACE_COLORS[fn].toLowerCase() === col) return fn;
+      }
+      for (const fn of FACE_NAMES) {
+        if (net[fn]?.[1]?.[1]?.color.toLowerCase() === col) return fn;
+      }
+      return null;
+    };
+
+    // 1. Count colors
+    const colorCounts: Record<FaceName, number> = {
+      U: 0,
+      D: 0,
+      F: 0,
+      B: 0,
+      L: 0,
+      R: 0,
+    };
+
+    for (const face of FACE_NAMES) {
+      const grid = net[face];
+      if (!grid) {
+        errors.push(`Missing face data for face ${face}`);
+        continue;
+      }
+      for (let r = 0; r < 3; r++) {
+        for (let c = 0; c < 3; c++) {
+          const cellColor = grid[r]?.[c]?.color;
+          if (cellColor) {
+            const fn = colorToFaceName(cellColor);
+            if (fn) {
+              colorCounts[fn]++;
+            }
+          }
+        }
+      }
+    }
+
+    let isValidColorCount = true;
+    for (const fn of FACE_NAMES) {
+      if (colorCounts[fn] !== 9) {
+        isValidColorCount = false;
+        errors.push(`Face ${fn} has ${colorCounts[fn]} stickers (expected exactly 9)`);
+      }
+    }
+
+    // Corner slot definitions: slotId, name, slotFaces [Primary U/D, Secondary, Tertiary], facelet coordinates
+    const cornerSlots: {
+      slotId: number;
+      name: string;
+      slotFaces: FaceName[];
+      facelets: { face: FaceName; r: number; c: number }[];
+    }[] = [
+      { slotId: 0, name: 'UFL', slotFaces: ['U', 'F', 'L'], facelets: [{ face: 'U', r: 2, c: 0 }, { face: 'F', r: 0, c: 0 }, { face: 'L', r: 0, c: 2 }] },
+      { slotId: 1, name: 'UFR', slotFaces: ['U', 'F', 'R'], facelets: [{ face: 'U', r: 2, c: 2 }, { face: 'F', r: 0, c: 2 }, { face: 'R', r: 0, c: 0 }] },
+      { slotId: 2, name: 'UBR', slotFaces: ['U', 'B', 'R'], facelets: [{ face: 'U', r: 0, c: 2 }, { face: 'B', r: 0, c: 0 }, { face: 'R', r: 0, c: 2 }] },
+      { slotId: 3, name: 'UBL', slotFaces: ['U', 'B', 'L'], facelets: [{ face: 'U', r: 0, c: 0 }, { face: 'B', r: 0, c: 2 }, { face: 'L', r: 0, c: 0 }] },
+      { slotId: 4, name: 'DFL', slotFaces: ['D', 'F', 'L'], facelets: [{ face: 'D', r: 0, c: 0 }, { face: 'F', r: 2, c: 0 }, { face: 'L', r: 2, c: 2 }] },
+      { slotId: 5, name: 'DFR', slotFaces: ['D', 'F', 'R'], facelets: [{ face: 'D', r: 0, c: 2 }, { face: 'F', r: 2, c: 2 }, { face: 'R', r: 2, c: 0 }] },
+      { slotId: 6, name: 'DBR', slotFaces: ['D', 'B', 'R'], facelets: [{ face: 'D', r: 2, c: 2 }, { face: 'B', r: 2, c: 0 }, { face: 'R', r: 2, c: 2 }] },
+      { slotId: 7, name: 'DBL', slotFaces: ['D', 'B', 'L'], facelets: [{ face: 'D', r: 2, c: 0 }, { face: 'B', r: 2, c: 2 }, { face: 'L', r: 2, c: 0 }] },
+    ];
+
+    // Edge slot definitions: slotId, name, slotFaces [Primary, Secondary], facelet coordinates
+    const edgeSlots: {
+      slotId: number;
+      name: string;
+      slotFaces: FaceName[];
+      facelets: { face: FaceName; r: number; c: number }[];
+    }[] = [
+      { slotId: 0, name: 'UF', slotFaces: ['U', 'F'], facelets: [{ face: 'U', r: 2, c: 1 }, { face: 'F', r: 0, c: 1 }] },
+      { slotId: 1, name: 'UR', slotFaces: ['U', 'R'], facelets: [{ face: 'U', r: 1, c: 2 }, { face: 'R', r: 0, c: 1 }] },
+      { slotId: 2, name: 'UB', slotFaces: ['U', 'B'], facelets: [{ face: 'U', r: 0, c: 1 }, { face: 'B', r: 0, c: 1 }] },
+      { slotId: 3, name: 'UL', slotFaces: ['U', 'L'], facelets: [{ face: 'U', r: 1, c: 0 }, { face: 'L', r: 0, c: 1 }] },
+      { slotId: 4, name: 'FL', slotFaces: ['F', 'L'], facelets: [{ face: 'F', r: 1, c: 0 }, { face: 'L', r: 1, c: 2 }] },
+      { slotId: 5, name: 'FR', slotFaces: ['F', 'R'], facelets: [{ face: 'F', r: 1, c: 2 }, { face: 'R', r: 1, c: 0 }] },
+      { slotId: 6, name: 'BR', slotFaces: ['B', 'R'], facelets: [{ face: 'B', r: 1, c: 0 }, { face: 'R', r: 1, c: 2 }] },
+      { slotId: 7, name: 'BL', slotFaces: ['B', 'L'], facelets: [{ face: 'B', r: 1, c: 2 }, { face: 'L', r: 1, c: 0 }] },
+      { slotId: 8, name: 'DF', slotFaces: ['D', 'F'], facelets: [{ face: 'D', r: 0, c: 1 }, { face: 'F', r: 2, c: 1 }] },
+      { slotId: 9, name: 'DR', slotFaces: ['D', 'R'], facelets: [{ face: 'D', r: 1, c: 2 }, { face: 'R', r: 2, c: 1 }] },
+      { slotId: 10, name: 'DB', slotFaces: ['D', 'B'], facelets: [{ face: 'D', r: 2, c: 1 }, { face: 'B', r: 2, c: 1 }] },
+      { slotId: 11, name: 'DL', slotFaces: ['D', 'L'], facelets: [{ face: 'D', r: 1, c: 0 }, { face: 'L', r: 2, c: 1 }] },
+    ];
+
+    const reconstructedCorners: CornerPiece[] = new Array(8);
+    const seenCornerIds = new Set<number>();
+
+    for (const slot of cornerSlots) {
+      const colors = slot.facelets.map((fl) => net[fl.face]?.[fl.r]?.[fl.c]?.color || '');
+      const pieceFaces = colors.map((col) => colorToFaceName(col));
+
+      if (pieceFaces.some((f) => !f)) {
+        errors.push(`Corner slot ${slot.name} has unidentified colors`);
+        invalidPieces.push({
+          type: 'corner',
+          slotName: slot.name,
+          faces: pieceFaces.filter(Boolean) as FaceName[],
+          colors,
+          reason: 'Unidentified or missing colors',
+        });
+        continue;
+      }
+
+      const f0 = pieceFaces[0]!;
+      const f1 = pieceFaces[1]!;
+      const f2 = pieceFaces[2]!;
+
+      // Find matching corner in INITIAL_CORNERS
+      const matched = INITIAL_CORNERS.find((ic) => {
+        const s = new Set(ic.faces);
+        return s.has(f0) && s.has(f1) && s.has(f2);
+      });
+
+      if (!matched) {
+        errors.push(`Slot ${slot.name} contains impossible corner colors: [${f0}, ${f1}, ${f2}]`);
+        invalidPieces.push({
+          type: 'corner',
+          slotName: slot.name,
+          faces: [f0, f1, f2],
+          colors,
+          reason: 'No physical corner piece has this set of faces',
+        });
+        continue;
+      }
+
+      if (seenCornerIds.has(matched.id)) {
+        errors.push(`Duplicate corner piece ${matched.name} found at slot ${slot.name}`);
+        invalidPieces.push({
+          type: 'corner',
+          slotName: slot.name,
+          faces: [f0, f1, f2],
+          colors,
+          reason: `Duplicate piece: ${matched.name} already placed elsewhere`,
+        });
+      }
+      seenCornerIds.add(matched.id);
+
+      // Orientation calculation: primary face is slot.slotFaces[0] (which is U or D)
+      // On this slot face, the facelet color belongs to face f0.
+      const pieceFaceIdx = matched.faces.indexOf(f0);
+      const orientation = (3 - pieceFaceIdx) % 3;
+
+      reconstructedCorners[matched.id] = {
+        id: matched.id,
+        name: matched.name,
+        homePos: { ...matched.homePos },
+        pos: slot.slotId,
+        orientation,
+        faces: [...matched.faces],
+      };
+    }
+
+    const reconstructedEdges: EdgePiece[] = new Array(12);
+    const seenEdgeIds = new Set<number>();
+
+    for (const slot of edgeSlots) {
+      const colors = slot.facelets.map((fl) => net[fl.face]?.[fl.r]?.[fl.c]?.color || '');
+      const pieceFaces = colors.map((col) => colorToFaceName(col));
+
+      if (pieceFaces.some((f) => !f)) {
+        errors.push(`Edge slot ${slot.name} has unidentified colors`);
+        invalidPieces.push({
+          type: 'edge',
+          slotName: slot.name,
+          faces: pieceFaces.filter(Boolean) as FaceName[],
+          colors,
+          reason: 'Unidentified or missing colors',
+        });
+        continue;
+      }
+
+      const f0 = pieceFaces[0]!;
+      const f1 = pieceFaces[1]!;
+
+      // Find matching edge in INITIAL_EDGES
+      const matched = INITIAL_EDGES.find((ie) => {
+        const s = new Set(ie.faces);
+        return s.has(f0) && s.has(f1);
+      });
+
+      if (!matched) {
+        errors.push(`Slot ${slot.name} contains impossible edge colors: [${f0}, ${f1}]`);
+        invalidPieces.push({
+          type: 'edge',
+          slotName: slot.name,
+          faces: [f0, f1],
+          colors,
+          reason: 'No physical edge piece has this pair of faces (e.g. opposite faces)',
+        });
+        continue;
+      }
+
+      if (seenEdgeIds.has(matched.id)) {
+        errors.push(`Duplicate edge piece ${matched.name} found at slot ${slot.name}`);
+        invalidPieces.push({
+          type: 'edge',
+          slotName: slot.name,
+          faces: [f0, f1],
+          colors,
+          reason: `Duplicate piece: ${matched.name} already placed elsewhere`,
+        });
+      }
+      seenEdgeIds.add(matched.id);
+
+      // Orientation calculation: primary face is slot.slotFaces[0]
+      // If f0 matches matched.faces[0], orientation is 0; otherwise 1.
+      const orientation = f0 === matched.faces[0] ? 0 : 1;
+
+      reconstructedEdges[matched.id] = {
+        id: matched.id,
+        name: matched.name,
+        homePos: { ...matched.homePos },
+        pos: slot.slotId,
+        orientation,
+        faces: [...matched.faces],
+      };
+    }
+
+    const hasAllCorners = seenCornerIds.size === 8 && reconstructedCorners.every(Boolean);
+    const hasAllEdges = seenEdgeIds.size === 12 && reconstructedEdges.every(Boolean);
+
+    if (!hasAllCorners || !hasAllEdges || !isValidColorCount || invalidPieces.length > 0) {
+      return {
+        success: false,
+        errors,
+        colorCounts,
+        isValidColorCount,
+        invalidPieces,
+      };
+    }
+
+    const state: CubeState = {
+      corners: reconstructedCorners,
+      edges: reconstructedEdges,
+      centers: [...INITIAL_CENTERS],
+    };
+
+    const orbitValidation = RubikGroupAlgebra.validateSolutionOrbit(state);
+
+    return {
+      success: true,
+      state,
+      errors,
+      colorCounts,
+      isValidColorCount,
+      orbitValidation,
+      invalidPieces,
+    };
+  }
 }
 
 // ==========================================
@@ -1138,8 +1419,18 @@ export const ALGORITHM_PRESETS: AlgorithmPreset[] = [
 ];
 
 // ==========================================
-// TUTORIAL STEPS
+// TUTORIAL STEPS & INTERACTIVE ACADEMY
 // ==========================================
+export interface TutorialCase {
+  id: string;
+  name: string;
+  nameBg: string;
+  description: string;
+  descriptionBg: string;
+  algorithm: string;
+  setupMoves?: string;
+}
+
 export interface TutorialStep {
   stepNumber: number;
   id: string;
@@ -1156,6 +1447,8 @@ export interface TutorialStep {
   mathExplanationBg: string;
   tips: string;
   tipsBg: string;
+  setupAlgorithm: string;
+  cases: TutorialCase[];
 }
 
 export const TUTORIAL_STEPS: TutorialStep[] = [
@@ -1166,15 +1459,45 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
     titleBg: 'Бял Кръст',
     subtitle: 'Orienting & aligning the 4 white edges',
     subtitleBg: 'Ориентиране и напасване на 4-те бели ръба',
-    goal: 'Form a white cross on the bottom/top face with edge side-colors matching their lateral centers.',
-    goalBg: 'Изграждане на бял кръст, при който страничните цветове на ръбовете съвпадат със страничните центрове.',
+    goal: 'Form a white cross around the white center, with each edge side-sticker matching its adjacent lateral center.',
+    goalBg: 'Изграждане на бял кръст около белия център, при който страничните цветове на ръбовете съвпадат със съответните центрове.',
     algorithm: "F R' D' R F2",
     algorithmName: 'Edge Insertion & Alignment',
     algorithmNameBg: 'Вмъкване и напасване на ръб',
+    setupAlgorithm: "D2 R' F' D R2 F2",
     mathExplanation: 'Action of generator turns on the edge set E. Moving edges into the U orbit without breaking already placed edges.',
     mathExplanationBg: 'Действие на генераторите върху множеството на ръбовете E. Придвижване на ръб в U орбитата, запазвайки вече поставените.',
-    tips: 'Create the "Daisy" first (4 white edges around yellow center), then turn each matching face 180° into the white cross.',
-    tipsBg: 'Първо направете „Маргаритка“ (4 бели ръба около жълтия център), след което завъртете всяка съвпадаща стена на 180° към белия център.',
+    tips: 'The easiest method is the "Daisy": put 4 white edges around the yellow center first, match the side color with its center, and do a 180° turn (F2/R2/B2/L2).',
+    tipsBg: 'Най-лесният метод е „Маргаритка“: съберете 4 бели ръба около жълтия център, напаснете страничния цвят с неговия център и завъртете на 180° (F2/R2/B2/L2).',
+    cases: [
+      {
+        id: 'daisy',
+        name: 'Daisy Method (Recommended)',
+        nameBg: 'Метод „Маргаритка“ (Препоръчителен)',
+        description: 'Match side color with its center and rotate 180° to white center.',
+        descriptionBg: 'Напаснете страничния цвят с неговия център и завъртете на 180° към белия център.',
+        algorithm: 'F2',
+        setupMoves: 'F2',
+      },
+      {
+        id: 'flipped_bottom',
+        name: 'Flipped Bottom Edge',
+        nameBg: 'Обърнат долен ръб',
+        description: 'White sticker on D face is flipped sideways.',
+        descriptionBg: 'Бял ръб на долния слой, при който бялото сочи встрани вместо надолу.',
+        algorithm: "F' U' R U",
+        setupMoves: "U' R' U F",
+      },
+      {
+        id: 'equatorial',
+        name: 'Middle Layer Edge',
+        nameBg: 'Ръб в средния слой',
+        description: 'Bring edge into the top layer safely without breaking completed edges.',
+        descriptionBg: 'Качете ръба в горния слой без разваляне на наредените до момента.',
+        algorithm: "R U R'",
+        setupMoves: "R U' R'",
+      },
+    ],
   },
   {
     stepNumber: 2,
@@ -1183,15 +1506,45 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
     titleBg: 'Върхове на Първия Слой',
     subtitle: 'Completing the entire first layer',
     subtitleBg: 'Завършване на целия първи слой',
-    goal: 'Place all 4 white corners into their correct positions and orientations.',
-    goalBg: 'Поставяне на 4-те бели върха на техните правилни позиции с правилна ориентация.',
+    goal: 'Place all 4 white corners into their correct slots with white facing down, solving the entire first layer.',
+    goalBg: 'Поставяне на 4-те бели върха на техните правилни позиции с бяло сочещо надолу, завършвайки първия слой.',
     algorithm: "R U R' U'",
     algorithmName: 'Right Trigger [R, U]',
     algorithmNameBg: 'Десен тригер: Комутаторен фрагмент [R, U]',
+    setupAlgorithm: "R U R' U' R U R' U'",
     mathExplanation: 'The 4-move sequence is the canonical trigger [R, U] = R U R⁻¹ U⁻¹. Repeating it 1 to 5 times cycles and twists the corner piece into place while restoring the remaining cube structure.',
     mathExplanationBg: '4-ходовата последователност е каноничният тригер [R, U] = R U R⁻¹ U⁻¹. Повтарянето му 1 до 5 пъти завърта и поставя върха на място, запазвайки останалата структура.',
-    tips: 'Hold the target corner slot directly below the corner piece, then repeat R U R\' U\' until white faces down.',
-    tipsBg: 'Дръжте целевата позиция под върха и повтаряйте R U R\' U\', докато белият стикер застане отдолу.',
+    tips: 'Hold the target slot directly below the corner piece, then repeat R U R\' U\' until white faces down.',
+    tipsBg: 'Дръжте целевия слот директно под върха и повтаряйте R U R\' U\', докато белият стикер застане отдолу.',
+    cases: [
+      {
+        id: 'white_right',
+        name: 'White Facing Right (1 Trigger)',
+        nameBg: 'Бялото сочи надясно (3 хода)',
+        description: 'Fast insertion with just 3 moves.',
+        descriptionBg: 'Бързо вмъкване с 3 хода: R U R\'.',
+        algorithm: "R U R'",
+        setupMoves: "R U' R'",
+      },
+      {
+        id: 'white_front',
+        name: 'White Facing Front',
+        nameBg: 'Бялото сочи напред',
+        description: 'Standard 4-move insertion.',
+        descriptionBg: 'Стандартно вмъкване с 4 хода: U R U\' R\'.',
+        algorithm: "U R U' R'",
+        setupMoves: "R U R' U'",
+      },
+      {
+        id: 'white_up',
+        name: 'White Facing Up',
+        nameBg: 'Бялото сочи нагоре',
+        description: 'Triple trigger cycles and reorients white to bottom.',
+        descriptionBg: 'Тройно повторение на десния тригер завърта бялото към основата.',
+        algorithm: "R U2 R' U' R U R'",
+        setupMoves: "R' U' R U R' U' R U R' U' R",
+      },
+    ],
   },
   {
     stepNumber: 3,
@@ -1200,15 +1553,45 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
     titleBg: 'Втори Слой (Средни Ръбове)',
     subtitle: 'Inserting the 4 equatorial edges',
     subtitleBg: 'Вмъкване на 4-те екваториални ръба',
-    goal: 'Solve the middle layer by slotting the 4 non-yellow edges (FR, FL, BR, BL).',
-    goalBg: 'Решаване на средния слой чрез вмъкване на 4-те нежълти ръба (FR, FL, BR, BL).',
+    goal: 'Solve the middle layer by slotting the 4 non-yellow edges (FR, FL, BR, BL) into their positions.',
+    goalBg: 'Решаване на средния слой чрез вмъкване на 4-те нежълти ръба (FR, FL, BR, BL) на правилните места.',
     algorithm: "U R U' R' U' F' U F",
     algorithmName: 'Right-Edge Insertion (Conjugated Commutator)',
     algorithmNameBg: 'Вмъкване надясно (Конюгиран комутатор)',
+    setupAlgorithm: "F' U' F U R U R' U'",
     mathExplanation: 'A conjugated commutator of form g = [R, U] · [F\', U\']. It operates on the stabilizer Stab_G(Layer 1), leaving the entire solved first layer invariant!',
     mathExplanationBg: 'Конюгиран комутатор от вида g = [R, U] · [F\', U\']. Той действа в стабилизатора Stab_G(Слой 1), оставяйки целия първи слой инвариантен!',
-    tips: 'Align edge with matching center; to insert left instead of right, use mirror: U\' L\' U L U F U\' F\'.',
-    tipsBg: 'Напаснете ръба с центъра; за вмъкване наляво използвайте огледалния алгоритъм: U\' L\' U L U F U\' F\'.',
+    tips: 'Align edge with matching center. If it needs to go to the Right, use U R U\' R\' U\' F\' U F. If Left, use U\' L\' U L U F U\' F\'.',
+    tipsBg: 'Напаснете цвета на ръба с центъра. Ако трябва да отиде Надясно, използвайте десния алгоритъм. Ако е Наляво, използвайте левия огледален алгоритъм.',
+    cases: [
+      {
+        id: 'insert_right',
+        name: 'Insert to the Right',
+        nameBg: 'Вмъкване надясно',
+        description: 'Edge slots from top layer into front-right middle position.',
+        descriptionBg: 'Ръбът от горния слой влиза в предно-десния среден слот (FR).',
+        algorithm: "U R U' R' U' F' U F",
+        setupMoves: "F' U' F U R U R' U'",
+      },
+      {
+        id: 'insert_left',
+        name: 'Insert to the Left (Mirror)',
+        nameBg: 'Вмъкване наляво (Огледален)',
+        description: 'Edge slots from top layer into front-left middle position.',
+        descriptionBg: 'Ръбът от горния слой влиза в предно-левия среден слот (FL).',
+        algorithm: "U' L' U L U F U' F'",
+        setupMoves: "F U' F' U' L' U' L U",
+      },
+      {
+        id: 'stuck_middle',
+        name: 'Edge Stuck in Middle Layer',
+        nameBg: 'Ръбът е заклещен на грешно място',
+        description: 'Insert any yellow edge into its slot to free it to the top layer.',
+        descriptionBg: 'Вмъкнете произволно жълто парче на негово място с десния алгоритъм, за да го качите в горния слой.',
+        algorithm: "U R U' R' U' F' U F",
+        setupMoves: "F' U' F U R U R' U'",
+      },
+    ],
   },
   {
     stepNumber: 4,
@@ -1222,10 +1605,40 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
     algorithm: "F R U R' U' F'",
     algorithmName: 'F · [R, U] · F⁻¹ (Conjugate of Commutator)',
     algorithmNameBg: 'F · [R, U] · F⁻¹ (Конюгат на комутатора)',
+    setupAlgorithm: "F U R U' R' F'",
     mathExplanation: 'Conjugating the right trigger [R, U] by F flips exactly 2 edges on the top face without permuting or flipping lower layer pieces. Edge flip sum invariant Σ flip ≡ 0 (mod 2) is strictly conserved.',
     mathExplanationBg: 'Конюгирането на тригера [R, U] с F обръща точно 2 ръба на горната страна. Инвариантът за сумата от обръщания Σ flip ≡ 0 (mod 2) се спазва стриктно.',
     tips: 'If you have an L-shape, hold it in top-left (9 and 12 o\'clock). If a horizontal line, hold it horizontally.',
     tipsBg: 'При L-форма я дръжте горе-вляво (на 9 и 12 часа). При хоризонтална линия я дръжте хоризонтално.',
+    cases: [
+      {
+        id: 'l_shape',
+        name: 'L-Shape (9 & 12 o\'clock)',
+        nameBg: 'L-образна форма (на 9 и 12 часа)',
+        description: 'Hold the small yellow L in the top-left corner, execute algorithm once.',
+        descriptionBg: 'Дръжте малката жълта стрелка горе-вляво и изпълнете алгоритъма веднъж.',
+        algorithm: "F R U R' U' F'",
+        setupMoves: "F U R U' R' F' U F U R U' R' F'",
+      },
+      {
+        id: 'horizontal_line',
+        name: 'Horizontal Line',
+        nameBg: 'Хоризонтална линия',
+        description: 'Hold the yellow line horizontally, execute algorithm once to get the cross!',
+        descriptionBg: 'Дръжте жълтата линия хоризонтално и изпълнете алгоритъма веднъж за готов кръст!',
+        algorithm: "F R U R' U' F'",
+        setupMoves: "F U R U' R' F'",
+      },
+      {
+        id: 'dot',
+        name: 'Dot (Only Center)',
+        nameBg: 'Точка (Само жълт център)',
+        description: 'Execute from any angle to form the L-shape, then continue.',
+        descriptionBg: 'Изпълнете от произволен ъгъл, за да получите L-образна форма.',
+        algorithm: "F R U R' U' F'",
+        setupMoves: "F U R U' R' F' U2 F U R U' R' F' U F U R U' R' F'",
+      },
+    ],
   },
   {
     stepNumber: 5,
@@ -1239,10 +1652,40 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
     algorithm: "R U R' U R U2 R'",
     algorithmName: 'Sune Transformation (Order 3 twist)',
     algorithmNameBg: 'Трансформация „Сюне“ (Завъртане от ред 3)',
+    setupAlgorithm: "R U2 R' U' R U' R'",
     mathExplanation: 'The famous Sune element! It has cycle structure that leaves edges in place and twists 3 corners with orientations (+1, +1, +1) ≡ 0 (mod 3), preserving the Corner Twist Invariant.',
     mathExplanationBg: 'Известният алгоритъм Sune! Запазва ръбовете и завърта 3 върха с ориентации (+1, +1, +1) ≡ 0 (mod 3), спазвайки инварианта за върховете.',
     tips: 'If 1 corner is yellow (Fish shape), place it at bottom-left and perform Sune.',
     tipsBg: 'Ако точно 1 връх е жълт (форма на Рибка), поставете го долу-вляво и изпълнете Sune.',
+    cases: [
+      {
+        id: 'fish',
+        name: 'Fish (1 Yellow Corner)',
+        nameBg: 'Рибка (1 жълт връх)',
+        description: 'Place the yellow corner head at bottom-left, execute Sune once (or twice).',
+        descriptionBg: 'Поставете главата на рибката долу-вляво и изпълнете Sune (1 или 2 пъти).',
+        algorithm: "R U R' U R U2 R'",
+        setupMoves: "R U2 R' U' R U' R'",
+      },
+      {
+        id: 'cross_no_corners',
+        name: 'Cross with 0 Yellow Corners',
+        nameBg: 'Кръст без жълти върхове',
+        description: 'Position so a yellow sticker on the left face points left, execute Sune.',
+        descriptionBg: 'Позиционирайте така, че жълтите фарове да са отляво, и изпълнете Sune.',
+        algorithm: "R U R' U R U2 R'",
+        setupMoves: "R U2 R' U' R U' R' U2 R U2 R' U' R U' R'",
+      },
+      {
+        id: 'two_corners',
+        name: 'Two Yellow Corners',
+        nameBg: 'Два жълти върха',
+        description: 'Rotate so the front-facing yellow sticker is at top-left, execute Sune.',
+        descriptionBg: 'Завъртете така, че предният жълт стикер да е отляво, и изпълнете Sune.',
+        algorithm: "R U R' U R U2 R'",
+        setupMoves: "R U2 R' U' R U' R' U R U2 R' U' R U' R'",
+      },
+    ],
   },
   {
     stepNumber: 6,
@@ -1256,10 +1699,31 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
     algorithm: "R' F R' B2 R F' R' B2 R2",
     algorithmName: 'A-Permutation / Headlights',
     algorithmNameBg: 'A-пермутация / „Фарове“',
+    setupAlgorithm: "R2 B2 R F R' B2 R F' R",
     mathExplanation: 'A pure 3-cycle of corners (C_a → C_b → C_c). Since a 3-cycle has even permutation parity sgn = +1, this preserves the fundamental Parity Invariant sgn(σ) = sgn(τ).',
     mathExplanationBg: 'Чист 3-цикъл на върхове (C_a → C_b → C_c). Тъй като 3-цикълът има четна пермутационна четност sgn = +1, той спазва фундаменталния инвариант за четност.',
     tips: 'Hold two matching corner colors (headlights) at the back, then execute the algorithm.',
     tipsBg: 'Дръжте двата съвпадащи цвята на върхове („фарове“) откъм задната страна и изпълнете алгоритъма.',
+    cases: [
+      {
+        id: 'headlights_back',
+        name: 'Headlights Found (Place at Back)',
+        nameBg: 'Намерени фарове (Сложете ги отзад)',
+        description: 'Keep the 2 matching corner stickers at the Back (B face), execute A-Perm.',
+        descriptionBg: 'Дръжте 2-та еднакви ъгъла откъм гърба (B) и изпълнете A-Perm.',
+        algorithm: "R' F R' B2 R F' R' B2 R2",
+        setupMoves: "R2 B2 R F R' B2 R F' R",
+      },
+      {
+        id: 'no_headlights',
+        name: 'No Headlights Anywhere',
+        nameBg: 'Няма нито едни фарове',
+        description: 'Execute A-Perm from any side; headlights will then appear on one face.',
+        descriptionBg: 'Изпълнете A-Perm от произволна страна; след това ще се появят фарове.',
+        algorithm: "R' F R' B2 R F' R' B2 R2",
+        setupMoves: "R2 B2 R F R' B2 R F' R U R2 B2 R F R' B2 R F' R",
+      },
+    ],
   },
   {
     stepNumber: 7,
@@ -1273,10 +1737,40 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
     algorithm: "R U' R U R U R U' R' U' R2",
     algorithmName: 'U-Permutation (3-cycle of edges)',
     algorithmNameBg: 'U-пермутация (3-цикъл на ръбове)',
+    setupAlgorithm: "R2 U R U R' U' R' U' R' U R'",
     mathExplanation: 'A pure 3-cycle of edges (E_1 → E_2 → E_3). As sgn = +1 and ord(U-perm) = 3, applying it places the final edges into place, returning the entire group element to the identity e ∈ G!',
     mathExplanationBg: 'Чист 3-цикъл на ръбове (E_1 → E_2 → E_3). Тъй като sgn = +1 и ord = 3, прилагането му подрежда последните елементи и връща куба в идентитета e ∈ G!',
     tips: 'Hold the solved bar at the back. Perform the algorithm once or twice to complete the cube!',
     tipsBg: 'Дръжте напълно наредената страна отзад. Изпълнете алгоритъма веднъж или два пъти и кубът е решен!',
+    cases: [
+      {
+        id: 'clockwise',
+        name: 'Clockwise 3-Cycle (Solved Bar at Back)',
+        nameBg: 'По часовниковата стрелка (Цяла стена отзад)',
+        description: 'Keep the 1 solved face at the Back (B), execute U-Perm to finish!',
+        descriptionBg: 'Дръжте готовата стена отзад и изпълнете U-Perm за пълно нареждане!',
+        algorithm: "R U' R U R U R U' R' U' R2",
+        setupMoves: "R2 U R U R' U' R' U' R' U R'",
+      },
+      {
+        id: 'counter_clockwise',
+        name: 'Counter-Clockwise 3-Cycle',
+        nameBg: 'Обратно на часовниковата стрелка',
+        description: 'Reverse U-Perm or execute clockwise twice.',
+        descriptionBg: 'Огледален U-Perm или изпълнете алгоритъма по часовника два пъти.',
+        algorithm: "R2 U R U R' U' R' U' R' U R'",
+        setupMoves: "R U' R U R U R U' R' U' R2",
+      },
+      {
+        id: 'no_solved_bar',
+        name: 'No Solved Bar (All 4 Edges Unsolved)',
+        nameBg: 'Няма цяла стена (4 разбъркани ръба)',
+        description: 'Execute U-Perm from any side to create 1 solved face, place it at Back and repeat.',
+        descriptionBg: 'Изпълнете U-Perm веднъж, за да наредите една стена, сложете я отзад и повторете.',
+        algorithm: "R U' R U R U R U' R' U' R2",
+        setupMoves: "R2 U R U R' U' R' U' R' U R' U R2 U R U R' U' R' U' R' U R'",
+      },
+    ],
   },
 ];
 

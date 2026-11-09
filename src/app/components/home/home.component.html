@@ -240,6 +240,53 @@
           </svg>
         </a>
       </div>
+
+      <!-- Card 4: Physical Cube Custom Input -->
+      <div class="module-card card-custom">
+        <div>
+          <div class="module-header">
+            <div class="icon-box icon-custom">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
+                <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
+                <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
+                <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
+                <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" />
+              </svg>
+            </div>
+            <div>
+              <h4 class="module-title">{{ isBg ? 'Въвеждане на Физическо Кубче' : 'Physical Cube Input' }}</h4>
+              <p class="module-subtitle">Custom Color Painter &amp; Piece Inspector</p>
+            </div>
+          </div>
+
+          <ul class="feature-list" style="margin-top: 1rem;">
+            <li class="feature-item">
+              <span class="feature-bullet">&bull;</span>
+              <span><strong>{{ isBg ? 'Интерактивна 2D четка:' : 'Interactive 2D Brush:' }}</strong> {{ isBg ? 'Нанесете цветовете от реалното си кубче стикер по стикер' : 'Paint facelets sticker by sticker with real colors' }}</span>
+            </li>
+            <li class="feature-item">
+              <span class="feature-bullet">&bull;</span>
+              <span><strong>{{ isBg ? 'Инспектор парче по парче:' : 'Piece-by-Piece Form:' }}</strong> {{ isBg ? 'Преглед на 8-те ъгъла и 12-те ръба с техните завъртания' : 'Inspect 8 corners & 12 edges with exact twists/flips' }}</span>
+            </li>
+            <li class="feature-item">
+              <span class="feature-bullet">&bull;</span>
+              <span><strong>{{ isBg ? 'Проверка за разглобяване:' : 'Tampering Diagnostics:' }}</strong> {{ isBg ? 'Моментален тест дали кубчето е сглобено в разрешим клас' : 'Instant check if cube is trapped in an unsolvable coset' }}</span>
+            </li>
+            <li class="feature-item">
+              <span class="feature-bullet">&bull;</span>
+              <span><strong>{{ isBg ? 'Синхронизация с 3D симулатора:' : 'Live 3D Sync:' }}</strong> {{ isBg ? 'Зареждане с 1 клик в 3D сцената за свободно въртене' : '1-click load into the 3D scene for solving and turns' }}</span>
+            </li>
+          </ul>
+        </div>
+
+        <a routerLink="/custom" class="card-action-btn btn-custom">
+          <span>{{ isBg ? 'Към Въвеждането' : 'Start Physical Input' }}</span>
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </a>
+      </div>
     </div>
   </div>
 </div>

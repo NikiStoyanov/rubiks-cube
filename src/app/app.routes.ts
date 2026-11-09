@@ -29,6 +29,13 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'custom',
+    loadComponent: () =>
+      import('./components/custom-cube/custom-cube.component').then(
+        (m) => m.CustomCubeComponent
+      ),
+  },
+  {
     path: '**',
     redirectTo: '',
   },

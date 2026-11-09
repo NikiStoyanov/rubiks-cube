@@ -12,6 +12,7 @@ export interface Translations {
   pageMath: string;
   pageValidator: string;
   pageTutorial: string;
+  pageCustomCube: string;
 
   // 3D Canvas instructions
   canvasInstructions: string;
@@ -197,6 +198,7 @@ export const translations: Record<Language, Translations> = {
     pageMath: 'Math Concepts',
     pageValidator: 'Orbit Validator',
     pageTutorial: 'Cube Tutorial',
+    pageCustomCube: 'Physical Cube',
 
     canvasInstructions: 'Rotate: Left Click + Drag | Pan: Right Click | Zoom: Scroll',
     activeSelection: 'Active Selection:',
@@ -370,6 +372,7 @@ export const translations: Record<Language, Translations> = {
     pageMath: 'Математически Концепции',
     pageValidator: 'Валидатор на Орбитата',
     pageTutorial: 'Интерактивен Урок',
+    pageCustomCube: 'Физическо кубче',
 
     canvasInstructions: 'Въртене: Ляв бутон + влачене | Панорама: Десен бутон | Мащаб: Скрол',
     activeSelection: 'Активен избор:',

@@ -119,4 +119,26 @@ describe('CubeStateService (Reactive Signals & Separation of Concerns)', () => {
     expect(emittedMove).toBe('L');
     sub.unsubscribe();
   });
+
+  it('allows painting stickers directly on customNet and broadcasts netSync', () => {
+    let syncCalled = false;
+    const sub = service.netSync$.subscribe((net) => {
+      syncCalled = true;
+      expect(net.F[0][0].color).toBe('#ef4444');
+    });
+
+    service.setActiveBrushColor('R'); // Red: #ef4444
+    service.paintSticker('F', 0, 0);
+
+    expect(service.customNet().F[0][0].color).toBe('#ef4444');
+    expect(syncCalled).toBe(true);
+    sub.unsubscribe();
+  });
+
+  it('allows painting centers without locking them', () => {
+    service.setActiveBrushColor('U'); // Yellow: #eab308
+    service.paintSticker('F', 1, 1);
+
+    expect(service.customNet().F[1][1].color).toBe('#eab308');
+  });
 });

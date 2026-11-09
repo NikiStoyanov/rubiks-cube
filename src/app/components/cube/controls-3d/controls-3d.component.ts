@@ -2,6 +2,7 @@ import { Component, inject, input, output, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { StandardMove } from '../../../types/cube';
 import { LanguageService } from '../../../services/language.service';
+import { CubeStateService } from '../../../services/cube-state.service';
 
 @Component({
   selector: 'app-controls-3d',
@@ -12,8 +13,10 @@ import { LanguageService } from '../../../services/language.service';
 })
 export class Controls3DComponent {
   private languageService = inject(LanguageService);
+  readonly cubeStateService = inject(CubeStateService);
   readonly t = this.languageService.t;
   readonly language = this.languageService.language;
+  readonly is3DPaintMode = this.cubeStateService.is3DPaintMode;
   readonly Math = Math;
 
   explodeFactor = input<number>(0);
@@ -24,10 +27,13 @@ export class Controls3DComponent {
   move = output<StandardMove>();
   reset = output<void>();
   scramble = output<void>();
+  solve = output<void>();
   explodeChange = output<number>();
   speedChange = output<number>();
   toggleCycleArrows = output<boolean>();
   resetCamera = output<void>();
+
+  readonly isSolved = this.cubeStateService.isSolved;
 
   readonly sliceMoves: StandardMove[] = ['M', 'E', 'S'];
 
@@ -42,6 +48,10 @@ export class Controls3DComponent {
       { name: 'R' as StandardMove, label: lang === 'bg' ? 'R (Дясна)' : 'R (Right)', color: 'bg-red-600 text-white border-red-500' },
     ];
   });
+
+  toggle3DPaint(): void {
+    this.cubeStateService.toggle3DPaintMode();
+  }
 
   onMoveClick(m: StandardMove): void {
     this.move.emit(m);
