@@ -20,6 +20,7 @@ export class OrbitValidatorComponent {
   private readonly cubeStateService = inject(CubeStateService);
 
   readonly language = this.languageService.language;
+  readonly t = this.languageService.t;
   readonly cubeState = this.cubeStateService.cubeState;
   readonly isAnimating = this.cubeStateService.isAnimating;
 

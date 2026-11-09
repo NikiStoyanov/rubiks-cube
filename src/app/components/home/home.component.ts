@@ -18,10 +18,6 @@ export class HomeComponent {
   readonly t = this.languageService.t;
   readonly language = this.languageService.language;
 
-  get isBg(): boolean {
-    return this.language() === 'bg';
-  }
-
   onScramble(): void {
     this.cubeStateService.scramble(20);
   }

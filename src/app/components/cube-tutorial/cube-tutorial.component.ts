@@ -32,6 +32,7 @@ export class CubeTutorialComponent implements OnDestroy {
   private readonly cubeStateService = inject(CubeStateService);
 
   readonly language = this.languageService.language;
+  readonly t = this.languageService.t;
   readonly isAnimating = this.cubeStateService.isAnimating;
 
   readonly steps = TUTORIAL_STEPS;

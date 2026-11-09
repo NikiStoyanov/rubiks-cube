@@ -4,35 +4,32 @@
     <div class="hero-info">
       <div class="hero-tags">
         <span class="badge-orbit">
-          {{ language() === 'bg' ? 'Теория на Орбитите: 1 / 12' : 'Orbit Theory: 1 / 12' }}
+          {{ t().valHeroBadge }}
         </span>
         <span class="badge-coset">
           [S₄₈ : G] = 12
         </span>
       </div>
       <h2 class="hero-title">
-        {{ language() === 'bg' ? 'Валидатор на Орбитата на Решението' : 'Solution Orbit Invariant Validator' }}
+        {{ t().valHeroTitle }}
       </h2>
       <p class="hero-desc">
-        {{ language() === 'bg'
-          ? 'Ако разглобим физически Кубчето на Рубик и го сглобим напълно случайно, вероятността полученото състояние да принадлежи на валидната орбита на групата G е едва 1 от 12 (8.33%). За да бъде решимо само чрез позволени завъртания, кубчето трябва да удовлетворява и трите фундаментални инварианта едновременно.'
-          : 'If a Rubik\'s Cube is disassembled and reassembled randomly, the probability that the resulting state lies in the valid solvable orbit G is exactly 1 in 12 (8.33%). To be solvable by legal face turns, the state must simultaneously satisfy all three fundamental invariants.'
-        }}
+        {{ t().valHeroDesc }}
       </p>
     </div>
 
     <!-- Quick Coset Probability Card -->
     <div class="coset-card">
       <div class="coset-row">
-        <span>{{ language() === 'bg' ? 'Физически състояния:' : 'Physical states:' }}</span>
+        <span>{{ t().valPhysicalStates }}</span>
         <span style="color: #ffffff; font-weight: 700;">12 · |G|</span>
       </div>
       <div class="coset-row">
-        <span>{{ language() === 'bg' ? 'Решима орбита |G|:' : 'Solvable orbit |G|:' }}</span>
+        <span>{{ t().valSolvableOrbit }}</span>
         <span style="color: var(--color-emerald); font-weight: 700;">~4.33 × 10¹⁹</span>
       </div>
       <div class="coset-row" style="border-top: 1px solid var(--border-medium); padding-top: 0.5rem;">
-        <span>{{ language() === 'bg' ? 'Вероятност:' : 'Probability:' }}</span>
+        <span>{{ t().valProbability }}</span>
         <span style="color: var(--color-amber); font-weight: 700;">1 / 12 (8.33%)</span>
       </div>
     </div>
@@ -64,16 +61,10 @@
 
       <div>
         <h3 class="result-title">
-          {{ val().isValidOrbit
-            ? (language() === 'bg' ? 'Валидно Решимо Състояние (Орбита на Решението)' : 'Valid Solvable Orbit (Identity Coset)')
-            : (language() === 'bg' ? 'НЕРЕШИМО СЪСТОЯНИЕ: Извън орбитата на групата G!' : 'UNSOLVABLE STATE: Outside the Legal Orbit of G!')
-          }}
+          {{ val().isValidOrbit ? t().valValidTitle : t().valInvalidTitle }}
         </h3>
         <p class="result-sub">
-          {{ val().isValidOrbit
-            ? (language() === 'bg' ? 'Всички 3 алгебрични инварианта са удовлетворени. Състоянието е достижимо от наредения куб само чрез завъртания.' : 'All 3 algebraic invariants are satisfied. This configuration can be solved strictly using legal face turns.')
-            : (language() === 'bg' ? 'Кубчето се намира в един от 11-те неразрешими косета на групата. Невъзможно е да се нареди без физическо разглобяване!' : 'This configuration resides in one of the 11 unreachable cosets. It cannot be solved without physical disassembly!')
-          }}
+          {{ val().isValidOrbit ? t().valValidDesc : t().valInvalidDesc }}
         </p>
       </div>
     </div>
@@ -85,7 +76,7 @@
     <div class="invariant-card" [class.ok]="val().cornerTwistSum === 0" [class.violated]="val().cornerTwistSum !== 0">
       <div class="invariant-header">
         <span class="invariant-badge" [class.ok]="val().cornerTwistSum === 0" [class.violated]="val().cornerTwistSum !== 0">
-          {{ val().cornerTwistSum === 0 ? (language() === 'bg' ? 'Спазен' : 'Conserved') : (language() === 'bg' ? 'Нарушен' : 'Violated') }}
+          {{ val().cornerTwistSum === 0 ? t().valConserved : t().valViolated }}
         </span>
         <span style="font-size: 0.7rem; color: var(--text-dim); font-family: var(--font-mono);">
           Mod 3 (ℤ₃)
@@ -94,13 +85,10 @@
 
       <div>
         <h4 class="invariant-title">
-          {{ language() === 'bg' ? '1. Ъглова Ориентация' : '1. Corner Orientation' }}
+          {{ t().valCornerTwistTitle }}
         </h4>
         <p class="invariant-desc">
-          {{ language() === 'bg'
-            ? 'Сумата от завъртанията на всички 8 върха трябва да се дели на 3. Единичен завъртян ъгъл е невъзможен.'
-            : 'The sum of all 8 corner twist orientations must be congruent to 0 modulo 3.'
-          }}
+          {{ t().valCornerTwistDesc }}
         </p>
       </div>
 
@@ -121,7 +109,7 @@
     <div class="invariant-card" [class.ok]="val().edgeFlipSum === 0" [class.violated]="val().edgeFlipSum !== 0">
       <div class="invariant-header">
         <span class="invariant-badge" [class.ok]="val().edgeFlipSum === 0" [class.violated]="val().edgeFlipSum !== 0">
-          {{ val().edgeFlipSum === 0 ? (language() === 'bg' ? 'Спазен' : 'Conserved') : (language() === 'bg' ? 'Нарушен' : 'Violated') }}
+          {{ val().edgeFlipSum === 0 ? t().valConserved : t().valViolated }}
         </span>
         <span style="font-size: 0.7rem; color: var(--text-dim); font-family: var(--font-mono);">
           Mod 2 (ℤ₂)
@@ -130,13 +118,10 @@
 
       <div>
         <h4 class="invariant-title">
-          {{ language() === 'bg' ? '2. Ръбова Ориентация' : '2. Edge Orientation' }}
+          {{ t().valEdgeFlipTitle }}
         </h4>
         <p class="invariant-desc">
-          {{ language() === 'bg'
-            ? 'Сумата от обръщанията на всички 12 ръба трябва да е четно число (0 mod 2). Единичен обърнат ръб е невъзможен.'
-            : 'The sum of all 12 edge flip orientations must be congruent to 0 modulo 2.'
-          }}
+          {{ t().valEdgeFlipDesc }}
         </p>
       </div>
 
@@ -157,7 +142,7 @@
     <div class="invariant-card" [class.ok]="val().isParityValid" [class.violated]="!val().isParityValid">
       <div class="invariant-header">
         <span class="invariant-badge" [class.ok]="val().isParityValid" [class.violated]="!val().isParityValid">
-          {{ val().isParityValid ? (language() === 'bg' ? 'Спазен' : 'Conserved') : (language() === 'bg' ? 'Нарушен' : 'Violated') }}
+          {{ val().isParityValid ? t().valConserved : t().valViolated }}
         </span>
         <span style="font-size: 0.7rem; color: var(--text-dim); font-family: var(--font-mono);">
           sgn(&sigma;) = sgn(&tau;)
@@ -166,13 +151,10 @@
 
       <div>
         <h4 class="invariant-title">
-          {{ language() === 'bg' ? '3. Четност на Пермутациите' : '3. Permutation Parity' }}
+          {{ t().valParityTitle }}
         </h4>
         <p class="invariant-desc">
-          {{ language() === 'bg'
-            ? 'Пермутацията на върховете и пермутацията на ръбовете трябва да имат еднаква четност (едновременно четни или нечетни).'
-            : 'The corner permutation sign must strictly match the edge permutation sign: sgn(σ) = sgn(τ).'
-          }}
+          {{ t().valParityDesc }}
         </p>
       </div>
 
@@ -194,13 +176,10 @@
   <div class="simulator-card">
     <div>
       <h3 style="font-size: 1.05rem; font-weight: 700; color: #ffffff; margin: 0;">
-        {{ language() === 'bg' ? 'Симулатор на Физическо Разглобяване (Косети на G)' : 'Physical Tampering Simulator (Cosets of G)' }}
+        {{ t().valTamperSimTitle }}
       </h3>
       <p style="font-size: 0.775rem; color: var(--text-secondary); margin: 0.25rem 0 0 0;">
-        {{ language() === 'bg'
-          ? 'Тествайте на практика какво се случва, когато физически завъртите стикер или размените две парчета. Наблюдавайте реакцията на 3D модела вляво и как инвариантите нарушават равенствата.'
-          : 'Simulate physical manipulation by twisting an isolated piece or swapping two pieces. Observe how the 3D cube model reflects the invalid coset.'
-        }}
+        {{ t().valTamperSimDesc }}
       </p>
     </div>
 
@@ -214,13 +193,10 @@
       >
         <span class="sim-btn-title">
           <span>🔄</span>
-          <span>{{ language() === 'bg' ? 'Завърти 1 ъгъл (+120°)' : 'Twist 1 Corner (+120°)' }}</span>
+          <span>{{ t().valTwistCornerBtn }}</span>
         </span>
         <span class="sim-btn-desc">
-          {{ language() === 'bg'
-            ? 'Нарушава ℤ₃ инварианта: ∑ rᵢ ≡ 1 (mod 3). Състоянието попада в косет 1.'
-            : 'Violates corner orientation mod 3. Moves state into coset 1.'
-          }}
+          {{ t().valTwistCornerDesc }}
         </span>
       </button>
 
@@ -233,13 +209,10 @@
       >
         <span class="sim-btn-title">
           <span>🔃</span>
-          <span>{{ language() === 'bg' ? 'Обърни 1 ръб (Flip)' : 'Flip 1 Edge' }}</span>
+          <span>{{ t().valFlipEdgeBtn }}</span>
         </span>
         <span class="sim-btn-desc">
-          {{ language() === 'bg'
-            ? 'Нарушава ℤ₂ инварианта: ∑ wᵢ ≡ 1 (mod 2). Състоянието попада в косет 2.'
-            : 'Violates edge orientation mod 2. Moves state into coset 2.'
-          }}
+          {{ t().valFlipEdgeDesc }}
         </span>
       </button>
 
@@ -252,13 +225,10 @@
       >
         <span class="sim-btn-title">
           <span>🔀</span>
-          <span>{{ language() === 'bg' ? 'Размени 2 ъгъла (Паритет)' : 'Swap 2 Pieces (Parity)' }}</span>
+          <span>{{ t().valSwapPiecesBtn }}</span>
         </span>
         <span class="sim-btn-desc">
-          {{ language() === 'bg'
-            ? 'Прилага транспозиция (нечетна пермутация). Нарушава sgn(σ) = sgn(τ).'
-            : 'Applies an odd transposition. Violates sgn(σ) = sgn(τ).'
-          }}
+          {{ t().valSwapPiecesDesc }}
         </span>
       </button>
     </div>
@@ -268,10 +238,10 @@
       <div class="repair-banner">
         <div>
           <span style="font-weight: 700; color: #ffffff; font-size: 0.9rem; display: block;">
-            {{ language() === 'bg' ? 'Кубчето в момента е неразрешимо!' : 'Cube is currently unsolvable!' }}
+            {{ t().valUnsolvableBannerTitle }}
           </span>
           <span style="font-size: 0.75rem; color: var(--text-secondary);">
-            {{ language() === 'bg' ? 'Можете да приложите математическо възстановяване до най-близката валидна орбита.' : 'You can apply an algebraic repair back into the legal solvable orbit.' }}
+            {{ t().valUnsolvableBannerDesc }}
           </span>
         </div>
 
@@ -285,7 +255,7 @@
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
             <path d="m9 12 2 2 4-4" />
           </svg>
-          <span>{{ language() === 'bg' ? 'Възстанови до Валидна Орбита' : 'Repair to Solvable Orbit' }}</span>
+          <span>{{ t().valRepairBtn }}</span>
         </button>
       </div>
     }

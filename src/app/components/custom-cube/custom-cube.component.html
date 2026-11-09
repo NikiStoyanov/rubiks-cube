@@ -11,16 +11,13 @@
             <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
             <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" />
           </svg>
-          <span>{{ isBg() ? 'Физическо Въвеждане' : 'Physical State Input' }}</span>
+          <span>{{ t().customBadge }}</span>
         </div>
         <h2 class="header-title">
-          {{ isBg() ? 'Въвеждане на Физическо Кубче' : 'Physical Cube Custom State Input' }}
+          {{ t().customTitle }}
         </h2>
         <p class="header-subtitle">
-          {{ isBg()
-            ? 'Въведете цветовете от вашето реално кубче на Рубик стикер по стикер или проверете състоянието му парче по парче.'
-            : "Input colors from your real physical Rubik's cube sticker by sticker, or inspect piece by piece."
-          }}
+          {{ t().customSubtitle }}
         </p>
       </div>
 
@@ -39,7 +36,7 @@
             <path d="M9 3v18" />
             <path d="M15 3v18" />
           </svg>
-          <span>{{ isBg() ? '2D Разгъвка с Палитра' : '2D Net Painter' }}</span>
+          <span>{{ t().customNetModeBtn }}</span>
         </button>
 
         <button
@@ -51,7 +48,7 @@
           <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
           </svg>
-          <span>{{ isBg() ? 'По Парчета (Върхове & Ръбове)' : 'Piece-by-Piece' }}</span>
+          <span>{{ t().customPiecesModeBtn }}</span>
         </button>
 
         <button
@@ -67,7 +64,7 @@
             <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
             <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" />
           </svg>
-          <span>{{ is3DPaintMode() ? (isBg() ? '3D Четка (Вкл)' : '3D Paint (On)') : (isBg() ? 'Оцвети в 3D' : 'Paint in 3D') }}</span>
+          <span>{{ is3DPaintMode() ? t().customPaint3DOn : t().customPaint3DOff }}</span>
         </button>
       </div>
     </div>
@@ -83,13 +80,10 @@
       </div>
       <div style="flex: 1;">
         <h4 class="banner-title ok">
-          {{ isBg() ? 'Състоянието беше приложено успешно към 3D куба!' : 'State applied successfully to the 3D cube!' }}
+          {{ t().customSuccessTitle }}
         </h4>
         <p class="banner-desc">
-          {{ isBg()
-            ? 'Сега кубчето вляво отразява вашето физическо кубче. Можете да го въртите, да пускате ходове или да използвате уроците за решаване.'
-            : 'The 3D cube on the left now matches your physical cube. You can turn faces, run algorithms, or follow the tutorial.'
-          }}
+          {{ t().customSuccessDesc }}
         </p>
       </div>
     </div>
@@ -107,17 +101,14 @@
       <div style="flex: 1;">
         <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
           <h4 class="banner-title ok">
-            {{ isBg() ? 'Напълно Валидно и Решимо Кубче (Принадлежи към G)' : 'Valid & Solvable Cube (Belongs to G)' }}
+            {{ t().customValidTitle }}
           </h4>
           <span class="badge-pill ok">
-            {{ isBg() ? 'Решимо в 100% от ходовете' : '100% Legally Solvable' }}
+            {{ t().customValidPill }}
           </span>
         </div>
         <p class="banner-desc">
-          {{ isBg()
-            ? 'Всички 3 инварианта на Рубик са спазени: сумата на завъртанията на върховете е 0 (mod 3), сумата на обръщанията на ръбовете е 0 (mod 2), а четността на върховете съвпада с четността на ръбовете.'
-            : 'All 3 Rubik invariants are conserved: corner twist sum ≡ 0 (mod 3), edge flip sum ≡ 0 (mod 2), and permutation parity sgn(σ) = sgn(τ).'
-          }}
+          {{ t().customValidDesc }}
         </p>
       </div>
       <div class="banner-actions">
@@ -130,17 +121,17 @@
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
           </svg>
-          <span>{{ showSolver() ? (isBg() ? 'Скрий Решението' : 'Hide Solver') : (isBg() ? '🧩 Реши моето кубче (Стъпка по стъпка)' : '🧩 Solve My Cube (Step-by-Step)') }}</span>
+          <span>{{ showSolver() ? t().customHideSolveBtn : t().customSolveBtn }}</span>
         </button>
 
         <button type="button" (click)="applyToCube()" class="btn-banner-primary">
           <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="20 6 9 17 4 12" />
           </svg>
-          <span>{{ isBg() ? 'Зареди в 3D Куба' : 'Apply to 3D Cube' }}</span>
+          <span>{{ t().customApplyTo3DBtn }}</span>
         </button>
         <a routerLink="/validator" class="btn-banner-secondary">
-          <span>{{ isBg() ? 'Провери във Валидатора' : 'Inspect in Validator' }}</span>
+          <span>{{ t().customInspectValidatorBtn }}</span>
         </a>
       </div>
     </div>
@@ -155,10 +146,10 @@
               <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
               </svg>
-              <span>{{ isBg() ? 'Стъпка по Стъпка Нареждане' : 'Step-by-Step Solve Guide' }}</span>
+              <span>{{ t().solveModalBadge }}</span>
             </div>
             <h3 class="solver-card-title">
-              {{ isBg() ? 'Как да наредите точно вашето въведено кубче' : 'How to Solve Your Exact Entered Cube' }}
+              {{ t().solveModalTitle }}
             </h3>
             <p class="solver-card-subtitle">
               {{ isBg()
@@ -172,23 +163,23 @@
           <div class="solver-stats-box">
             <div class="solver-stat-pill">
               <span class="stat-num">{{ solveResult()?.totalMoves }}</span>
-              <span class="stat-lbl">{{ isBg() ? 'общо хода' : 'total moves' }}</span>
+              <span class="stat-lbl">{{ t().solveModalTotalMoves }}</span>
             </div>
             <div class="solver-stat-pill">
               <span class="stat-num">{{ solveResult()?.stages?.length }}</span>
-              <span class="stat-lbl">{{ isBg() ? 'етапа' : 'stages' }}</span>
+              <span class="stat-lbl">{{ t().solveModalStages }}</span>
             </div>
             <button
               type="button"
               (click)="reloadIn3D()"
               class="btn-solver-reload"
-              [title]="isBg() ? 'Рестартирай 3D куба в начално състояние' : 'Restart 3D cube to initial position'"
+              [title]="t().tutorialResetBtn"
             >
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="1 4 1 10 7 10" />
                 <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
               </svg>
-              <span>{{ isBg() ? 'Рестарт на позицията' : 'Reset Position' }}</span>
+              <span>{{ t().tutorialResetBtn }}</span>
             </button>
           </div>
         </div>
@@ -197,8 +188,8 @@
         <div class="solver-progress-container">
           <div class="progress-info-row">
             <span class="progress-lbl">
-              {{ isBg() ? 'Прогрес на нареждането:' : 'Solving Progress:' }}
-              <strong>{{ currentMoveIndex() }} / {{ solveResult()?.totalMoves }} {{ isBg() ? 'хода' : 'moves' }}</strong>
+              {{ t().solveModalExecutedMoves }}
+              <strong>{{ currentMoveIndex() }} / {{ solveResult()?.totalMoves }} {{ t().solveModalTotalMoves }}</strong>
             </span>
             <span class="progress-percent">{{ solveProgressPercent() }}%</span>
           </div>
@@ -218,9 +209,9 @@
               [class.is-done]="st.moves.length === 0"
             >
               <span class="pill-step-num">#{{ st.stageNumber }}</span>
-              <span class="pill-name">{{ isBg() ? st.nameBg.split(':')[1]?.trim() || st.nameBg : st.nameEn.split(':')[1]?.trim() || st.nameEn }}</span>
+              <span class="pill-name">{{ language() === 'bg' ? (st.nameBg.split(':')[1]?.trim() || st.nameBg) : (st.nameEn.split(':')[1]?.trim() || st.nameEn) }}</span>
               @if (st.moves.length === 0) {
-                <span class="pill-check-icon" [title]="isBg() ? 'Вече нареден' : 'Already solved'">✓</span>
+                <span class="pill-check-icon" [title]="t().solveModalStageAlreadySolved">✓</span>
               } @else {
                 <span class="pill-move-count">{{ st.moves.length }}h</span>
               }
@@ -234,27 +225,27 @@
             <div class="stage-view-header">
               <div>
                 <span class="stage-tag">
-                  {{ isBg() ? 'Етап ' + currStage.stageNumber + ' от 7' : 'Stage ' + currStage.stageNumber + ' of 7' }}
+                  {{ t().solveModalStagePrefix }} {{ currStage.stageNumber }} {{ t().solveModalStageOf }} 7
                 </span>
                 <h4 class="stage-main-title">
-                  {{ isBg() ? currStage.nameBg : currStage.nameEn }}
+                  {{ language() === 'bg' ? currStage.nameBg : currStage.nameEn }}
                 </h4>
                 <p class="stage-goal-desc">
-                  <strong>{{ isBg() ? 'Цел: ' : 'Goal: ' }}</strong>
-                  {{ isBg() ? currStage.goalBg : currStage.goalEn }}
+                  <strong>{{ t().solveModalGoalPrefix }} </strong>
+                  {{ language() === 'bg' ? currStage.goalBg : currStage.goalEn }}
                 </p>
               </div>
 
               <a
                 routerLink="/tutorial"
                 class="btn-open-tutorial-link"
-                [title]="isBg() ? 'Научи принципите на този етап в Академията' : 'Learn principles in Tutorial'"
+                [title]="t().solveModalAcademyLink"
               >
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
                   <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
                 </svg>
-                <span>{{ isBg() ? 'Урок за този етап' : 'Tutorial Academy' }}</span>
+                <span>{{ t().solveModalAcademyLink }}</span>
               </a>
             </div>
 
@@ -262,10 +253,10 @@
             <div class="algo-display-box">
               <div class="algo-box-top">
                 <span class="algo-box-label">
-                  {{ isBg() ? 'Последователност от ходове за изпълнение:' : 'Sequence of moves to execute:' }}
+                  {{ t().solveModalMovesForStage }}
                 </span>
                 @if (currStage.moves.length > 0) {
-                  <span class="algo-moves-badge">{{ currStage.moves.length }} {{ isBg() ? 'хода' : 'moves' }}</span>
+                  <span class="algo-moves-badge">{{ currStage.moves.length }} {{ t().solveModalTotalMoves }}</span>
                 }
               </div>
 
@@ -275,10 +266,7 @@
                     <polyline points="20 6 9 17 4 12" />
                   </svg>
                   <span>
-                    {{ isBg()
-                      ? 'Този етап вече е нареден на твоето кубче! Не са необходими допълнителни ходове за него.'
-                      : 'This stage is already solved on your cube! No moves needed.'
-                    }}
+                    {{ t().solveModalStageAlreadySolved }}
                   </span>
                 </div>
               } @else {
@@ -291,11 +279,11 @@
                 </div>
               }
 
-              <!-- Bulgarian Explanation Note -->
+              <!-- Explanation Note -->
               <div class="stage-explanation-box">
                 <div class="explanation-icon">💡</div>
                 <div class="explanation-text">
-                  <p><strong>{{ isBg() ? 'Обяснение: ' : 'Explanation: ' }}</strong>{{ isBg() ? currStage.explanationBg : currStage.explanationEn }}</p>
+                  <p><strong>{{ language() === 'bg' ? 'Обяснение: ' : 'Explanation: ' }}</strong>{{ language() === 'bg' ? currStage.explanationBg : currStage.explanationEn }}</p>
                 </div>
               </div>
             </div>
@@ -308,12 +296,12 @@
                   (click)="stepBackward()"
                   [disabled]="currentMoveIndex() <= 0"
                   class="btn-step-ctrl"
-                  [title]="isBg() ? 'Върни 1 ход назад' : 'Step back 1 move'"
+                  [title]="t().solveModalStepBack"
                 >
                   <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <polyline points="15 18 9 12 15 6" />
                   </svg>
-                  <span>{{ isBg() ? 'Предишен ход' : 'Step Back' }}</span>
+                  <span>{{ t().solveModalStepBack }}</span>
                 </button>
 
                 <button
@@ -327,12 +315,12 @@
                       <rect x="6" y="4" width="4" height="16" />
                       <rect x="14" y="4" width="4" height="16" />
                     </svg>
-                    <span>{{ isBg() ? 'Пауза' : 'Pause' }}</span>
+                    <span>{{ t().solveModalPause }}</span>
                   } @else {
                     <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                       <polygon points="5 3 19 12 5 21 5 3" />
                     </svg>
-                    <span>{{ isBg() ? 'Пусни Автоматично' : 'Auto Play' }}</span>
+                    <span>{{ t().solveModalAutoPlay }}</span>
                   }
                 </button>
 
@@ -341,9 +329,9 @@
                   (click)="stepForward()"
                   [disabled]="currentMoveIndex() >= (solveResult()?.allMoves?.length || 0)"
                   class="btn-step-ctrl"
-                  [title]="isBg() ? 'Изпълни 1 ход напред в 3D куба' : 'Step forward 1 move on 3D cube'"
+                  [title]="t().solveModalStepNext"
                 >
-                  <span>{{ isBg() ? 'Следващ ход' : 'Step Next' }}</span>
+                  <span>{{ t().solveModalStepNext }}</span>
                   <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <polyline points="9 18 15 12 9 6" />
                   </svg>
@@ -352,7 +340,7 @@
 
               <!-- Speed Selector Pills -->
               <div class="speed-selector-group">
-                <span class="speed-label">{{ isBg() ? 'Скорост:' : 'Speed:' }}</span>
+                <span class="speed-label">{{ t().solveModalSpeed }}</span>
                 @for (spd of [0.5, 1, 1.5, 2]; track spd) {
                   <button
                     type="button"
@@ -382,48 +370,45 @@
       <div style="flex: 1;">
         <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
           <h4 class="banner-title error">
-            {{ isBg() ? 'Физически Разглобено / Нерешимо Състояние (Невалиден Coset)' : 'Physically Tampered / Unsolvable Coset' }}
+            {{ t().customInvalidTitle }}
           </h4>
           <span class="badge-pill error">
-            {{ isBg() ? 'Нерешимо само с въртене' : 'Unsolvable with standard moves' }}
+            {{ t().customInvalidPill }}
           </span>
         </div>
         <p class="banner-desc">
-          {{ isBg()
-            ? 'Кубчето е сглобено правилно по парчета, но е в един от 11-те нерешими класа на неразложимост. Открити нарушения:'
-            : 'All pieces exist, but the cube is trapped in one of the 11 unsolvable cosets. Invariants violated:'
-          }}
+          {{ t().customInvalidDesc }}
         </p>
         <ul class="error-sublist">
           @if (!orbitValidation()?.isCornerTwistValid) {
             <li>
-              &bull; <strong>{{ isBg() ? 'Ъглова ориентация:' : 'Corner Twists:' }}</strong>
+              &bull; <strong>{{ t().valCornerTwistTitle }}:</strong>
               &sum; v&#7522; &equiv; {{ orbitValidation()?.cornerTwistSum }} &ne; 0 (mod 3) —
-              {{ isBg() ? 'Има поне един физически завъртян ъгъл на ръка.' : 'At least one corner was manually twisted.' }}
+              {{ t().customCornerTwistViolatedDesc }}
             </li>
           }
           @if (!orbitValidation()?.isEdgeFlipValid) {
             <li>
-              &bull; <strong>{{ isBg() ? 'Ръбова ориентация:' : 'Edge Flips:' }}</strong>
+              &bull; <strong>{{ t().valEdgeFlipTitle }}:</strong>
               &sum; w&#7522; &equiv; {{ orbitValidation()?.edgeFlipSum }} &ne; 0 (mod 2) —
-              {{ isBg() ? 'Има поне един физически обърнат ръб на ръка.' : 'At least one edge was manually flipped.' }}
+              {{ t().customEdgeFlipViolatedDesc }}
             </li>
           }
           @if (!orbitValidation()?.isParityValid) {
             <li>
-              &bull; <strong>{{ isBg() ? 'Четност на пермутациите:' : 'Permutation Parity:' }}</strong>
+              &bull; <strong>{{ t().valParityTitle }}:</strong>
               sgn(&sigma;)={{ orbitValidation()?.cornerParity }} &ne; sgn(&tau;)={{ orbitValidation()?.edgeParity }} —
-              {{ isBg() ? 'Две парчета са разменени физически на ръка.' : 'Two pieces were manually swapped.' }}
+              {{ t().customParityViolatedDesc }}
             </li>
           }
         </ul>
       </div>
       <div class="banner-actions">
         <button type="button" (click)="applyToCube()" class="btn-banner-primary">
-          <span>{{ isBg() ? 'Зареди въпреки това в 3D' : 'Load into 3D Anyway' }}</span>
+          <span>{{ t().customApplyTo3DBtn }}</span>
         </button>
         <a routerLink="/validator" class="btn-banner-secondary">
-          <span>{{ isBg() ? 'Детайли във Валидатора' : 'Inspect Coset Invariants' }}</span>
+          <span>{{ t().customInspectValidatorBtn }}</span>
         </a>
       </div>
     </div>
@@ -439,10 +424,10 @@
       </div>
       <div style="flex: 1;">
         <h4 class="banner-title warning">
-          {{ isBg() ? 'Въвеждането не е завършено' : 'Incomplete or Invalid State' }}
+          {{ language() === 'bg' ? 'Въвеждането не е завършено' : 'Incomplete or Invalid State' }}
         </h4>
         <p class="banner-desc">
-          {{ isBg()
+          {{ language() === 'bg'
             ? 'Всеки цвят трябва да присъства точно 9 пъти и всички 20 подвижни парчета (8 ъгъла и 12 ръба) трябва да са физически валидни.'
             : 'Each color must appear exactly 9 times and all 20 movable pieces (8 corners and 12 edges) must form physically valid color combinations.'
           }}
@@ -453,14 +438,14 @@
               <li>&bull; {{ err }}</li>
             }
             @if (reconstruction().errors.length > 3) {
-              <li>&bull; {{ isBg() ? '... и още ' + (reconstruction().errors.length - 3) + ' забележки' : '... and ' + (reconstruction().errors.length - 3) + ' more issues' }}</li>
+              <li>&bull; {{ language() === 'bg' ? '... и още ' + (reconstruction().errors.length - 3) + ' забележки' : '... and ' + (reconstruction().errors.length - 3) + ' more issues' }}</li>
             }
           </ul>
         }
       </div>
       <div class="banner-actions">
         <button type="button" (click)="resetToSolved()" class="btn-banner-secondary">
-          <span>{{ isBg() ? 'Запълни с Подредено' : 'Fill Solved' }}</span>
+          <span>{{ t().customPresetSolved }}</span>
         </button>
       </div>
     </div>
@@ -475,13 +460,10 @@
         <div class="palette-top">
           <div>
             <h3 class="palette-title">
-              {{ isBg() ? '1. Изберете цвят за нанасяне (Четка)' : '1. Choose Active Color Brush' }}
+              {{ t().customNetPainterTitle }}
             </h3>
             <p class="palette-desc">
-              {{ isBg()
-                ? 'Кликнете върху цвят, след което кликайте по стикерите на разгъвката по-долу.'
-                : 'Select a brush color, then click stickers on the unfolded 2D cube net below.'
-              }}
+              {{ t().customNetPainterSubtitle }}
             </p>
           </div>
 
@@ -490,20 +472,20 @@
             <button
               type="button"
               (click)="resetToSolved()"
-              [title]="isBg() ? 'Запълни всички стикери в решено състояние' : 'Reset all facelets to solved'"
+              [title]="t().customResetSolvedBtn"
               class="tool-btn"
             >
               <svg class="w-3.5 h-3.5 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
                 <path d="M3 3v5h5" />
               </svg>
-              <span>{{ isBg() ? 'Подредено' : 'Solved' }}</span>
+              <span>{{ t().customResetSolvedBtn }}</span>
             </button>
 
             <button
               type="button"
               (click)="clearToBlank()"
-              [title]="isBg() ? 'Изчисти всички стикери в сиво за въвеждане от нулата' : 'Clear all stickers to neutral grey'"
+              [title]="t().customClearBlankBtn"
               class="tool-btn"
             >
               <svg class="w-3.5 h-3.5 text-rose-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -511,7 +493,7 @@
                 <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
                 <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
               </svg>
-              <span>{{ isBg() ? 'Изчисти' : 'Clear' }}</span>
+              <span>{{ t().customClearBlankBtn }}</span>
             </button>
           </div>
         </div>
@@ -527,7 +509,7 @@
             >
               <span class="swatch-color" [style.background-color]="item.color"></span>
               <div class="swatch-info">
-                <span class="swatch-name">{{ isBg() ? item.nameBg : item.nameEn }}</span>
+                <span class="swatch-name">{{ language() === 'bg' ? item.nameBg : item.nameEn }}</span>
                 <span
                   class="swatch-count"
                   [class.ok]="colorCounts()[item.face] === 9"
@@ -546,25 +528,25 @@
 
         <!-- Presets Row -->
         <div class="presets-row">
-          <span class="presets-label">{{ isBg() ? 'Тестови Шаблони:' : 'Presets:' }}</span>
+          <span class="presets-label">{{ t().customPresetsTitle }}</span>
           <div class="presets-chips">
             <button type="button" (click)="loadPreset('solved')" class="preset-chip">
-              {{ isBg() ? '🎯 Решено' : '🎯 Solved' }}
+              {{ t().customPresetSolved }}
             </button>
             <button type="button" (click)="loadPreset('scramble')" class="preset-chip">
-              {{ isBg() ? '🎲 Разбъркано' : '🎲 Scrambled' }}
+              {{ t().customPresetScramble }}
             </button>
             <button type="button" (click)="loadPreset('twist')" class="preset-chip warning">
-              {{ isBg() ? '🔄 Завъртян ъгъл (+120°)' : '🔄 Corner Twist' }}
+              {{ t().customPresetTwist }}
             </button>
             <button type="button" (click)="loadPreset('flip')" class="preset-chip warning">
-              {{ isBg() ? '🔀 Обърнат ръб' : '🔀 Edge Flip' }}
+              {{ t().customPresetFlip }}
             </button>
             <button type="button" (click)="loadPreset('swap')" class="preset-chip warning">
-              {{ isBg() ? '⚡ Разменени 2 върха' : '⚡ Corner Swap' }}
+              {{ t().customPresetSwap }}
             </button>
             <button type="button" (click)="loadPreset('superflip')" class="preset-chip">
-              {{ isBg() ? '✨ Superflip' : '✨ Superflip' }}
+              {{ t().customPresetSuperflip }}
             </button>
           </div>
         </div>
@@ -574,10 +556,10 @@
       <div class="net-grid-card">
         <div class="net-grid-header">
           <h3 class="palette-title">
-            {{ isBg() ? '2. Интерактивна Разгъвка (6-те Стени)' : '2. Interactive 2D Cube Net' }}
+            {{ t().net2DTitle }}
           </h3>
           <span style="font-size: 0.75rem; color: var(--text-dim);">
-            {{ isBg()
+            {{ language() === 'bg'
               ? 'Центровете (маркирани с 🔒) са фиксирани и определят коя страна къде се намира'
               : 'Centers (marked with 🔒) are fixed and define face orientations'
             }}
@@ -594,7 +576,7 @@
           <div class="cross-row">
             <div class="cross-cell-empty"></div>
             <div class="cross-face-box">
-              <span class="face-title-tag">U &bull; {{ isBg() ? 'Горе (Бяло)' : 'Up (White)' }}</span>
+              <span class="face-title-tag">U &bull; {{ language() === 'bg' ? 'Горе (Бяло)' : 'Up (White)' }}</span>
               <div class="face-3x3-grid">
                 @for (r of [0, 1, 2]; track r) {
                   @for (c of [0, 1, 2]; track c) {
@@ -621,7 +603,7 @@
           <div class="cross-row">
             <!-- Left Face -->
             <div class="cross-face-box">
-              <span class="face-title-tag">L &bull; {{ isBg() ? 'Ляво (Оранж)' : 'Left (Orange)' }}</span>
+              <span class="face-title-tag">L &bull; {{ language() === 'bg' ? 'Ляво (Оранж)' : 'Left (Orange)' }}</span>
               <div class="face-3x3-grid">
                 @for (r of [0, 1, 2]; track r) {
                   @for (c of [0, 1, 2]; track c) {
@@ -643,7 +625,7 @@
 
             <!-- Front Face -->
             <div class="cross-face-box">
-              <span class="face-title-tag">F &bull; {{ isBg() ? 'Отпред (Зелено)' : 'Front (Green)' }}</span>
+              <span class="face-title-tag">F &bull; {{ language() === 'bg' ? 'Отпред (Зелено)' : 'Front (Green)' }}</span>
               <div class="face-3x3-grid">
                 @for (r of [0, 1, 2]; track r) {
                   @for (c of [0, 1, 2]; track c) {
@@ -665,7 +647,7 @@
 
             <!-- Right Face -->
             <div class="cross-face-box">
-              <span class="face-title-tag">R &bull; {{ isBg() ? 'Дясно (Червено)' : 'Right (Red)' }}</span>
+              <span class="face-title-tag">R &bull; {{ language() === 'bg' ? 'Дясно (Червено)' : 'Right (Red)' }}</span>
               <div class="face-3x3-grid">
                 @for (r of [0, 1, 2]; track r) {
                   @for (c of [0, 1, 2]; track c) {
@@ -687,7 +669,7 @@
 
             <!-- Back Face -->
             <div class="cross-face-box">
-              <span class="face-title-tag">B &bull; {{ isBg() ? 'Отзад (Синьо)' : 'Back (Blue)' }}</span>
+              <span class="face-title-tag">B &bull; {{ language() === 'bg' ? 'Отзад (Синьо)' : 'Back (Blue)' }}</span>
               <div class="face-3x3-grid">
                 @for (r of [0, 1, 2]; track r) {
                   @for (c of [0, 1, 2]; track c) {
@@ -712,7 +694,7 @@
           <div class="cross-row">
             <div class="cross-cell-empty"></div>
             <div class="cross-face-box">
-              <span class="face-title-tag">D &bull; {{ isBg() ? 'Долу (Жълто)' : 'Down (Yellow)' }}</span>
+              <span class="face-title-tag">D &bull; {{ language() === 'bg' ? 'Долу (Жълто)' : 'Down (Yellow)' }}</span>
               <div class="face-3x3-grid">
                 @for (r of [0, 1, 2]; track r) {
                   @for (c of [0, 1, 2]; track c) {
@@ -744,7 +726,7 @@
             <line x1="12" y1="8" x2="12.01" y2="8" />
           </svg>
           <span>
-            {{ isBg()
+            {{ language() === 'bg'
               ? 'Съвет за въвеждане: Дръжте вашето физическо кубче така, че бялата стена да е отгоре, а зелената – към вас. Тогава разгъвката отговаря точно на това, което виждате.'
               : 'Physical Tip: Hold your cube with White on Top (U) and Green on Front (F). The 2D unfolded cross matches this orientation exactly.'
             }}
@@ -760,7 +742,7 @@
         <div class="pieces-card">
           <div class="pieces-card-header">
             <h3 class="palette-title">
-              {{ isBg() ? '8-те Върха (Corners) — Орбита в S₈' : '8 Corners — Orbit in S₈' }}
+              {{ t().customCornersHeading }}
             </h3>
             <span style="font-size: 0.75rem; color: var(--text-dim);">
               &sum; v&#7522; &equiv; {{ orbitValidation()?.cornerTwistSum ?? '?' }} (mod 3)
@@ -774,7 +756,7 @@
                   <div>
                     <span class="piece-title">{{ c.name }}</span>
                     <span class="piece-pos-tag">
-                      {{ isBg() ? 'Позиция: слот #' + c.pos : 'Slot #' + c.pos }}
+                      {{ language() === 'bg' ? 'Позиция: слот #' + c.pos : 'Slot #' + c.pos }}
                     </span>
                   </div>
                   <span
@@ -804,14 +786,14 @@
                     (click)="twistCornerInPlace(c.id, 1)"
                     class="btn-mini-twist"
                   >
-                    <span>{{ isBg() ? 'Завърти +120°' : 'Twist +120°' }}</span>
+                    <span>{{ t().customTwistBtn }} (+120°)</span>
                   </button>
                   <button
                     type="button"
                     (click)="twistCornerInPlace(c.id, 2)"
                     class="btn-mini-twist"
                   >
-                    <span>{{ isBg() ? 'Завърти +240°' : 'Twist +240°' }}</span>
+                    <span>{{ t().customTwistBtn }} (+240°)</span>
                   </button>
                 </div>
               </div>
@@ -823,7 +805,7 @@
         <div class="pieces-card">
           <div class="pieces-card-header">
             <h3 class="palette-title">
-              {{ isBg() ? '12-те Ръба (Edges) — Орбита в S₁₂' : '12 Edges — Orbit in S₁₂' }}
+              {{ t().customEdgesHeading }}
             </h3>
             <span style="font-size: 0.75rem; color: var(--text-dim);">
               &sum; w&#7522; &equiv; {{ orbitValidation()?.edgeFlipSum ?? '?' }} (mod 2)
@@ -837,7 +819,7 @@
                   <div>
                     <span class="piece-title">{{ e.name }}</span>
                     <span class="piece-pos-tag">
-                      {{ isBg() ? 'Позиция: слот #' + e.pos : 'Slot #' + e.pos }}
+                      {{ language() === 'bg' ? 'Позиция: слот #' + e.pos : 'Slot #' + e.pos }}
                     </span>
                   </div>
                   <span
@@ -867,7 +849,7 @@
                     (click)="flipEdgeInPlace(e.id)"
                     class="btn-mini-twist"
                   >
-                    <span>{{ isBg() ? 'Обърни ръба (Flip)' : 'Flip Edge' }}</span>
+                    <span>{{ t().customFlipBtn }}</span>
                   </button>
                 </div>
               </div>
@@ -882,10 +864,7 @@
   <footer class="footer-actions-card">
     <div style="display: flex; align-items: center; gap: 0.75rem;">
       <span class="footer-state-indicator" [class.ok]="isSolvable()" [class.violated]="!isSolvable()">
-        {{ isSolvable()
-          ? (isBg() ? 'Готово за прилагане към 3D симулатора' : 'Ready to apply to 3D cube')
-          : (isBg() ? 'Невалидно/Нерешимо състояние' : 'Unsolvable or incomplete state')
-        }}
+        {{ isSolvable() ? t().customFooterReady : t().customFooterUnsolvable }}
       </span>
     </div>
 
@@ -900,7 +879,7 @@
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
         </svg>
-        <span>{{ showSolver() ? (isBg() ? 'Скрий Решението' : 'Hide Solver') : (isBg() ? '🧩 Реши моето кубче' : '🧩 Solve My Cube') }}</span>
+        <span>{{ showSolver() ? t().customHideSolveBtn : t().customSolveBtn }}</span>
       </button>
 
       <button
@@ -912,14 +891,14 @@
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <polyline points="20 6 9 17 4 12" />
         </svg>
-        <span>{{ isBg() ? 'Приложи към 3D Симулатора' : 'Apply to 3D Simulator' }}</span>
+        <span>{{ t().customApplyMainBtn }}</span>
       </button>
 
       <a routerLink="/validator" class="btn-inspect-link">
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
         </svg>
-        <span>{{ isBg() ? 'Валидатор' : 'Validator' }}</span>
+        <span>{{ t().pageValidator }}</span>
       </a>
     </div>
   </footer>

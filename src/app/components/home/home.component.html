@@ -10,37 +10,33 @@
       </div>
 
       <h2 class="hero-title">
-        {{ isBg ? 'Изследване на Груповите Действия върху Кубчето на Рубик' : "Rubik's Cube Group Actions Explorer" }}
+        {{ t().homeHeroTitle }}
       </h2>
 
       <p class="hero-desc">
-        {{
-          isBg
-            ? 'Интерактивна платформа, свързваща абстрактната алгебра и 3D визуализацията. Изследвайте симетрии, циклични разлагания на пермутации, инварианти на разрешимост и поетапно решаване чрез теория на групите.'
-            : 'An interactive platform bridging abstract algebra and 3D visualization. Explore group actions G ↷ X, disjoint permutation cycles, solution orbit invariants, and a step-by-step group-theoretic solving method.'
-        }}
+        {{ t().homeHeroDesc }}
       </p>
 
       <!-- Key Algebraic Stats Strip -->
       <div class="stats-grid">
         <div class="stat-item">
           <span class="stat-val">4.325 &times; 10&#185;&#8313;</span>
-          <span class="stat-label">{{ isBg ? 'Ред на групата |G|' : 'Group Order |G|' }}</span>
+          <span class="stat-label">{{ t().groupOrder }}</span>
         </div>
 
         <div class="stat-item">
           <span class="stat-val">&#123;U, D, L, R, F, B&#125;</span>
-          <span class="stat-label">{{ isBg ? '6 Генератора' : '6 Generators' }}</span>
+          <span class="stat-label">{{ t().generatorsHeading }}</span>
         </div>
 
         <div class="stat-item">
           <span class="stat-val">1 / 12</span>
-          <span class="stat-label">{{ isBg ? 'Фактор на разрешимост' : 'Orbit Solvability Factor' }}</span>
+          <span class="stat-label">{{ t().homeStatSolvability }}</span>
         </div>
 
         <div class="stat-item">
           <span class="stat-val">20 moves</span>
-          <span class="stat-label">{{ isBg ? 'Число на Бог (HTM)' : "God's Number (HTM)" }}</span>
+          <span class="stat-label">{{ t().homeStatGodsNumber }}</span>
         </div>
       </div>
     </div>
@@ -55,9 +51,9 @@
         </svg>
       </div>
       <div>
-        <h3 class="toolbar-title">{{ isBg ? 'Бързи действия' : 'Quick Actions' }}</h3>
+        <h3 class="toolbar-title">{{ t().homeQuickActions }}</h3>
         <p class="toolbar-desc">
-          {{ isBg ? 'Манипулирайте директно 3D куба вляво' : 'Manipulate the persistent 3D cube on the left' }}
+          {{ t().homeQuickActionsDesc }}
         </p>
       </div>
     </div>
@@ -67,7 +63,7 @@
         <svg class="w-3.5 h-3.5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
         </svg>
-        <span>{{ isBg ? 'Разбъркай' : 'Scramble' }}</span>
+        <span>{{ t().scrambleBtn }}</span>
       </button>
 
       <button type="button" (click)="onReset()" class="action-pill-btn">
@@ -75,14 +71,14 @@
           <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
           <path d="M3 3v5h5" />
         </svg>
-        <span>{{ isBg ? 'Ресет (e)' : 'Reset (e)' }}</span>
+        <span>{{ t().identityBtn }}</span>
       </button>
 
       <button type="button" (click)="onOpenTour()" class="action-pill-btn primary">
         <svg class="w-3.5 h-3.5 text-amber-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
         </svg>
-        <span>{{ isBg ? 'Интерактивен Тур' : 'Interactive Tour' }}</span>
+        <span>{{ t().tourBtn }}</span>
       </button>
 
       <button type="button" (click)="onOpenTheory()" class="action-pill-btn">
@@ -91,7 +87,7 @@
           <line x1="12" y1="16" x2="12" y2="12" />
           <line x1="12" y1="8" x2="12.01" y2="8" />
         </svg>
-        <span>{{ isBg ? 'Теория & Формули' : 'Theory & Formulas' }}</span>
+        <span>{{ t().theoryGuideBtn }}</span>
       </button>
     </div>
   </section>
@@ -105,7 +101,7 @@
         <rect width="7" height="7" x="14" y="14" rx="1" />
         <rect width="7" height="7" x="3" y="14" rx="1" />
       </svg>
-      <span>{{ isBg ? 'Основни Модули на Платформата' : 'Core Application Modules' }}</span>
+      <span>{{ t().homeFeaturesTitle }}</span>
     </h3>
 
     <div class="modules-grid">
@@ -119,7 +115,7 @@
               </svg>
             </div>
             <div>
-              <h4 class="module-title">{{ isBg ? 'Математически Концепции' : 'Math Concepts' }}</h4>
+              <h4 class="module-title">{{ t().homeModMathTitle }}</h4>
               <p class="module-subtitle">G &le; S&#8324;&#8328; &amp; Group Actions</p>
             </div>
           </div>
@@ -127,25 +123,25 @@
           <ul class="feature-list" style="margin-top: 1rem;">
             <li class="feature-item">
               <span class="feature-bullet">&bull;</span>
-              <span><strong>{{ isBg ? 'Орбити &amp; Стабилизатори:' : 'Orbits &amp; Stabilizers:' }}</strong> {{ isBg ? 'Теорема за орбита-стабилизатор |G| = |Orb(x)| · |Stab(x)|' : 'Verify |G| = |Orb(x)| · |Stab(x)|' }}</span>
+              <span><strong>{{ t().homeModMathFeat1 }}</strong> {{ t().homeModMathFeat1Desc }}</span>
             </li>
             <li class="feature-item">
               <span class="feature-bullet">&bull;</span>
-              <span><strong>{{ isBg ? 'Циклични разлагания:' : 'Cycle Notation:' }}</strong> {{ isBg ? 'Разлагане на пермутации в непресичащи се цикли и четност' : 'Disjoint permutation cycles and parity analysis' }}</span>
+              <span><strong>{{ t().homeModMathFeat2 }}</strong> {{ t().homeModMathFeat2Desc }}</span>
             </li>
             <li class="feature-item">
               <span class="feature-bullet">&bull;</span>
-              <span><strong>{{ isBg ? 'Ред &amp; Свидетел на Коши:' : 'Order &amp; Cauchy Witness:' }}</strong> {{ isBg ? 'Изчисление на ord(g) и елементи от прости редове' : 'Compute ord(g) and Cauchy prime order elements' }}</span>
+              <span><strong>{{ t().homeModMathFeat3 }}</strong> {{ t().homeModMathFeat3Desc }}</span>
             </li>
             <li class="feature-item">
               <span class="feature-bullet">&bull;</span>
-              <span><strong>{{ isBg ? 'Подгрупи:' : 'Subgroups:' }}</strong> {{ isBg ? 'Генерирани подгрупи ⟨R, U⟩, Слайс група и етапи на Тистлетуейт' : 'Explore ⟨R, U⟩, slice subgroup, and Thistlethwaite stages' }}</span>
+              <span><strong>{{ t().homeModMathFeat4 }}</strong> {{ t().homeModMathFeat4Desc }}</span>
             </li>
           </ul>
         </div>
 
         <a routerLink="/math" class="card-action-btn btn-math">
-          <span>{{ isBg ? 'Към Математическия Лаб' : 'Explore Math Concepts' }}</span>
+          <span>{{ t().homeExploreBtn }}</span>
           <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="9 18 15 12 9 6" />
           </svg>
@@ -163,7 +159,7 @@
               </svg>
             </div>
             <div>
-              <h4 class="module-title">{{ isBg ? 'Валидатор на Орбитата' : 'Orbit Validator' }}</h4>
+              <h4 class="module-title">{{ t().homeModValidatorTitle }}</h4>
               <p class="module-subtitle">Solvability Invariants &amp; Cosets</p>
             </div>
           </div>
@@ -171,25 +167,25 @@
           <ul class="feature-list" style="margin-top: 1rem;">
             <li class="feature-item">
               <span class="feature-bullet">&bull;</span>
-              <span><strong>{{ isBg ? 'Ъглова ориентация:' : 'Corner Twists:' }}</strong> &sum; r&#7522; &equiv; 0 (mod 3)</span>
+              <span><strong>{{ t().homeModValidatorFeat1 }}</strong> {{ t().homeModValidatorFeat1Desc }}</span>
             </li>
             <li class="feature-item">
               <span class="feature-bullet">&bull;</span>
-              <span><strong>{{ isBg ? 'Ръбова ориентация:' : 'Edge Flips:' }}</strong> &sum; w&#7522; &equiv; 0 (mod 2)</span>
+              <span><strong>{{ t().homeModValidatorFeat2 }}</strong> {{ t().homeModValidatorFeat2Desc }}</span>
             </li>
             <li class="feature-item">
               <span class="feature-bullet">&bull;</span>
-              <span><strong>{{ isBg ? 'Четност на пермутациите:' : 'Permutation Parity:' }}</strong> sgn(&sigma;) = sgn(&tau;)</span>
+              <span><strong>{{ t().homeModValidatorFeat3 }}</strong> {{ t().homeModValidatorFeat3Desc }}</span>
             </li>
             <li class="feature-item">
               <span class="feature-bullet">&bull;</span>
-              <span><strong>{{ isBg ? 'Симулатор на неразрешимост:' : '12 Coset Simulator:' }}</strong> {{ isBg ? 'Тествайте единични завъртания и възстановете валидна орбита' : 'Tamper pieces to explore invalid cosets & repair' }}</span>
+              <span><strong>{{ t().homeModValidatorFeat4 }}</strong> {{ t().homeModValidatorFeat4Desc }}</span>
             </li>
           </ul>
         </div>
 
         <a routerLink="/validator" class="card-action-btn btn-validator">
-          <span>{{ isBg ? 'Към Валидатора' : 'Launch Orbit Validator' }}</span>
+          <span>{{ t().homeModValidatorBtn }}</span>
           <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="9 18 15 12 9 6" />
           </svg>
@@ -208,7 +204,7 @@
               </svg>
             </div>
             <div>
-              <h4 class="module-title">{{ isBg ? 'Интерактивен Урок' : 'Cube Tutorial' }}</h4>
+              <h4 class="module-title">{{ t().homeModTutorialTitle }}</h4>
               <p class="module-subtitle">7-Step Group-Theoretic Solution</p>
             </div>
           </div>
@@ -216,25 +212,25 @@
           <ul class="feature-list" style="margin-top: 1rem;">
             <li class="feature-item">
               <span class="feature-bullet">&bull;</span>
-              <span><strong>{{ isBg ? '7 Етапа на редукция:' : '7 Reduction Steps:' }}</strong> {{ isBg ? 'Бял кръст &rarr; Първи пласт &rarr; Среден пласт &rarr; OLL &rarr; PLL' : 'White Cross &rarr; Layer 1 &rarr; F2L &rarr; OLL &rarr; PLL' }}</span>
+              <span><strong>{{ t().homeModTutorialFeat1 }}</strong> {{ t().homeModTutorialFeat1Desc }}</span>
             </li>
             <li class="feature-item">
               <span class="feature-bullet">&bull;</span>
-              <span><strong>{{ isBg ? 'Комутатори &amp; Конюгати:' : 'Commutators &amp; Conjugates:' }}</strong> {{ isBg ? 'Алгебрична обосновка на всяка стъпка: [A, B] = A B A⁻¹ B⁻¹' : 'Algebraic basis for each step: g = c [a, b] c⁻¹' }}</span>
+              <span><strong>{{ t().homeModTutorialFeat2 }}</strong> {{ t().homeModTutorialFeat2Desc }}</span>
             </li>
             <li class="feature-item">
               <span class="feature-bullet">&bull;</span>
-              <span><strong>{{ isBg ? 'Интерактивно изпълнение:' : 'Live Execution:' }}</strong> {{ isBg ? 'Бутон за директно прилагане на алгоритмите върху 3D куба' : 'Apply algorithms directly to the 3D cube with one click' }}</span>
+              <span><strong>{{ t().homeModTutorialFeat3 }}</strong> {{ t().homeModTutorialFeat3Desc }}</span>
             </li>
             <li class="feature-item">
               <span class="feature-bullet">&bull;</span>
-              <span><strong>{{ isBg ? 'Интерактивни съвети:' : 'Hints &amp; Visuals:' }}</strong> {{ isBg ? 'Визуални насоки и съвети за всяка позиция' : 'Visual guides and notations for every case' }}</span>
+              <span><strong>{{ t().homeModTutorialFeat4 }}</strong> {{ t().homeModTutorialFeat4Desc }}</span>
             </li>
           </ul>
         </div>
 
         <a routerLink="/tutorial" class="card-action-btn btn-tutorial">
-          <span>{{ isBg ? 'Към Интерактивния Урок' : 'Start Cube Tutorial' }}</span>
+          <span>{{ t().homeModTutorialBtn }}</span>
           <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="9 18 15 12 9 6" />
           </svg>
@@ -255,7 +251,7 @@
               </svg>
             </div>
             <div>
-              <h4 class="module-title">{{ isBg ? 'Въвеждане на Физическо Кубче' : 'Physical Cube Input' }}</h4>
+              <h4 class="module-title">{{ t().homeModCustomTitle }}</h4>
               <p class="module-subtitle">Custom Color Painter &amp; Piece Inspector</p>
             </div>
           </div>
@@ -263,25 +259,25 @@
           <ul class="feature-list" style="margin-top: 1rem;">
             <li class="feature-item">
               <span class="feature-bullet">&bull;</span>
-              <span><strong>{{ isBg ? 'Интерактивна 2D четка:' : 'Interactive 2D Brush:' }}</strong> {{ isBg ? 'Нанесете цветовете от реалното си кубче стикер по стикер' : 'Paint facelets sticker by sticker with real colors' }}</span>
+              <span><strong>{{ t().homeModCustomFeat1 }}</strong> {{ t().homeModCustomFeat1Desc }}</span>
             </li>
             <li class="feature-item">
               <span class="feature-bullet">&bull;</span>
-              <span><strong>{{ isBg ? 'Инспектор парче по парче:' : 'Piece-by-Piece Form:' }}</strong> {{ isBg ? 'Преглед на 8-те ъгъла и 12-те ръба с техните завъртания' : 'Inspect 8 corners & 12 edges with exact twists/flips' }}</span>
+              <span><strong>{{ t().homeModCustomFeat2 }}</strong> {{ t().homeModCustomFeat2Desc }}</span>
             </li>
             <li class="feature-item">
               <span class="feature-bullet">&bull;</span>
-              <span><strong>{{ isBg ? 'Проверка за разглобяване:' : 'Tampering Diagnostics:' }}</strong> {{ isBg ? 'Моментален тест дали кубчето е сглобено в разрешим клас' : 'Instant check if cube is trapped in an unsolvable coset' }}</span>
+              <span><strong>{{ t().homeModCustomFeat3 }}</strong> {{ t().homeModCustomFeat3Desc }}</span>
             </li>
             <li class="feature-item">
               <span class="feature-bullet">&bull;</span>
-              <span><strong>{{ isBg ? 'Синхронизация с 3D симулатора:' : 'Live 3D Sync:' }}</strong> {{ isBg ? 'Зареждане с 1 клик в 3D сцената за свободно въртене' : '1-click load into the 3D scene for solving and turns' }}</span>
+              <span><strong>{{ t().homeModCustomFeat4 }}</strong> {{ t().homeModCustomFeat4Desc }}</span>
             </li>
           </ul>
         </div>
 
         <a routerLink="/custom" class="card-action-btn btn-custom">
-          <span>{{ isBg ? 'Към Въвеждането' : 'Start Physical Input' }}</span>
+          <span>{{ t().homeModCustomBtn }}</span>
           <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="9 18 15 12 9 6" />
           </svg>

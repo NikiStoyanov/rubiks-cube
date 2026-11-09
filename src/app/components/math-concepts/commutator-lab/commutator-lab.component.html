@@ -47,18 +47,15 @@
   <div class="p-3.5 rounded-xl bg-gradient-to-r from-fuchsia-950/40 to-slate-950 border border-fuchsia-500/30 text-xs text-slate-300 space-y-2">
     <div class="flex items-center gap-2 font-bold text-fuchsia-300">
       <span>💡</span>
-      <span>{{ language() === 'bg' ? 'Какво е комутатор [A, B] и защо е магическото оръжие на спийдкюбърите?' : 'What is a commutator [A, B] and why is it speedcubing magic?' }}</span>
+      <span>{{ t().commutatorCalloutTitle }}</span>
     </div>
     <p class="text-[11px] leading-relaxed text-slate-300">
-      {{ language() === 'bg'
-        ? 'Комутаторът [A, B] = A B A⁻¹ B⁻¹ измерва колко два хода "не комутират". Тъй като първо правите A и B, а после ги отменяте наобратно с техните инверсии, почти всичко по кубчето се възстановява, освен малкото парчета, където действията са се пресекли. Това позволява хирургично разменяне на точно 3 парчета!'
-        : 'The commutator [A, B] = A B A⁻¹ B⁻¹ measures how two operations fail to commute. Because you apply A and B then undo both with their inverses, almost the entire cube cancels out except for a few intersecting pieces. This allows surgically cycling 3 pieces without scrambling the rest!'
-      }}
+      {{ t().commutatorCalloutDesc }}
     </p>
     <div class="p-2 bg-slate-900/90 rounded-lg border border-slate-800 text-[11px] space-y-1 text-slate-400">
-      <div class="text-amber-300 font-semibold">{{ language() === 'bg' ? '🎯 Опитайте следното:' : '🎯 Try this:' }}</div>
-      <div>1. {{ language() === 'bg' ? 'Изберете "3-цикъл на ъгли" от готовите шаблони.' : 'Select "Corner 3-cycle" from presets.' }}</div>
-      <div>2. {{ language() === 'bg' ? 'Кликнете "Изпълни [A, B]" и вижте как точно 3 ъгъла сменят местата си, а останалата част от кубчето остава непокътната!' : 'Click "Execute [A, B]" and observe how exactly 3 corners cycle while the rest of the cube remains intact!' }}</div>
+      <div class="text-amber-300 font-semibold">{{ t().tryThisLabel }}</div>
+      <div>1. {{ t().commutatorCalloutStep1 }}</div>
+      <div>2. {{ t().commutatorCalloutStep2 }}</div>
     </div>
   </div>
 

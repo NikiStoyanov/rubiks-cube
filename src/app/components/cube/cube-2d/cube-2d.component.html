@@ -111,10 +111,10 @@
   @if (showHighlights()) {
     <div class="mt-3 flex items-center gap-2 text-[11px] text-slate-400 bg-slate-900/80 px-3 py-1 rounded-full border border-slate-800 animate-fade-in">
       <span class="inline-block w-2 h-2 rounded-full bg-cyan-400"></span>
-      <span>{{ language() === 'bg' ? 'Кликнете върху стикер за избор на връх или ръб' : 'Click any sticker to select corner or edge' }}</span>
+      <span>{{ t().clickNetInstruction }}</span>
       <span class="text-slate-600">|</span>
       <span class="inline-block w-2 h-2 rounded-full bg-amber-400"></span>
-      <span>{{ language() === 'bg' ? 'Орбита (Orb)' : 'Orbit (Orb)' }}</span>
+      <span>{{ t().tabOrbit }} (Orb)</span>
     </div>
   }
 </div>

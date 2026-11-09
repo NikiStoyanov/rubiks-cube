@@ -30,18 +30,15 @@
   <div class="p-3.5 rounded-xl bg-gradient-to-r from-emerald-950/40 to-slate-950 border border-emerald-500/30 text-xs text-slate-300 space-y-2">
     <div class="flex items-center gap-2 font-bold text-emerald-300">
       <span>💡</span>
-      <span>{{ language() === 'bg' ? 'Какво е стабилизатор и как да го проверите?' : 'What is a Stabilizer and how to verify it?' }}</span>
+      <span>{{ t().stabCalloutTitle }}</span>
     </div>
     <p class="text-[11px] leading-relaxed text-slate-300">
-      {{ language() === 'bg'
-        ? 'Стабилизаторът Stab(x) включва само онези ходове, които оставят избраното парче абсолютно неподвижно на мястото му. Ако завъртането не засяга избраното парче (или прави 360° на неговия слой), то е в неговия стабилизатор!'
-        : 'The stabilizer Stab(x) contains only those moves that leave the chosen piece strictly fixed in its place. If a turn does not touch the piece, it belongs to its stabilizer!'
-      }}
+      {{ t().stabCalloutDesc }}
     </p>
     <div class="p-2 bg-slate-900/90 rounded-lg border border-slate-800 text-[11px] space-y-1 text-slate-400">
-      <div class="text-amber-300 font-semibold">{{ language() === 'bg' ? '🎯 Опитайте следното:' : '🎯 Try this:' }}</div>
-      <div>1. {{ language() === 'bg' ? 'Погледнете списъка с ходове долу: тези със зелена отметка не мърдат парчето.' : 'Look at the candidate moves below: those with green checkmarks keep the piece motionless.' }}</div>
-      <div>2. {{ language() === 'bg' ? 'Кликнете върху зелен ход (напр. D или R за горно парче) и вижте как кубчето се върти, но избраното парче остава неподвижно!' : 'Click a green move (e.g. D or R) and observe the cube turn while the target piece stays fixed!' }}</div>
+      <div class="text-amber-300 font-semibold">{{ t().tryThisLabel }}</div>
+      <div>1. {{ t().stabCalloutStep1 }}</div>
+      <div>2. {{ t().stabCalloutStep2 }}</div>
     </div>
   </div>
 

@@ -35,6 +35,7 @@ export class CustomCubeComponent implements OnInit, OnDestroy {
   private readonly sub = new Subscription();
 
   readonly language = this.languageService.language;
+  readonly t = this.languageService.t;
   readonly isBg = computed(() => this.language() === 'bg');
 
   // Input modes: '2d' (Net Painter) or 'pieces' (Piece by Piece Inspector)

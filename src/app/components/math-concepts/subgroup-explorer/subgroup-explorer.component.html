@@ -20,18 +20,15 @@
   <div class="p-3.5 rounded-xl bg-gradient-to-r from-sky-950/40 to-slate-950 border border-sky-500/30 text-xs text-slate-300 space-y-2">
     <div class="flex items-center gap-2 font-bold text-sky-300">
       <span>💡</span>
-      <span>{{ language() === 'bg' ? 'Какво е подгрупа (H ≤ G) и защо поражда симетрии?' : 'What is a Subgroup (H ≤ G) and why does it yield symmetries?' }}</span>
+      <span>{{ t().subgroupCalloutTitle }}</span>
     </div>
     <p class="text-[11px] leading-relaxed text-slate-300">
-      {{ language() === 'bg'
-        ? 'Подгрупата е затворено подмножество от ходове. Ограничавайки се само до определени генератори (например само 180° ходове ⟨R², L², U², D², F², B²⟩), пространството от възможни състояния намалява драстично от 4.3×10¹⁹ до малка група с висока симетрия.'
-        : 'A subgroup is a closed subset of moves. Restricting yourself to specific generators (e.g. only 180° turns ⟨R², L², U², D², F², B²⟩) shrinks the state space dramatically from 4.3×10¹⁹ to a highly symmetric subgroup.'
-      }}
+      {{ t().subgroupCalloutDesc }}
     </p>
     <div class="p-2 bg-slate-900/90 rounded-lg border border-slate-800 text-[11px] space-y-1 text-slate-400">
-      <div class="text-amber-300 font-semibold">{{ language() === 'bg' ? '🎯 Опитайте следното:' : '🎯 Try this:' }}</div>
-      <div>1. {{ language() === 'bg' ? 'Кликнете "Приложи" (▶) на "Шахматна дъска" или "Cube-in-a-Cube" долу, за да генерирате красиви симетрични конфигурации.' : 'Click "Apply" (▶) on "Checkerboard" or "Cube-in-a-Cube" below to create elegant symmetric states.' }}</div>
-      <div>2. {{ language() === 'bg' ? 'Разгледайте "Подгрупа на Косиемба" — това е основата на 2-фазовия алгоритъм, с който решаващите ботове решават всяко кубче за под 20 хода!' : 'Inspect the "Kociemba Subgroup" — the foundation of the 2-phase algorithm that solves any cube in ≤20 moves!' }}</div>
+      <div class="text-amber-300 font-semibold">{{ t().tryThisLabel }}</div>
+      <div>1. {{ t().subgroupCalloutStep1 }}</div>
+      <div>2. {{ t().subgroupCalloutStep2 }}</div>
     </div>
   </div>
 

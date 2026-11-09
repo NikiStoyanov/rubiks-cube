@@ -28,18 +28,15 @@
   <div class="p-3.5 rounded-xl bg-gradient-to-r from-cyan-950/40 to-slate-950 border border-cyan-500/30 text-xs text-slate-300 space-y-2">
     <div class="flex items-center gap-2 font-bold text-cyan-300">
       <span>💡</span>
-      <span>{{ language() === 'bg' ? 'Какво е орбита и как да експериментирате тук?' : 'What is an Orbit and how to experiment?' }}</span>
+      <span>{{ t().orbitCalloutTitle }}</span>
     </div>
     <p class="text-[11px] leading-relaxed text-slate-300">
-      {{ language() === 'bg'
-        ? 'Орбитата Orb(x) е съвкупността от абсолютно всички места по кубчето, до които избраното парче може да стигне чрез позволените ходове. В 3D модела тези позиции светят в неоново синьо!'
-        : 'The orbit Orb(x) is the set of all positions a piece can reach under allowed moves. In the 3D model, all orbit positions glow in neon cyan!'
-      }}
+      {{ t().orbitCalloutDesc }}
     </p>
     <div class="p-2 bg-slate-900/90 rounded-lg border border-slate-800 text-[11px] space-y-1 text-slate-400">
-      <div class="text-amber-300 font-semibold">{{ language() === 'bg' ? '🎯 Опитайте следното:' : '🎯 Try this:' }}</div>
-      <div>1. {{ language() === 'bg' ? 'Кликнете върху парче долу или направо върху 3D кубчето.' : 'Click any piece below or directly on the 3D cube.' }}</div>
-      <div>2. {{ language() === 'bg' ? 'Сменете подгрупата (напр. "Само 180° ходове") и вижте как орбитата веднага се свива само до 4 позиции!' : 'Switch subgroup (e.g. "Half-Turns only") to see the orbit shrink to just 4 pieces!' }}</div>
+      <div class="text-amber-300 font-semibold">{{ t().tryThisLabel }}</div>
+      <div>1. {{ t().orbitCalloutStep1 }}</div>
+      <div>2. {{ t().orbitCalloutStep2 }}</div>
     </div>
   </div>
 

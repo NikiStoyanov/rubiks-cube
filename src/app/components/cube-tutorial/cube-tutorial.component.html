@@ -3,9 +3,9 @@
   <div class="tutorial-header-card">
     <div class="header-top-row">
       <div class="header-left">
-        <span class="academy-badge">🎓 {{ isBg ? 'Академия за начинаещи' : 'Beginner Academy' }}</span>
+        <span class="academy-badge">🎓 {{ t().academyBadge }}</span>
         <span class="step-counter-badge">
-          {{ isBg ? 'Стъпка ' + (currentStepIndex() + 1) + ' от ' + steps.length : 'Step ' + (currentStepIndex() + 1) + ' of ' + steps.length }}
+          {{ t().stepCounterStep }} {{ currentStepIndex() + 1 }} {{ t().stepCounterOf }} {{ steps.length }}
         </span>
       </div>
 
@@ -15,27 +15,27 @@
           (click)="toggleSolver()"
           class="badge-btn badge-solver"
           [class.active-solver]="showSolver()"
-          [title]="isBg ? 'Изчисли стъпките за нареждане от текущото състояние' : 'Calculate solve steps from current state'"
+          [title]="t().tutorialSolveBtn"
         >
-          🧩 {{ showSolver() ? (isBg ? 'Скрий Решителя' : 'Hide Solver') : (isBg ? 'Реши моето кубче' : 'Solve My Cube') }}
+          🧩 {{ showSolver() ? t().tutorialHideSolveBtn : t().tutorialSolveBtn }}
         </button>
 
         <button
           type="button"
           (click)="toggleNotationGuide()"
           class="badge-btn badge-notation"
-          [title]="isBg ? 'Справочник за означенията на ходовете' : 'Move notation reference'"
+          [title]="t().tutorialNotationBtn"
         >
-          📖 {{ isBg ? 'Нотация' : 'Notation' }}
+          📖 {{ t().tutorialNotationBtn }}
         </button>
 
         <button
           type="button"
           (click)="onReset()"
           class="badge-btn badge-reset"
-          [title]="isBg ? 'Ресет на куба към наредено състояние' : 'Reset cube to solved'"
+          [title]="t().tutorialResetBtn"
         >
-          ↺ {{ isBg ? 'Ресет' : 'Reset' }}
+          ↺ {{ t().tutorialResetBtn }}
         </button>
       </div>
     </div>
@@ -49,10 +49,10 @@
           [class.active]="currentStepIndex() === i"
           [class.completed]="completedSteps().has(i)"
           (click)="selectStep(i)"
-          [title]="isBg ? s.titleBg : s.title"
+          [title]="language() === 'bg' ? s.titleBg : s.title"
         >
           <span class="nav-tab-num">{{ s.stepNumber }}</span>
-          <span class="nav-tab-title">{{ isBg ? s.titleBg : s.title }}</span>
+          <span class="nav-tab-title">{{ language() === 'bg' ? s.titleBg : s.title }}</span>
           @if (completedSteps().has(i)) {
             <span class="nav-tab-check">✓</span>
           }
@@ -71,22 +71,22 @@
     <div class="tutorial-solver-card animate-fade-in">
       <div class="solver-card-header">
         <div class="solver-card-titles">
-          <span class="solver-badge">🧩 {{ isBg ? 'Анализ на твоето кубче' : 'Current State Solution' }}</span>
+          <span class="solver-badge">🧩 {{ t().tutorialAnalysisBadge }}</span>
           <h3 class="solver-heading">
-            {{ isBg ? 'Следващи стъпки до пълно нареждане' : 'Next Steps to Complete Solution' }}
+            {{ t().tutorialNextStepsTitle }}
           </h3>
           <p class="solver-sub">
             @if (sol.totalMoves === 0) {
-              {{ isBg ? 'Кубчето вече е напълно наредено в начално състояние!' : 'The cube is already completely solved!' }}
+              {{ t().tutorialAlreadySolved }}
             } @else {
-              {{ isBg
+              {{ language() === 'bg'
                 ? 'Необходими са още ' + sol.totalMoves + ' хода в ' + sol.stages.length + ' етапа за пълно нареждане от тази позиция.'
                 : 'Requires ' + sol.totalMoves + ' moves across ' + sol.stages.length + ' stages to solve from this position.'
               }}
             }
           </p>
         </div>
-        <button type="button" (click)="toggleSolver()" class="btn-close-solver" [title]="isBg ? 'Затвори' : 'Close'">✕</button>
+        <button type="button" (click)="toggleSolver()" class="btn-close-solver" [title]="t().modalCloseBtn">&times;</button>
       </div>
 
       @if (sol.totalMoves > 0) {
@@ -96,15 +96,15 @@
               <div class="stage-row-left">
                 <span class="stage-row-num">#{{ stage.stageNumber }}</span>
                 <div class="stage-row-text">
-                  <div class="stage-row-title">{{ isBg ? stage.nameBg : stage.nameEn }}</div>
-                  <div class="stage-row-goal">{{ isBg ? stage.goalBg : stage.goalEn }}</div>
+                  <div class="stage-row-title">{{ language() === 'bg' ? stage.nameBg : stage.nameEn }}</div>
+                  <div class="stage-row-goal">{{ language() === 'bg' ? stage.goalBg : stage.goalEn }}</div>
                   @if (stage.moves.length > 0) {
                     <div class="stage-row-moves">
                       <span class="stage-algo-text">{{ stage.algoString }}</span>
                       <span class="stage-count">({{ stage.moves.length }}h)</span>
                     </div>
                   } @else {
-                    <div class="stage-row-done-badge">✓ {{ isBg ? 'Вече нареден на това кубче' : 'Already solved' }}</div>
+                    <div class="stage-row-done-badge">✓ {{ t().solveModalStageAlreadySolved }}</div>
                   }
                 </div>
               </div>
@@ -115,7 +115,7 @@
                   (click)="jumpToStage(stage.stageNumber)"
                   class="btn-jump-stage"
                 >
-                  {{ isBg ? 'Към урок #' + stage.stageNumber : 'Go to step #' + stage.stageNumber }} →
+                  {{ t().tutorialGoToStep }} #{{ stage.stageNumber }} →
                 </button>
               </div>
             </div>
@@ -135,12 +135,12 @@
       <div class="step-hero-text">
         <div style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.2rem;">
           <h2 class="step-hero-title">
-            {{ isBg ? currentStep().titleBg : currentStep().title }}
+            {{ language() === 'bg' ? currentStep().titleBg : currentStep().title }}
           </h2>
-          <span class="method-tag">{{ isBg ? 'LBL Метод' : 'LBL' }}</span>
+          <span class="method-tag">{{ t().tutorialMethodTag }}</span>
         </div>
         <p class="step-hero-subtitle">
-          {{ isBg ? currentStep().subtitleBg : currentStep().subtitle }}
+          {{ language() === 'bg' ? currentStep().subtitleBg : currentStep().subtitle }}
         </p>
       </div>
     </div>
@@ -149,7 +149,7 @@
     @if (currentStep().cases && currentStep().cases.length > 0) {
       <div class="cases-box">
         <div class="cases-header-row">
-          <span class="cases-title">{{ isBg ? 'Изберете вашия случай (форма на кубчето):' : 'Select your case / pattern:' }}</span>
+          <span class="cases-title">{{ t().tutorialSelectCase }}</span>
           <span class="cases-counter">{{ selectedCaseIndex() + 1 }} / {{ currentStep().cases.length }}</span>
         </div>
 
@@ -162,15 +162,15 @@
               (click)="selectCase(cIdx)"
             >
               <span class="case-chip-dot"></span>
-              <span>{{ isBg ? c.nameBg : c.name }}</span>
+              <span>{{ language() === 'bg' ? c.nameBg : c.name }}</span>
             </button>
           }
         </div>
 
         @if (currentCase(); as activeC) {
           <div class="case-info-bar">
-            💡 <strong>{{ isBg ? 'Как да разпознаете:' : 'Recognition:' }}</strong>
-            {{ isBg ? activeC.descriptionBg : activeC.description }}
+            💡 <strong>{{ t().tutorialRecognition }}</strong>
+            {{ language() === 'bg' ? activeC.descriptionBg : activeC.description }}
           </div>
         }
       </div>
@@ -180,10 +180,10 @@
     <div class="goal-box">
       <div class="goal-header">
         <span class="goal-icon">🎯</span>
-        <span class="goal-title">{{ isBg ? 'Цел на стъпката' : 'Step Objective' }}</span>
+        <span class="goal-title">{{ t().tutorialStepObjective }}</span>
       </div>
       <p class="goal-text">
-        {{ isBg ? currentStep().goalBg : currentStep().goal }}
+        {{ language() === 'bg' ? currentStep().goalBg : currentStep().goal }}
       </p>
     </div>
 
@@ -191,10 +191,10 @@
     <div class="algorithm-card">
       <div class="algo-header-row">
         <span class="algo-name-tag">
-          {{ isBg ? currentStep().algorithmNameBg : currentStep().algorithmName }}
+          {{ language() === 'bg' ? currentStep().algorithmNameBg : currentStep().algorithmName }}
         </span>
         <span class="algo-step-count">
-          {{ currentMoveIndex() }} / {{ currentStepMoves().length }} {{ isBg ? 'хода' : 'moves' }}
+          {{ currentMoveIndex() }} / {{ currentStepMoves().length }} {{ t().solveModalTotalMoves }}
         </span>
       </div>
 
@@ -222,10 +222,10 @@
       <span class="setup-icon">🎯</span>
       <div class="setup-text">
         <span class="setup-title">
-          {{ isBg ? 'Зареди тестова ситуация за тази стъпка' : 'Load Practice Situation on 3D Cube' }}
+          {{ t().tutorialSetupCubeBtn }}
         </span>
         <span class="setup-subtitle">
-          {{ isBg ? 'Настройва физическия 3D модел в точната позиция за упражнение' : 'Physically arranges 3D cube into the exact situation so you can practice' }}
+          {{ language() === 'bg' ? 'Настройва физическия 3D модел в точната позиция за упражнение' : 'Physically arranges 3D cube into the exact situation so you can practice' }}
         </span>
       </div>
     </button>
@@ -234,14 +234,14 @@
     <div class="player-toolbar-card">
       <div class="toolbar-top">
         <span class="toolbar-title">
-          {{ isBg ? 'Интерактивен контролер:' : 'Step Controller:' }}
+          {{ t().tutorialPracticeTitle }}
         </span>
         <button
           type="button"
           class="mode-switch-btn"
           (click)="togglePracticeMode()"
         >
-          {{ isPracticeMode() ? (isBg ? '👁️ Премини в Плейър' : '👁️ Switch to Player') : (isBg ? '🎮 Опитай сам' : '🎮 Practice Mode') }}
+          {{ isPracticeMode() ? (language() === 'bg' ? '👁️ Премини в Плейър' : '👁️ Switch to Player') : ('🎮 ' + t().tutorialPracticeBtn) }}
         </button>
       </div>
 
@@ -253,10 +253,10 @@
             class="player-action-btn"
             (click)="executePrevMove()"
             [disabled]="isAnimating() || currentMoveIndex() <= 0"
-            [title]="isBg ? 'Върни един ход назад' : 'Step back'"
+            [title]="t().solveModalStepBack"
           >
             <span>⏮️</span>
-            <span>{{ isBg ? 'Назад' : 'Prev' }}</span>
+            <span>{{ t().solveModalStepBack }}</span>
           </button>
 
           <button
@@ -266,7 +266,7 @@
             [disabled]="isAnimating()"
           >
             <span>{{ isAutoPlaying() ? '⏸️' : '▶️' }}</span>
-            <span>{{ isAutoPlaying() ? (isBg ? 'Пауза' : 'Pause') : (isBg ? 'Авто' : 'Auto') }}</span>
+            <span>{{ isAutoPlaying() ? t().solveModalPause : t().solveModalAutoPlay }}</span>
           </button>
 
           <button
@@ -274,9 +274,9 @@
             class="player-action-btn next-btn"
             (click)="executeNextMove()"
             [disabled]="isAnimating() || currentMoveIndex() >= currentStepMoves().length"
-            [title]="isBg ? 'Изпълни следващия ход' : 'Next move'"
+            [title]="t().solveModalStepNext"
           >
-            <span>{{ isBg ? 'Следващ ход' : 'Next Move' }}</span>
+            <span>{{ t().solveModalStepNext }}</span>
             <span>⏭️</span>
           </button>
 
@@ -312,9 +312,9 @@
         <!-- Manual Practice Move Pad -->
         <div class="manual-pad">
           <div class="manual-target-row">
-            <span>{{ isBg ? 'Следващ очакван ход:' : 'Expected next move:' }}</span>
+            <span>{{ language() === 'bg' ? 'Следващ очакван ход:' : 'Expected next move:' }}</span>
             <span class="expected-pill">
-              {{ currentStepMoves()[currentMoveIndex()] || (isBg ? 'Завършено! 🎉' : 'Done! 🎉') }}
+              {{ currentStepMoves()[currentMoveIndex()] || (language() === 'bg' ? 'Завършено! 🎉' : 'Done! 🎉') }}
             </span>
           </div>
 
@@ -339,7 +339,7 @@
               [disabled]="isAnimating() || currentMoveIndex() <= 0"
             >
               <span>⏮️</span>
-              <span>{{ isBg ? 'Отмени ход' : 'Undo move' }}</span>
+              <span>{{ language() === 'bg' ? 'Отмени ход' : 'Undo move' }}</span>
             </button>
             <button
               type="button"
@@ -348,7 +348,7 @@
               [disabled]="isAnimating()"
             >
               <span>🔄</span>
-              <span>{{ isBg ? 'Рестартирай ситуацията' : 'Reload case' }}</span>
+              <span>{{ language() === 'bg' ? 'Рестартирай ситуацията' : 'Reload case' }}</span>
             </button>
           </div>
         </div>
@@ -372,12 +372,12 @@
     >
       @if (isStepExecuting() || (isAnimating() && !isAutoPlaying())) {
         <div class="spinner"></div>
-        <span>{{ isBg ? 'Въртене на 3D куба...' : 'Executing on 3D Cube...' }}</span>
+        <span>{{ language() === 'bg' ? 'Въртене на 3D куба...' : 'Executing on 3D Cube...' }}</span>
       } @else {
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
           <polygon points="5 3 19 12 5 21 5 3" />
         </svg>
-        <span>{{ isBg ? 'Изпълни целия алгоритъм наведнъж' : 'Execute Full Algorithm at Once' }}</span>
+        <span>{{ language() === 'bg' ? 'Изпълни целия алгоритъм наведнъж' : 'Execute Full Algorithm at Once' }}</span>
       }
     </button>
 
@@ -386,7 +386,7 @@
       <div class="success-banner">
         <span>✓</span>
         <span>
-          {{ isBg ? 'Браво! Стъпката е завършена успешно. Продължете към следващата!' : 'Great job! Step solved successfully. Proceed to next step!' }}
+          {{ language() === 'bg' ? 'Браво! Стъпката е завършена успешно. Продължете към следващата!' : 'Great job! Step solved successfully. Proceed to next step!' }}
         </span>
       </div>
     }
@@ -395,8 +395,8 @@
     <div class="tip-card">
       <span class="tip-icon">💡</span>
       <div class="tip-content">
-        <strong>{{ isBg ? 'Съвет:' : 'Tip:' }}</strong>
-        <span>{{ isBg ? currentStep().tipsBg : currentStep().tips }}</span>
+        <strong>{{ language() === 'bg' ? 'Съвет:' : 'Tip:' }}</strong>
+        <span>{{ language() === 'bg' ? currentStep().tipsBg : currentStep().tips }}</span>
       </div>
     </div>
 
@@ -404,13 +404,13 @@
     <div class="math-section">
       <button type="button" (click)="toggleMathNote()" class="math-toggle-btn">
         <span>{{ showMathNote() ? '▼' : '▶' }}</span>
-        <span>{{ isBg ? 'Защо работи това? (Алгебрична обосновка от теория на групите)' : 'Why does this work? (Group Theory Rationale)' }}</span>
+        <span>{{ t().tutorialMathBasis }}</span>
       </button>
 
       @if (showMathNote()) {
         <div class="math-content-box">
           <p style="margin: 0; line-height: 1.55;">
-            {{ isBg ? currentStep().mathExplanationBg : currentStep().mathExplanation }}
+            {{ language() === 'bg' ? currentStep().mathExplanationBg : currentStep().mathExplanation }}
           </p>
         </div>
       }
@@ -425,7 +425,7 @@
         class="nav-btn"
       >
         <span>←</span>
-        <span>{{ isBg ? 'Предишна стъпка' : 'Previous Step' }}</span>
+        <span>{{ t().tutorialPrevBtn }}</span>
       </button>
 
       <button
@@ -434,7 +434,7 @@
         [disabled]="currentStepIndex() === steps.length - 1"
         class="nav-btn next-step"
       >
-        <span>{{ isBg ? 'Следваща стъпка' : 'Next Step' }}</span>
+        <span>{{ t().tutorialNextBtn }}</span>
         <span>→</span>
       </button>
     </div>
@@ -448,11 +448,11 @@
     <div class="notation-header">
       <div>
         <h3 class="notation-title">
-          📖 {{ isBg ? 'Справочник за Нотацията на Рубик Куб' : 'Rubik\'s Cube Notation Guide' }}
+          📖 {{ language() === 'bg' ? 'Справочник за Нотацията на Рубик Куб' : 'Rubik\'s Cube Notation Guide' }}
         </h3>
         <p class="notation-subtitle">
           {{
-            isBg
+            language() === 'bg'
               ? 'Стандартна международна нотация (Сингмастър). Натиснете „▶ Тествай“, за да видите завъртането в 3D.'
               : 'Standard Singmaster notation. Click "▶ Test" to see the move rotate live in 3D.'
           }}
@@ -466,22 +466,22 @@
       <div class="notation-rule-card">
         <span class="rule-symbol">X</span>
         <div>
-          <strong>{{ isBg ? 'Буква без апостроф (R, U, F)' : 'Bare letter (R, U, F)' }}</strong>
-          <p>{{ isBg ? 'Завъртане на съответната страна по часовника на 90°.' : '90° clockwise rotation of the face.' }}</p>
+          <strong>{{ language() === 'bg' ? 'Буква без апостроф (R, U, F)' : 'Bare letter (R, U, F)' }}</strong>
+          <p>{{ language() === 'bg' ? 'Завъртане на съответната страна по часовника на 90°.' : '90° clockwise rotation of the face.' }}</p>
         </div>
       </div>
       <div class="notation-rule-card">
         <span class="rule-symbol">X'</span>
         <div>
-          <strong>{{ isBg ? 'Буква с апостроф Prime (R\', U\', F\')' : 'Prime letter (R\', U\', F\')' }}</strong>
-          <p>{{ isBg ? 'Завъртане обратно на часовника на 90°.' : '90° counter-clockwise rotation of the face.' }}</p>
+          <strong>{{ language() === 'bg' ? 'Буква с апостроф Prime (R\', U\', F\')' : 'Prime letter (R\', U\', F\')' }}</strong>
+          <p>{{ language() === 'bg' ? 'Завъртане обратно на часовника на 90°.' : '90° counter-clockwise rotation of the face.' }}</p>
         </div>
       </div>
       <div class="notation-rule-card">
         <span class="rule-symbol">X2</span>
         <div>
-          <strong>{{ isBg ? 'Буква с двойка (U2, R2, F2)' : 'Double turn (U2, R2, F2)' }}</strong>
-          <p>{{ isBg ? 'Двойно завъртане на 180°.' : '180° half-turn rotation.' }}</p>
+          <strong>{{ language() === 'bg' ? 'Буква с двойка (U2, R2, F2)' : 'Double turn (U2, R2, F2)' }}</strong>
+          <p>{{ language() === 'bg' ? 'Двойно завъртане на 180°.' : '180° half-turn rotation.' }}</p>
         </div>
       </div>
     </div>
@@ -492,9 +492,9 @@
         <div class="notation-card">
           <div class="notation-card-top">
             <span class="notation-badge">{{ item.badge }}</span>
-            <span class="notation-card-name">{{ isBg ? item.nameBg : item.nameEn }}</span>
+            <span class="notation-card-name">{{ language() === 'bg' ? item.nameBg : item.nameEn }}</span>
           </div>
-          <p class="notation-card-desc">{{ isBg ? item.descBg : item.descEn }}</p>
+          <p class="notation-card-desc">{{ language() === 'bg' ? item.descBg : item.descEn }}</p>
           <button
             type="button"
             class="notation-test-btn"
@@ -502,7 +502,7 @@
             (click)="testNotationMove(item.code)"
           >
             <span>▶</span>
-            <span>{{ isBg ? 'Тествай в 3D' : 'Test on 3D Cube' }}</span>
+            <span>{{ language() === 'bg' ? 'Тествай в 3D' : 'Test on 3D Cube' }}</span>
           </button>
         </div>
       }
@@ -511,10 +511,10 @@
     <div class="notation-footer">
       <button type="button" class="badge-btn badge-reset" (click)="onReset()">
         <span>↺</span>
-        <span>{{ isBg ? 'Ресет на куба' : 'Reset Cube' }}</span>
+        <span>{{ t().tutorialResetBtn }}</span>
       </button>
       <button type="button" class="nav-btn next-step" (click)="toggleNotationGuide()">
-        <span>{{ isBg ? 'Затвори справочника' : 'Close Guide' }}</span>
+        <span>{{ language() === 'bg' ? 'Затвори справочника' : 'Close Guide' }}</span>
       </button>
     </div>
   </div>

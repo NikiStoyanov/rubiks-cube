@@ -14,6 +14,7 @@ import { FACE_COLORS } from '../../../math/rubikGroup';
 export class Cube2DComponent {
   private languageService = inject(LanguageService);
   readonly language = this.languageService.language;
+  readonly t = this.languageService.t;
   readonly faceColorMap = FACE_COLORS;
 
   net = input<Net2DFaces | null>(null);
