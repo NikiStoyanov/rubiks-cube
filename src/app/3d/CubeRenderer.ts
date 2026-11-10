@@ -11,7 +11,7 @@ import {
   Net2DFaces,
   PieceType
 } from '../types/cube';
-import { FACE_COLORS, INITIAL_CORNERS, INITIAL_EDGES, INITIAL_CENTERS, RubikGroupAlgebra } from '../math/rubikGroup';
+import { FACE_COLORS, INITIAL_CORNERS, INITIAL_EDGES, INITIAL_CENTERS, RubikGroupAlgebra } from '../math/group-algebra';
 
 export interface HighlightConfig {
   selectedPieceType?: 'corner' | 'edge' | 'all';

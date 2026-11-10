@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { CubeStateService } from './cube-state.service';
-import { RubikGroupAlgebra } from '../math/group-algebra';
+import { RubikGroupAlgebra, FACE_COLORS } from '../math/group-algebra';
 
 describe('CubeStateService (Reactive Signals & Separation of Concerns)', () => {
   let service: CubeStateService;
@@ -140,5 +140,57 @@ describe('CubeStateService (Reactive Signals & Separation of Concerns)', () => {
     service.paintSticker('F', 1, 1);
 
     expect(service.customNet().F[1][1].color).toBe('#eab308');
+  });
+
+  it('correctly serializes and deserializes 54-facelet state representation', () => {
+    const solvedStr = service.get54FaceletString();
+    expect(solvedStr.length).toBe(54);
+    // Solved state has 9 of each face letter: U, D, F, B, L, R
+    expect(solvedStr.startsWith('UUUUUUUUU')).toBe(true);
+
+    const net = service.parse54FaceletString(solvedStr);
+    expect(net).not.toBeNull();
+    expect(net?.U[0][0].color).toBe(FACE_COLORS.U);
+
+    // Invalid length returns null
+    expect(service.parse54FaceletString('INVALID')).toBeNull();
+  });
+
+  it('generates share URL and loads state from URL query parameters', () => {
+    service.applyMove('R');
+    service.applyMove('U');
+
+    const shareUrl = service.getShareUrl();
+    expect(shareUrl).toContain('state=');
+    expect(shareUrl).toContain('moves=R_U');
+
+    // Reset service and load from that URL
+    service.reset();
+    expect(service.isSolved()).toBe(true);
+
+    const loaded = service.loadStateFromUrl(shareUrl);
+    expect(loaded).toBe(true);
+    expect(service.isSolved()).toBe(false);
+  });
+
+  it('supports undoLastMove and redoLastMove with moveHistory and redoHistory', () => {
+    service.applyMove('R');
+    service.applyMove('U');
+    expect(service.moveHistory()).toEqual(['R', 'U']);
+    expect(service.redoHistory()).toEqual([]);
+
+    service.undoLastMove();
+    expect(service.moveHistory()).toEqual(['R']);
+    expect(service.redoHistory()).toEqual(['U']);
+
+    service.undoLastMove();
+    expect(service.isSolved()).toBe(true);
+    expect(service.moveHistory()).toEqual([]);
+    expect(service.redoHistory()).toEqual(['R', 'U']);
+
+    service.redoLastMove();
+    expect(service.isSolved()).toBe(false);
+    expect(service.moveHistory()).toEqual(['R']);
+    expect(service.redoHistory()).toEqual(['U']);
   });
 });

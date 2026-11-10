@@ -24,7 +24,7 @@
 
 @media (min-width: 640px) {
   .tabs-pill-bar {
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(6, 1fr);
   }
 }
 
@@ -70,6 +70,12 @@
   background: var(--color-indigo);
   color: #ffffff;
   box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+}
+
+.concept-tab-btn.active-commutator {
+  background: #c026d3;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(192, 38, 211, 0.35);
 }
 
 .concept-tab-btn.active-order {

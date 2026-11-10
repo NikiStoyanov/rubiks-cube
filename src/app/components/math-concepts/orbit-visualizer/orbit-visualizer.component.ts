@@ -1,18 +1,18 @@
-import { Component, inject, input, output, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ChangeDetectionStrategy, inject, input, output, computed } from '@angular/core';
 import { MathViewComponent } from '../../shared/math-view/math-view.component';
-import { 
-  INITIAL_CORNERS, 
-  INITIAL_EDGES, 
-  computeOrbit, 
-  SUBGROUP_PRESETS 
-} from '../../../math/rubikGroup';
+import {
+  INITIAL_CORNERS,
+  INITIAL_EDGES,
+  RubikGroupAlgebra,
+  SUBGROUP_PRESETS,
+} from '../../../math/group-algebra';
 import { LanguageService } from '../../../services/language.service';
 
 @Component({
   selector: 'app-orbit-visualizer',
   standalone: true,
-  imports: [CommonModule, MathViewComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [MathViewComponent],
   templateUrl: './orbit-visualizer.component.html',
 })
 export class OrbitVisualizerComponent {
@@ -45,7 +45,7 @@ export class OrbitVisualizerComponent {
   });
 
   readonly orbitData = computed(() => {
-    return computeOrbit(
+    return RubikGroupAlgebra.computeOrbit(
       this.selectedPieceType(),
       this.selectedPieceId(),
       this.activeSubgroup().generators

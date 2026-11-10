@@ -13,6 +13,41 @@ export interface Translations {
   pageValidator: string;
   pageTutorial: string;
   pageCustomCube: string;
+  pageTimer: string;
+
+  // Sound & Shortcuts
+  soundToggleMute: string;
+  soundToggleUnmute: string;
+  soundOn: string;
+  soundOff: string;
+  shortcutsModalTitle: string;
+  shortcutsModalDesc: string;
+  shortcutsFaces: string;
+  shortcutsPrimes: string;
+  shortcutsSlices: string;
+  shortcutsUndo: string;
+  shortcutsReset: string;
+  shortcutsHelpBtn: string;
+
+  // Speedcubing Timer
+  timerTitle: string;
+  timerSubtitle: string;
+  timerHoldPrompt: string;
+  timerReleasePrompt: string;
+  timerInspectionPrompt: string;
+  timerStopPrompt: string;
+  timerInspectionToggle: string;
+  timerNewScramble: string;
+  timerApplyScramble: string;
+  timerStatsHeading: string;
+  timerBest: string;
+  timerAo5: string;
+  timerAo12: string;
+  timerSolvesCount: string;
+  timerHistory: string;
+  timerNoSolves: string;
+  timerClearHistory: string;
+  timerDeleteSolve: string;
 
   // 3D Canvas instructions
   canvasInstructions: string;
@@ -345,6 +380,35 @@ export interface Translations {
   customFooterReady: string;
   customFooterUnsolvable: string;
   customApplyMainBtn: string;
+  customCameraModeBtn: string;
+  camTitle: string;
+  camSubtitle: string;
+  camStartBtn: string;
+  camStopBtn: string;
+  camCaptureBtn: string;
+  camMirrorBtn: string;
+  camSwitchCameraBtn: string;
+  camDemoScanBtn: string;
+  camScannedFaces: string;
+  camCurrentFaceLabel: string;
+  camHoldInstructionF: string;
+  camHoldInstructionR: string;
+  camHoldInstructionB: string;
+  camHoldInstructionL: string;
+  camHoldInstructionU: string;
+  camHoldInstructionD: string;
+  camLivePreviewTitle: string;
+  camLivePreviewHint: string;
+  camCenterMatchOk: string;
+  camCenterMatchWarn: string;
+  camAllScannedTitle: string;
+  camAllScannedDesc: string;
+  camViewInNetBtn: string;
+  camErrorPermission: string;
+  camIdlePrompt: string;
+  camCalibrateHint: string;
+  camCalibrateBtn: string;
+  camResetCalibrationBtn: string;
 
   // Cube Tutorial Academy
   academyBadge: string;
@@ -399,6 +463,26 @@ export interface Translations {
   theorySec4IndexDesc: string;
   theorySec5Title: string;
   theorySec5Desc: string;
+
+  // State Sharing
+  shareBtn: string;
+  shareModalTitle: string;
+  shareModalDesc: string;
+  shareDirectLink: string;
+  shareCopyLink: string;
+  shareLinkCopied: string;
+  shareNativeBtn: string;
+  shareScrambleTitle: string;
+  shareCopyScramble: string;
+  shareFaceletsTitle: string;
+  shareCopyFacelets: string;
+  shareStatusSolved: string;
+  shareStatusSolvable: string;
+  shareStatusInvalid: string;
+  shareLoadedNotification: string;
+  shareViaWhatsApp: string;
+  shareViaTelegram: string;
+  shareViaX: string;
 }
 
 export const translations: Record<Language, Translations> = {
@@ -414,6 +498,61 @@ export const translations: Record<Language, Translations> = {
     pageValidator: 'Orbit Validator',
     pageTutorial: 'Cube Tutorial',
     pageCustomCube: 'Physical Cube',
+    pageTimer: 'Speed Timer',
+
+    // Sound & Shortcuts
+    soundToggleMute: 'Mute Audio',
+    soundToggleUnmute: 'Unmute Audio',
+    soundOn: 'Sound ON',
+    soundOff: 'Sound OFF',
+    shortcutsModalTitle: 'Keyboard Shortcuts',
+    shortcutsModalDesc: "Control the 3D Rubik's Cube directly from your keyboard",
+    shortcutsFaces: 'Face Turns (Clockwise)',
+    shortcutsPrimes: "Inverse Turns (Shift + Key / Counter-Clockwise)",
+    shortcutsSlices: 'Slice Turns (M, E, S)',
+    shortcutsUndo: 'Undo Last Move (Z or Ctrl+Z)',
+    shortcutsReset: 'Reset to Identity (Space / Esc)',
+    shortcutsHelpBtn: 'Hotkeys',
+
+    // State Sharing
+    shareBtn: 'Share State',
+    shareModalTitle: 'Share Cube State',
+    shareModalDesc: 'Share your exact 3D cube configuration via link, scramble sequence, or social apps',
+    shareDirectLink: 'Direct Web Link',
+    shareCopyLink: 'Copy Link',
+    shareLinkCopied: 'Copied to clipboard!',
+    shareNativeBtn: 'Share via device apps...',
+    shareScrambleTitle: 'Move Sequence / Scramble',
+    shareCopyScramble: 'Copy Moves',
+    shareFaceletsTitle: '54-Character Facelet Code',
+    shareCopyFacelets: 'Copy Facelet Code',
+    shareStatusSolved: 'Identity State (Solved)',
+    shareStatusSolvable: 'Solvable Configuration (Valid Orbit)',
+    shareStatusInvalid: 'Non-Standard Orbit (Tampered/Twisted Pieces)',
+    shareLoadedNotification: 'Shared cube state successfully loaded!',
+    shareViaWhatsApp: 'WhatsApp',
+    shareViaTelegram: 'Telegram',
+    shareViaX: 'X / Twitter',
+
+    // Speedcubing Timer
+    timerTitle: 'WCA Speedcubing Timer',
+    timerSubtitle: 'Practice speedcubing with official 15s inspection, live scramble, and WCA stats',
+    timerHoldPrompt: 'Hold Spacebar or Click & Hold to Ready',
+    timerReleasePrompt: 'Release to Start!',
+    timerInspectionPrompt: 'Inspection Time (Hold Space to Ready)',
+    timerStopPrompt: 'Press Space or solve the cube to stop!',
+    timerInspectionToggle: '15s WCA Inspection',
+    timerNewScramble: 'New Scramble',
+    timerApplyScramble: 'Apply Scramble to 3D Cube',
+    timerStatsHeading: 'Session Statistics',
+    timerBest: 'Personal Best (PB)',
+    timerAo5: 'Average of 5 (Ao5)',
+    timerAo12: 'Average of 12 (Ao12)',
+    timerSolvesCount: 'Total Solves',
+    timerHistory: 'Solve History',
+    timerNoSolves: 'No solves recorded yet. Ready to start your first run?',
+    timerClearHistory: 'Clear History',
+    timerDeleteSolve: 'Delete',
 
     canvasInstructions: 'Rotate: Left Click + Drag | Pan: Right Click | Zoom: Scroll',
     activeSelection: 'Active Selection:',
@@ -766,6 +905,35 @@ export const translations: Record<Language, Translations> = {
     customFooterReady: 'Ready to apply to 3D cube',
     customFooterUnsolvable: 'Unsolvable or incomplete state',
     customApplyMainBtn: 'Apply to 3D Simulator',
+    customCameraModeBtn: 'Webcam Scanner',
+    camTitle: 'Webcam Cube Scanner',
+    camSubtitle: 'Hold each face of your physical cube inside the 3×3 target grid and capture all 6 faces.',
+    camStartBtn: 'Start Camera',
+    camStopBtn: 'Stop Camera',
+    camCaptureBtn: 'Capture Face',
+    camMirrorBtn: 'Mirror',
+    camSwitchCameraBtn: 'Switch Camera',
+    camDemoScanBtn: 'Simulate Scan (Demo)',
+    camScannedFaces: 'Scanned Faces',
+    camCurrentFaceLabel: 'Target Face:',
+    camHoldInstructionF: 'Hold GREEN center facing camera, WHITE on top (U)',
+    camHoldInstructionR: 'Hold RED center facing camera, WHITE on top (U)',
+    camHoldInstructionB: 'Hold BLUE center facing camera, WHITE on top (U)',
+    camHoldInstructionL: 'Hold ORANGE center facing camera, WHITE on top (U)',
+    camHoldInstructionU: 'Hold WHITE center facing camera, GREEN on bottom (towards you)',
+    camHoldInstructionD: 'Hold YELLOW center facing camera, GREEN on top (away from you)',
+    camLivePreviewTitle: 'Detected 3×3 Face Preview',
+    camLivePreviewHint: 'Click any sticker below to manually correct its color before or after capturing.',
+    camCenterMatchOk: 'Center matches target face',
+    camCenterMatchWarn: 'Center looks different — check lighting or orientation',
+    camAllScannedTitle: 'All 6 faces scanned!',
+    camAllScannedDesc: 'Review the 2D Net or click Solve My Cube above to see the step-by-step solution.',
+    camViewInNetBtn: 'Review in 2D Net',
+    camErrorPermission: 'Camera access was denied or no webcam was found. Check browser permissions or use Simulate Scan.',
+    camIdlePrompt: 'Click "Start Camera" to scan your physical Rubik\'s Cube using your webcam',
+    camCalibrateHint: 'Tip: Avoid strong glare on stickers. Tap any detected cell on the right to cycle its color.',
+    camCalibrateBtn: 'Calibrate Color from Center',
+    camResetCalibrationBtn: 'Reset Calibration',
 
     // Cube Tutorial Academy
     academyBadge: 'Beginner Academy',
@@ -803,6 +971,61 @@ export const translations: Record<Language, Translations> = {
     pageValidator: 'Валидатор на Орбитата',
     pageTutorial: 'Интерактивен Урок',
     pageCustomCube: 'Физическо кубче',
+    pageTimer: 'Таймер',
+
+    // Sound & Shortcuts
+    soundToggleMute: 'Заглуши звука',
+    soundToggleUnmute: 'Пусни звука',
+    soundOn: 'Звук ВКЛ',
+    soundOff: 'Звук ИЗКЛ',
+    shortcutsModalTitle: 'Клавиатурни Комбинации',
+    shortcutsModalDesc: 'Управлявайте 3D кубчето директно от вашата клавиатура',
+    shortcutsFaces: 'Завъртания на стени (по часовника)',
+    shortcutsPrimes: 'Обратни завъртания (Shift + клавиш)',
+    shortcutsSlices: 'Слойни завъртания (M, E, S)',
+    shortcutsUndo: 'Отмени последния ход (Z или Ctrl+Z)',
+    shortcutsReset: 'Ресет към идентитет (Esc)',
+    shortcutsHelpBtn: 'Клавиши',
+
+    // State Sharing
+    shareBtn: 'Сподели състояние',
+    shareModalTitle: 'Споделяне на текущото състояние',
+    shareModalDesc: 'Споделете точната конфигурация на 3D кубчето чрез уникален линк, последователност от ходове или в приложения',
+    shareDirectLink: 'Директен линк за зареждане',
+    shareCopyLink: 'Копирай връзката',
+    shareLinkCopied: 'Копирано в клипборда!',
+    shareNativeBtn: 'Сподели чрез мобилно приложение...',
+    shareScrambleTitle: 'Последователност от ходове / Разбъркване',
+    shareCopyScramble: 'Копирай ходовете',
+    shareFaceletsTitle: '54-символен код на стикерите (Facelets)',
+    shareCopyFacelets: 'Копирай кода',
+    shareStatusSolved: 'Идентитет (Наредено кубче)',
+    shareStatusSolvable: 'Валидна орбита (Може да се нареди)',
+    shareStatusInvalid: 'Нестандартна орбита (Разменени/завъртени елементи)',
+    shareLoadedNotification: 'Споделеното състояние на кубчето бе заредено успешно!',
+    shareViaWhatsApp: 'WhatsApp',
+    shareViaTelegram: 'Telegram',
+    shareViaX: 'X / Twitter',
+
+    // Speedcubing Timer
+    timerTitle: 'WCA Таймер за Спийдкюбинг',
+    timerSubtitle: 'Тренирайте бързо нареждане с официална 15 сек. инспекция, разбъркване и статистика',
+    timerHoldPrompt: 'Задръжте Space или кликнете и задръжте за готовност',
+    timerReleasePrompt: 'Пуснете клавиша, за да стартирате!',
+    timerInspectionPrompt: 'Време за инспекция (Задръжте Space за готовност)',
+    timerStopPrompt: 'Натиснете Space или наредете кубчето за стоп!',
+    timerInspectionToggle: '15 сек. WCA инспекция',
+    timerNewScramble: 'Ново разбъркване',
+    timerApplyScramble: 'Приложи разбъркване в 3D',
+    timerStatsHeading: 'Статистика за сесията',
+    timerBest: 'Личен рекорд (PB)',
+    timerAo5: 'Средно от 5 (Ao5)',
+    timerAo12: 'Средно от 12 (Ao12)',
+    timerSolvesCount: 'Общо нареждания',
+    timerHistory: 'История на опитите',
+    timerNoSolves: 'Все още няма записани опити. Готови ли сте за първия си старт?',
+    timerClearHistory: 'Изчисти историята',
+    timerDeleteSolve: 'Изтрий',
 
     canvasInstructions: 'Въртене: Ляв бутон + влачене | Панорама: Десен бутон | Мащаб: Скрол',
     activeSelection: 'Активен избор:',
@@ -1155,6 +1378,35 @@ export const translations: Record<Language, Translations> = {
     customFooterReady: 'Готово за прилагане към 3D симулатора',
     customFooterUnsolvable: 'Невалидно/Нерешимо състояние',
     customApplyMainBtn: 'Приложи към 3D Симулатора',
+    customCameraModeBtn: 'Сканер с Камера',
+    camTitle: 'Сканиране на Кубчето с Камера',
+    camSubtitle: 'Позиционирайте всяка стена на физическото си кубче в 3×3 решетката и заснемете всички 6 страни.',
+    camStartBtn: 'Включи Камерата',
+    camStopBtn: 'Спри Камерата',
+    camCaptureBtn: 'Заснеми Стената',
+    camMirrorBtn: 'Огледално',
+    camSwitchCameraBtn: 'Смени Камерата',
+    camDemoScanBtn: 'Симулирай Сканиране (Демо)',
+    camScannedFaces: 'Сканирани Стени',
+    camCurrentFaceLabel: 'Текуща Стена:',
+    camHoldInstructionF: 'Дръжте ЗЕЛЕНИЯ център към камерата, БЯЛОТО отгоре (U)',
+    camHoldInstructionR: 'Дръжте ЧЕРВЕНИЯ център към камерата, БЯЛОТО отгоре (U)',
+    camHoldInstructionB: 'Дръжте СИНИЯ център към камерата, БЯЛОТО отгоре (U)',
+    camHoldInstructionL: 'Дръжте ОРАНЖЕВИЯ център към камерата, БЯЛОТО отгоре (U)',
+    camHoldInstructionU: 'Дръжте БЕЛИЯ център към камерата, ЗЕЛЕНОТО отдолу (към вас)',
+    camHoldInstructionD: 'Дръжте ЖЪЛТИЯ център към камерата, ЗЕЛЕНОТО отгоре (напред)',
+    camLivePreviewTitle: 'Разпознати Цветове (3×3 Преглед)',
+    camLivePreviewHint: 'Кликнете върху който и да е стикер долу, за да коригирате цвета му ръчно при нужда.',
+    camCenterMatchOk: 'Центърът съвпада с търсената стена',
+    camCenterMatchWarn: 'Центърът изглежда различен — проверете светлината или ориентацията',
+    camAllScannedTitle: 'Всички 6 стени са сканирани!',
+    camAllScannedDesc: 'Прегледайте 2D разгъвката или натиснете „Реши моето кубче“ горе за стъпките до нареждане.',
+    camViewInNetBtn: 'Преглед в 2D Разгъвката',
+    camErrorPermission: 'Достъпът до камерата бе отказан или не бе открита камера. Проверете разрешенията на браузъра или използвайте Демо режима.',
+    camIdlePrompt: 'Натиснете „Включи Камерата“, за да сканирате реалното си кубче на Рубик',
+    camCalibrateHint: 'Съвет: Избягвайте силен отблясък върху стикерите. Кликнете всяка клетка вдясно за корекция на цвета.',
+    camCalibrateBtn: 'Калибрирай цвета от центъра',
+    camResetCalibrationBtn: 'Нулирай калибрацията',
 
     // Cube Tutorial Academy
     academyBadge: 'Академия за начинаещи',

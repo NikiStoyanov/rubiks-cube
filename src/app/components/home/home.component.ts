@@ -1,5 +1,4 @@
-import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { LanguageService } from '../../services/language.service';
 import { CubeStateService } from '../../services/cube-state.service';
@@ -7,7 +6,8 @@ import { CubeStateService } from '../../services/cube-state.service';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [RouterLink],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
 })

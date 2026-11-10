@@ -12,11 +12,15 @@
       </span>
     </div>
 
-    <!-- Active Move Badge -->
+    <!-- Active Move Badge & Inline Quick Telemetry -->
     <div class="hud-actions">
       <div class="hud-move-badge">
         <app-math-view [math]="currentMoveTex()" [block]="false" />
       </div>
+
+      <span class="hud-move-badge" style="color: var(--color-cyan); font-family: var(--font-mono); font-size: 0.7rem;">
+        ord={{ orderText() }}
+      </span>
 
       <button
         type="button"

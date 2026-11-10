@@ -26,19 +26,50 @@
     </div>
   </div>
 
-  <!-- Intuitive Beginner Guide Box -->
-  <div class="p-3.5 rounded-xl bg-gradient-to-r from-emerald-950/40 to-slate-950 border border-emerald-500/30 text-xs text-slate-300 space-y-2">
-    <div class="flex items-center gap-2 font-bold text-emerald-300">
-      <span>💡</span>
-      <span>{{ t().stabCalloutTitle }}</span>
+  <!-- Generator Stability Interactive Grid FIRST -->
+  <div>
+    <div class="flex items-center justify-between mb-2">
+      <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+        {{ t().generatorMembership }}
+      </span>
+      <span class="text-xs text-slate-400">
+        {{ t().clickToTest }}
+      </span>
     </div>
-    <p class="text-[11px] leading-relaxed text-slate-300">
-      {{ t().stabCalloutDesc }}
-    </p>
-    <div class="p-2 bg-slate-900/90 rounded-lg border border-slate-800 text-[11px] space-y-1 text-slate-400">
-      <div class="text-amber-300 font-semibold">{{ t().tryThisLabel }}</div>
-      <div>1. {{ t().stabCalloutStep1 }}</div>
-      <div>2. {{ t().stabCalloutStep2 }}</div>
+    <div class="grid grid-cols-4 sm:grid-cols-7 gap-1.5">
+      @for (item of generatorCheck(); track item.move) {
+        <button
+          (click)="applyMove.emit(item.move)"
+          [disabled]="isAnimating()"
+          [title]="
+            item.fixesOrientation
+              ? item.move + ' fixes ' + pieceName()
+              : item.fixesPos
+              ? item.move + ' twists ' + pieceName()
+              : item.move + ' moves ' + pieceName()
+          "
+          [class]="'py-1.5 px-2 rounded-lg text-xs font-mono flex items-center justify-between border transition-all cursor-pointer ' + (
+            item.fixesOrientation
+              ? 'bg-emerald-950/50 text-emerald-300 border-emerald-800 hover:bg-emerald-900/50'
+              : item.fixesPos
+              ? 'bg-amber-950/40 text-amber-300 border-amber-800/60'
+              : 'bg-slate-950 text-slate-500 border-slate-800/80 hover:bg-slate-800 hover:text-slate-300'
+          )"
+        >
+          <span class="font-bold">{{ item.move }}</span>
+          @if (item.fixesOrientation) {
+            <!-- Check Icon -->
+            <svg class="w-3.5 h-3.5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          } @else {
+            <!-- X Icon -->
+            <svg class="w-3 h-3 text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 6 6 18" /><path d="m6 6 12 12" />
+            </svg>
+          }
+        </button>
+      }
     </div>
   </div>
 
@@ -91,50 +122,19 @@
     </div>
   </div>
 
-  <!-- Generator Stability Grid -->
-  <div>
-    <div class="flex items-center justify-between mb-2">
-      <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-        {{ t().generatorMembership }}
-      </span>
-      <span class="text-xs text-slate-400">
-        {{ t().clickToTest }}
-      </span>
+  <!-- Intuitive Beginner Guide Box -->
+  <div class="p-3.5 rounded-xl bg-gradient-to-r from-emerald-950/40 to-slate-950 border border-emerald-500/30 text-xs text-slate-300 space-y-2">
+    <div class="flex items-center gap-2 font-bold text-emerald-300">
+      <span>💡</span>
+      <span>{{ t().stabCalloutTitle }}</span>
     </div>
-    <div class="grid grid-cols-4 sm:grid-cols-7 gap-1.5">
-      @for (item of generatorCheck(); track item.move) {
-        <button
-          (click)="applyMove.emit(item.move)"
-          [disabled]="isAnimating()"
-          [title]="
-            item.fixesOrientation
-              ? item.move + ' fixes ' + pieceName()
-              : item.fixesPos
-              ? item.move + ' twists ' + pieceName()
-              : item.move + ' moves ' + pieceName()
-          "
-          [class]="'py-1.5 px-2 rounded-lg text-xs font-mono flex items-center justify-between border transition-all cursor-pointer ' + (
-            item.fixesOrientation
-              ? 'bg-emerald-950/50 text-emerald-300 border-emerald-800 hover:bg-emerald-900/50'
-              : item.fixesPos
-              ? 'bg-amber-950/40 text-amber-300 border-amber-800/60'
-              : 'bg-slate-950 text-slate-500 border-slate-800/80 hover:bg-slate-800 hover:text-slate-300'
-          )"
-        >
-          <span class="font-bold">{{ item.move }}</span>
-          @if (item.fixesOrientation) {
-            <!-- Check Icon -->
-            <svg class="w-3.5 h-3.5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
-          } @else {
-            <!-- X Icon -->
-            <svg class="w-3 h-3 text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M18 6 6 18" /><path d="m6 6 12 12" />
-            </svg>
-          }
-        </button>
-      }
+    <p class="text-[11px] leading-relaxed text-slate-300">
+      {{ t().stabCalloutDesc }}
+    </p>
+    <div class="p-2 bg-slate-900/90 rounded-lg border border-slate-800 text-[11px] space-y-1 text-slate-400">
+      <div class="text-amber-300 font-semibold">{{ t().tryThisLabel }}</div>
+      <div>1. {{ t().stabCalloutStep1 }}</div>
+      <div>2. {{ t().stabCalloutStep2 }}</div>
     </div>
   </div>
 </div>

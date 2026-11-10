@@ -1,5 +1,11 @@
-import { Component, computed, inject, signal, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  DestroyRef,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { LanguageService } from '../../services/language.service';
 import { CubeStateService } from '../../services/cube-state.service';
 import {
@@ -8,7 +14,7 @@ import {
   TutorialCase,
   RubikGroupAlgebra,
 } from '../../math/group-algebra';
-import { CubeSolver, type SolveResult, type SolverStage } from '../../math/cube-solver';
+import { type SolveResult } from '../../math/cube-solver';
 import { StandardMove } from '../../types/cube';
 
 export interface NotationGuideItem {
@@ -23,13 +29,14 @@ export interface NotationGuideItem {
 @Component({
   selector: 'app-cube-tutorial',
   standalone: true,
-  imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './cube-tutorial.component.html',
   styleUrl: './cube-tutorial.component.css',
 })
-export class CubeTutorialComponent implements OnDestroy {
+export class CubeTutorialComponent {
   private readonly languageService = inject(LanguageService);
   private readonly cubeStateService = inject(CubeStateService);
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly language = this.languageService.language;
   readonly t = this.languageService.t;
@@ -53,7 +60,11 @@ export class CubeTutorialComponent implements OnDestroy {
   readonly solveResult = signal<SolveResult | null>(null);
   readonly practiceFeedback = signal<{ success: boolean; message: string } | null>(null);
 
-  private autoPlayTimer: any = null;
+  private autoPlayTimer: ReturnType<typeof setTimeout> | null = null;
+
+  constructor() {
+    this.destroyRef.onDestroy(() => this.stopAutoPlay());
+  }
 
   // Notation reference catalog for Rubik's cube Singmaster notation
   readonly notationList: NotationGuideItem[] = [
@@ -216,10 +227,6 @@ export class CubeTutorialComponent implements OnDestroy {
   readonly isStepCompleted = computed<boolean>(() => {
     return this.currentMoveIndex() >= this.currentStepMoves().length && this.currentStepMoves().length > 0;
   });
-
-  ngOnDestroy(): void {
-    this.stopAutoPlay();
-  }
 
   prevStep(): void {
     if (this.currentStepIndex() > 0) {

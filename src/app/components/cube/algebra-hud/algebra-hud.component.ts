@@ -1,5 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ChangeDetectionStrategy, computed, inject, signal } from '@angular/core';
 import { CubeStateService } from '../../../services/cube-state.service';
 import { LanguageService } from '../../../services/language.service';
 import { MathViewComponent } from '../../shared/math-view/math-view.component';
@@ -7,7 +6,8 @@ import { MathViewComponent } from '../../shared/math-view/math-view.component';
 @Component({
   selector: 'app-algebra-hud',
   standalone: true,
-  imports: [CommonModule, MathViewComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [MathViewComponent],
   templateUrl: './algebra-hud.component.html',
   styleUrl: './algebra-hud.component.css',
 })
@@ -26,7 +26,7 @@ export class AlgebraHudComponent {
   readonly activePieceName = this.cubeStateService.activePieceName;
   readonly activeSubgroupId = this.cubeStateService.activeSubgroupId;
 
-  readonly isExpanded = signal<boolean>(true);
+  readonly isExpanded = signal<boolean>(false);
 
   toggleExpand(): void {
     this.isExpanded.update((v) => !v);

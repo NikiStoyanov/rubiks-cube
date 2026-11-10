@@ -1,16 +1,16 @@
-import { Component, inject, input, output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ChangeDetectionStrategy, inject, input, output } from '@angular/core';
 import { MathViewComponent } from '../../shared/math-view/math-view.component';
-import { 
-  SUBGROUP_PRESETS, 
-  ALGORITHM_PRESETS 
-} from '../../../math/rubikGroup';
+import {
+  SUBGROUP_PRESETS,
+  ALGORITHM_PRESETS,
+} from '../../../math/group-algebra';
 import { LanguageService } from '../../../services/language.service';
 
 @Component({
   selector: 'app-subgroup-explorer',
   standalone: true,
-  imports: [CommonModule, MathViewComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [MathViewComponent],
   templateUrl: './subgroup-explorer.component.html',
 })
 export class SubgroupExplorerComponent {

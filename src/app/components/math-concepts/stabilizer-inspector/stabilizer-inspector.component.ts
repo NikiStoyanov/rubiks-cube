@@ -1,19 +1,18 @@
-import { Component, inject, input, output, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ChangeDetectionStrategy, inject, input, output, computed } from '@angular/core';
 import { MathViewComponent } from '../../shared/math-view/math-view.component';
 import {
   INITIAL_CORNERS,
   INITIAL_EDGES,
-  applyMove,
-  createInitialCubeState
-} from '../../../math/rubikGroup';
+  RubikGroupAlgebra,
+} from '../../../math/group-algebra';
 import { StandardMove } from '../../../types/cube';
 import { LanguageService } from '../../../services/language.service';
 
 @Component({
   selector: 'app-stabilizer-inspector',
   standalone: true,
-  imports: [CommonModule, MathViewComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [MathViewComponent],
   templateUrl: './stabilizer-inspector.component.html',
 })
 export class StabilizerInspectorComponent {
@@ -58,10 +57,10 @@ export class StabilizerInspectorComponent {
   readonly generatorCheck = computed(() => {
     const pType = this.selectedPieceType();
     const pId = this.selectedPieceId();
-    const initialState = createInitialCubeState();
+    const initialState = RubikGroupAlgebra.createIdentityState();
 
     return this.candidateMoves.map((m) => {
-      const next = applyMove(initialState, m);
+      const next = RubikGroupAlgebra.applyMove(initialState, m);
       const fixesPos =
         pType === 'corner'
           ? next.corners[pId].pos === pId

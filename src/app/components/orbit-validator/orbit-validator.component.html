@@ -1,41 +1,5 @@
 <div class="validator-wrapper">
-  <!-- Hero Header & Theory intro -->
-  <div class="validator-hero">
-    <div class="hero-info">
-      <div class="hero-tags">
-        <span class="badge-orbit">
-          {{ t().valHeroBadge }}
-        </span>
-        <span class="badge-coset">
-          [S₄₈ : G] = 12
-        </span>
-      </div>
-      <h2 class="hero-title">
-        {{ t().valHeroTitle }}
-      </h2>
-      <p class="hero-desc">
-        {{ t().valHeroDesc }}
-      </p>
-    </div>
-
-    <!-- Quick Coset Probability Card -->
-    <div class="coset-card">
-      <div class="coset-row">
-        <span>{{ t().valPhysicalStates }}</span>
-        <span style="color: #ffffff; font-weight: 700;">12 · |G|</span>
-      </div>
-      <div class="coset-row">
-        <span>{{ t().valSolvableOrbit }}</span>
-        <span style="color: var(--color-emerald); font-weight: 700;">~4.33 × 10¹⁹</span>
-      </div>
-      <div class="coset-row" style="border-top: 1px solid var(--border-medium); padding-top: 0.5rem;">
-        <span>{{ t().valProbability }}</span>
-        <span style="color: var(--color-amber); font-weight: 700;">1 / 12 (8.33%)</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Main Result Banner: Solvable Orbit vs Unsolvable Coset -->
+  <!-- Main Result Banner FIRST: Solvable Orbit vs Unsolvable Coset -->
   <div
     class="result-banner"
     [class.valid]="val().isValidOrbit"
@@ -68,6 +32,95 @@
         </p>
       </div>
     </div>
+  </div>
+
+  <!-- Physical Tampering Simulator SECOND (Immediate Interactive Controls) -->
+  <div class="simulator-card">
+    <div>
+      <h3 style="font-size: 1.05rem; font-weight: 700; color: #ffffff; margin: 0;">
+        {{ t().valTamperSimTitle }}
+      </h3>
+      <p style="font-size: 0.775rem; color: var(--text-secondary); margin: 0.25rem 0 0 0;">
+        {{ t().valTamperSimDesc }}
+      </p>
+    </div>
+
+    <div class="sim-actions-grid">
+      <!-- Tamper Action 1: Twist Corner -->
+      <button
+        type="button"
+        (click)="onSimulateCornerTwist()"
+        [disabled]="isAnimating()"
+        class="sim-btn"
+      >
+        <span class="sim-btn-title">
+          <span>🔄</span>
+          <span>{{ t().valTwistCornerBtn }}</span>
+        </span>
+        <span class="sim-btn-desc">
+          {{ t().valTwistCornerDesc }}
+        </span>
+      </button>
+
+      <!-- Tamper Action 2: Flip Edge -->
+      <button
+        type="button"
+        (click)="onSimulateEdgeFlip()"
+        [disabled]="isAnimating()"
+        class="sim-btn"
+      >
+        <span class="sim-btn-title">
+          <span>🔃</span>
+          <span>{{ t().valFlipEdgeBtn }}</span>
+        </span>
+        <span class="sim-btn-desc">
+          {{ t().valFlipEdgeDesc }}
+        </span>
+      </button>
+
+      <!-- Tamper Action 3: Swap 2 Pieces -->
+      <button
+        type="button"
+        (click)="onSimulatePieceSwap()"
+        [disabled]="isAnimating()"
+        class="sim-btn"
+      >
+        <span class="sim-btn-title">
+          <span>🔀</span>
+          <span>{{ t().valSwapPiecesBtn }}</span>
+        </span>
+        <span class="sim-btn-desc">
+          {{ t().valSwapPiecesDesc }}
+        </span>
+      </button>
+    </div>
+
+    <!-- Repair Action -->
+    @if (!val().isValidOrbit) {
+      <div class="repair-banner">
+        <div>
+          <span style="font-weight: 700; color: #ffffff; font-size: 0.9rem; display: block;">
+            {{ t().valUnsolvableBannerTitle }}
+          </span>
+          <span style="font-size: 0.75rem; color: var(--text-secondary);">
+            {{ t().valUnsolvableBannerDesc }}
+          </span>
+        </div>
+
+        <button
+          type="button"
+          (click)="onRepair()"
+          [disabled]="isAnimating()"
+          class="btn-repair"
+        >
+          <svg style="width: 1rem; height: 1rem;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+            <path d="m9 12 2 2 4-4" />
+          </svg>
+          <span>{{ t().valRepairBtn }}</span>
+        </button>
+      </div>
+    }
   </div>
 
   <!-- The 3 Fundamental Solvability Invariants -->
@@ -172,92 +225,39 @@
     </div>
   </div>
 
-  <!-- Physical Tampering Simulator (Entering the 11 Unsolvable Cosets) -->
-  <div class="simulator-card">
-    <div>
-      <h3 style="font-size: 1.05rem; font-weight: 700; color: #ffffff; margin: 0;">
-        {{ t().valTamperSimTitle }}
-      </h3>
-      <p style="font-size: 0.775rem; color: var(--text-secondary); margin: 0.25rem 0 0 0;">
-        {{ t().valTamperSimDesc }}
+  <!-- Hero Header & Theory Summary -->
+  <div class="validator-hero">
+    <div class="hero-info">
+      <div class="hero-tags">
+        <span class="badge-orbit">
+          {{ t().valHeroBadge }}
+        </span>
+        <span class="badge-coset">
+          [S₄₈ : G] = 12
+        </span>
+      </div>
+      <h2 class="hero-title">
+        {{ t().valHeroTitle }}
+      </h2>
+      <p class="hero-desc">
+        {{ t().valHeroDesc }}
       </p>
     </div>
 
-    <div class="sim-actions-grid">
-      <!-- Tamper Action 1: Twist Corner -->
-      <button
-        type="button"
-        (click)="onSimulateCornerTwist()"
-        [disabled]="isAnimating()"
-        class="sim-btn"
-      >
-        <span class="sim-btn-title">
-          <span>🔄</span>
-          <span>{{ t().valTwistCornerBtn }}</span>
-        </span>
-        <span class="sim-btn-desc">
-          {{ t().valTwistCornerDesc }}
-        </span>
-      </button>
-
-      <!-- Tamper Action 2: Flip Edge -->
-      <button
-        type="button"
-        (click)="onSimulateEdgeFlip()"
-        [disabled]="isAnimating()"
-        class="sim-btn"
-      >
-        <span class="sim-btn-title">
-          <span>🔃</span>
-          <span>{{ t().valFlipEdgeBtn }}</span>
-        </span>
-        <span class="sim-btn-desc">
-          {{ t().valFlipEdgeDesc }}
-        </span>
-      </button>
-
-      <!-- Tamper Action 3: Swap 2 Pieces -->
-      <button
-        type="button"
-        (click)="onSimulatePieceSwap()"
-        [disabled]="isAnimating()"
-        class="sim-btn"
-      >
-        <span class="sim-btn-title">
-          <span>🔀</span>
-          <span>{{ t().valSwapPiecesBtn }}</span>
-        </span>
-        <span class="sim-btn-desc">
-          {{ t().valSwapPiecesDesc }}
-        </span>
-      </button>
-    </div>
-
-    <!-- Repair Action -->
-    @if (!val().isValidOrbit) {
-      <div class="repair-banner">
-        <div>
-          <span style="font-weight: 700; color: #ffffff; font-size: 0.9rem; display: block;">
-            {{ t().valUnsolvableBannerTitle }}
-          </span>
-          <span style="font-size: 0.75rem; color: var(--text-secondary);">
-            {{ t().valUnsolvableBannerDesc }}
-          </span>
-        </div>
-
-        <button
-          type="button"
-          (click)="onRepair()"
-          [disabled]="isAnimating()"
-          class="btn-repair"
-        >
-          <svg style="width: 1rem; height: 1rem;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
-            <path d="m9 12 2 2 4-4" />
-          </svg>
-          <span>{{ t().valRepairBtn }}</span>
-        </button>
+    <!-- Quick Coset Probability Card -->
+    <div class="coset-card">
+      <div class="coset-row">
+        <span>{{ t().valPhysicalStates }}</span>
+        <span style="color: #ffffff; font-weight: 700;">12 · |G|</span>
       </div>
-    }
+      <div class="coset-row">
+        <span>{{ t().valSolvableOrbit }}</span>
+        <span style="color: var(--color-emerald); font-weight: 700;">~4.33 × 10¹⁹</span>
+      </div>
+      <div class="coset-row" style="border-top: 1px solid var(--border-medium); padding-top: 0.5rem;">
+        <span>{{ t().valProbability }}</span>
+        <span style="color: var(--color-amber); font-weight: 700;">1 / 12 (8.33%)</span>
+      </div>
+    </div>
   </div>
 </div>

@@ -27,23 +27,7 @@
     </div>
   </div>
 
-  <!-- Intuitive Beginner Guide Box -->
-  <div class="p-3.5 rounded-xl bg-gradient-to-r from-amber-950/40 to-slate-950 border border-amber-500/30 text-xs text-slate-300 space-y-2">
-    <div class="flex items-center gap-2 font-bold text-amber-300">
-      <span>💡</span>
-      <span>{{ t().orderCalloutTitle }}</span>
-    </div>
-    <p class="text-[11px] leading-relaxed text-slate-300">
-      {{ t().orderCalloutDesc }}
-    </p>
-    <div class="p-2 bg-slate-900/90 rounded-lg border border-slate-800 text-[11px] space-y-1 text-slate-400">
-      <div class="text-amber-300 font-semibold">{{ t().tryThisLabel }}</div>
-      <div>1. {{ t().orderCalloutStep1 }}</div>
-      <div>2. {{ t().orderCalloutStep2 }}</div>
-    </div>
-  </div>
-
-  <!-- Preset Selector -->
+  <!-- Preset Selector FIRST -->
   <div class="flex flex-wrap gap-1.5">
     @for (p of presets(); track p.name) {
       <button
@@ -153,6 +137,22 @@
           <path d="M3 3v5h5" />
         </svg>
       </button>
+    </div>
+  </div>
+
+  <!-- Intuitive Beginner Guide Box -->
+  <div class="p-3.5 rounded-xl bg-gradient-to-r from-amber-950/40 to-slate-950 border border-amber-500/30 text-xs text-slate-300 space-y-2">
+    <div class="flex items-center gap-2 font-bold text-amber-300">
+      <span>💡</span>
+      <span>{{ t().orderCalloutTitle }}</span>
+    </div>
+    <p class="text-[11px] leading-relaxed text-slate-300">
+      {{ t().orderCalloutDesc }}
+    </p>
+    <div class="p-2 bg-slate-900/90 rounded-lg border border-slate-800 text-[11px] space-y-1 text-slate-400">
+      <div class="text-amber-300 font-semibold">{{ t().tryThisLabel }}</div>
+      <div>1. {{ t().orderCalloutStep1 }}</div>
+      <div>2. {{ t().orderCalloutStep2 }}</div>
     </div>
   </div>
 </div>

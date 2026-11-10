@@ -40,23 +40,7 @@
       </button>
     </div>
 
-    <!-- Intuitive Beginner Guide Box -->
-    <div class="p-3.5 rounded-xl bg-gradient-to-r from-indigo-950/40 to-slate-950 border border-indigo-500/30 text-xs text-slate-300 space-y-2">
-      <div class="flex items-center gap-2 font-bold text-indigo-300">
-        <span>💡</span>
-        <span>{{ t().cycleCalloutTitle }}</span>
-      </div>
-      <p class="text-[11px] leading-relaxed text-slate-300">
-        {{ t().cycleCalloutDesc }}
-      </p>
-      <div class="p-2 bg-slate-900/90 rounded-lg border border-slate-800 text-[11px] space-y-1 text-slate-400">
-        <div class="text-amber-300 font-semibold">{{ t().tryThisLabel }}</div>
-        <div>1. {{ t().cycleCalloutStep1 }}</div>
-        <div>2. {{ t().cycleCalloutStep2 }}</div>
-      </div>
-    </div>
-
-    <!-- Cycle Displays -->
+    <!-- Cycle Displays FIRST -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
       <!-- Corner Cycles -->
       <div class="bg-slate-950/80 rounded-xl p-3.5 border border-slate-800">
@@ -130,6 +114,22 @@
         <div class="text-xs font-bold font-mono mt-1 text-slate-300">
           {{ analysis()!.fixedEdges.length }} / 12
         </div>
+      </div>
+    </div>
+
+    <!-- Intuitive Beginner Guide Box -->
+    <div class="p-3.5 rounded-xl bg-gradient-to-r from-indigo-950/40 to-slate-950 border border-indigo-500/30 text-xs text-slate-300 space-y-2">
+      <div class="flex items-center gap-2 font-bold text-indigo-300">
+        <span>💡</span>
+        <span>{{ t().cycleCalloutTitle }}</span>
+      </div>
+      <p class="text-[11px] leading-relaxed text-slate-300">
+        {{ t().cycleCalloutDesc }}
+      </p>
+      <div class="p-2 bg-slate-900/90 rounded-lg border border-slate-800 text-[11px] space-y-1 text-slate-400">
+        <div class="text-amber-300 font-semibold">{{ t().tryThisLabel }}</div>
+        <div>1. {{ t().cycleCalloutStep1 }}</div>
+        <div>2. {{ t().cycleCalloutStep2 }}</div>
       </div>
     </div>
   </div>

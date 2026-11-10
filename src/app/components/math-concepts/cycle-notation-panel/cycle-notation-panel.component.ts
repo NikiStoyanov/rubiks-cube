@@ -1,5 +1,4 @@
-import { Component, inject, input, output, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ChangeDetectionStrategy, inject, input, output, computed } from '@angular/core';
 import { MathViewComponent } from '../../shared/math-view/math-view.component';
 import { MoveAnalysis, DisjointCycle } from '../../../types/cube';
 import { LanguageService } from '../../../services/language.service';
@@ -7,7 +6,8 @@ import { LanguageService } from '../../../services/language.service';
 @Component({
   selector: 'app-cycle-notation-panel',
   standalone: true,
-  imports: [CommonModule, MathViewComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [MathViewComponent],
   templateUrl: './cycle-notation-panel.component.html',
 })
 export class CycleNotationPanelComponent {

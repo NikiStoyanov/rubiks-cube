@@ -41,6 +41,22 @@
         </svg>
       </button>
 
+      <!-- Share Button -->
+      <button
+        type="button"
+        (click)="share.emit()"
+        [title]="t().shareBtn"
+        class="btn-icon-sm"
+      >
+        <svg class="w-4 h-4 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="18" cy="5" r="3" />
+          <circle cx="6" cy="12" r="3" />
+          <circle cx="18" cy="19" r="3" />
+          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+        </svg>
+      </button>
+
       <button
         (click)="solve.emit()"
         [disabled]="isAnimating() || isSolved()"
@@ -169,6 +185,62 @@
         </div>
       }
     </div>
+  </div>
+
+  <!-- Visual Move History Tape & Undo/Redo Bar -->
+  <div class="history-tape-bar">
+    <div class="history-undo-btns">
+      <button
+        type="button"
+        (click)="onUndo()"
+        [disabled]="isAnimating() || moveHistory().length === 0"
+        [title]="t().shortcutsUndo + ' (Ctrl+Z)'"
+        class="btn-history-ctrl"
+      >
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 14 4 9l5-5" />
+          <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11" />
+        </svg>
+        <span>{{ language() === 'bg' ? 'Назад' : 'Undo' }}</span>
+      </button>
+
+      <button
+        type="button"
+        (click)="onRedo()"
+        [disabled]="isAnimating() || redoHistory().length === 0"
+        [title]="language() === 'bg' ? 'Повтори хода' : 'Redo move'"
+        class="btn-history-ctrl"
+      >
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m15 14 5-5-5-5" />
+          <path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5A5.5 5.5 0 0 0 9.5 20H13" />
+        </svg>
+        <span>{{ language() === 'bg' ? 'Напред' : 'Redo' }}</span>
+      </button>
+    </div>
+
+    <div class="history-pills-scroll">
+      @if (moveHistory().length === 0) {
+        <span class="history-empty-hint">
+          {{ language() === 'bg' ? 'История на ходовете: e (Начално)' : 'Move tape: e (Identity)' }}
+        </span>
+      } @else {
+        @if (moveHistory().length > 14) {
+          <span class="history-more-tag">+{{ moveHistory().length - 14 }}</span>
+        }
+        @for (m of recentMoves(); track $index; let isLast = $last) {
+          <span class="history-move-chip" [class.latest]="isLast">
+            {{ m }}
+          </span>
+        }
+      }
+    </div>
+
+    @if (moveHistory().length > 0) {
+      <span class="history-count-badge" [title]="language() === 'bg' ? 'Общо ходове' : 'Total moves'">
+        {{ moveHistory().length }}
+      </span>
+    }
   </div>
 
   <!-- Sliders: Explode & Speed & 3D Vectors -->

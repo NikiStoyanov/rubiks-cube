@@ -1,60 +1,70 @@
 import {
-  Component,
-  ElementRef,
-  ViewChild,
   AfterViewInit,
-  OnDestroy,
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  ElementRef,
   NgZone,
+  effect,
   inject,
   signal,
-  computed,
-  effect,
+  viewChild,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterOutlet, RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
 import { RubiksCube3D } from './3d/CubeRenderer';
-import { CubeState, StandardMove, ViewMode, PieceType, AppPage, FaceName } from './types/cube';
-import { FACE_COLORS, FACE_NAMES, RubikGroupAlgebra } from './math/group-algebra';
-import { CubeSolver, type SolveResult, type SolverStage } from './math/cube-solver';
+import { FaceName, PieceType, StandardMove, ViewMode } from './types/cube';
+import { FACE_COLORS, FACE_NAMES } from './math/group-algebra';
 import { LanguageService } from './services/language.service';
-import { CubeStateService, ActiveTab } from './services/cube-state.service';
+import { CubeStateService } from './services/cube-state.service';
+import { SoundService } from './services/sound.service';
+import { ToastService } from './services/toast.service';
 import { Controls3DComponent } from './components/cube/controls-3d/controls-3d.component';
 import { Cube2DComponent } from './components/cube/cube-2d/cube-2d.component';
+import { AlgebraHudComponent } from './components/cube/algebra-hud/algebra-hud.component';
 import { TheoryGuideModalComponent } from './components/shared/theory-guide-modal/theory-guide-modal.component';
 import { OnboardingTourComponent } from './components/shared/onboarding-tour/onboarding-tour.component';
-import { AlgebraHudComponent } from './components/cube/algebra-hud/algebra-hud.component';
+import { SolveModalComponent } from './components/shared/solve-modal/solve-modal.component';
+import { ShareModalComponent } from './components/shared/share-modal/share-modal.component';
+import { ShortcutsModalComponent } from './components/shared/shortcuts-modal/shortcuts-modal.component';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [
-    CommonModule,
     RouterOutlet,
     RouterLink,
     RouterLinkActive,
     Controls3DComponent,
     Cube2DComponent,
+    AlgebraHudComponent,
     TheoryGuideModalComponent,
     OnboardingTourComponent,
-    AlgebraHudComponent,
+    SolveModalComponent,
+    ShareModalComponent,
+    ShortcutsModalComponent,
   ],
   templateUrl: './app.html',
   styleUrl: './app.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '(window:keydown)': 'handleGlobalKeyDown($event)',
+  },
 })
-export class App implements AfterViewInit, OnDestroy {
+export class App implements AfterViewInit {
   private readonly ngZone = inject(NgZone);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly languageService = inject(LanguageService);
   readonly cubeStateService = inject(CubeStateService);
-
-  private readonly subs = new Subscription();
+  readonly soundService = inject(SoundService);
+  readonly toastService = inject(ToastService);
 
   readonly t = this.languageService.t;
   readonly language = this.languageService.language;
+  readonly toastMessage = this.toastService.message;
 
-  @ViewChild('cubeContainer') cubeContainerRef!: ElementRef<HTMLDivElement>;
+  readonly cubeContainerRef = viewChild<ElementRef<HTMLDivElement>>('cubeContainer');
   readonly cubeRenderer = signal<RubiksCube3D | null>(null);
 
   // Delegated Reactive State Signals
@@ -83,50 +93,38 @@ export class App implements AfterViewInit, OnDestroy {
   readonly orbitPieces = this.cubeStateService.orbitPieces;
   readonly analysis = this.cubeStateService.analysis;
   readonly isSolved = this.cubeStateService.isSolved;
+  readonly isSolvable = this.cubeStateService.isSolvable;
   readonly activePieceName = this.cubeStateService.activePieceName;
 
-  // Global Solver Modal State
+  // Modal Visibility Signals
   readonly isSolveModalOpen = signal<boolean>(false);
-  readonly solveResult = signal<SolveResult | null>(null);
-  readonly activeSolveStageIndex = signal<number>(0);
-  readonly currentSolveMoveIndex = signal<number>(0);
-  readonly isSolveAutoPlaying = signal<boolean>(false);
-  readonly solvePlaybackSpeed = signal<number>(1);
-  private solveAutoPlayTimer: any = null;
-
-  readonly activeSolveStage = computed<SolverStage | null>(() => {
-    const res = this.solveResult();
-    if (!res || !res.stages.length) return null;
-    return res.stages[this.activeSolveStageIndex()] ?? null;
-  });
-
-  readonly solveProgressPercent = computed<number>(() => {
-    const res = this.solveResult();
-    if (!res || res.totalMoves === 0) return 0;
-    return Math.min(100, Math.round((this.currentSolveMoveIndex() / res.totalMoves) * 100));
-  });
+  readonly isShortcutsModalOpen = signal<boolean>(false);
+  readonly isShareModalOpen = signal<boolean>(false);
 
   constructor() {
-    // Synchronize current route with activePage in CubeStateService
-    this.subs.add(
-      this.router.events
-        .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
-        .subscribe((e) => {
-          const url = e.urlAfterRedirects;
-          if (url.includes('validator')) {
-            this.cubeStateService.setActivePage('validator');
-          } else if (url.includes('tutorial')) {
-            this.cubeStateService.setActivePage('tutorial');
-          } else if (url.includes('math')) {
-            this.cubeStateService.setActivePage('math');
-          } else {
-            this.cubeStateService.setActivePage('home');
-          }
-          this.updateHighlights();
-        })
-    );
+    this.router.events
+      .pipe(
+        filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe((e) => {
+        const url = e.urlAfterRedirects;
+        if (url.includes('validator')) {
+          this.cubeStateService.setActivePage('validator');
+        } else if (url.includes('tutorial')) {
+          this.cubeStateService.setActivePage('tutorial');
+        } else if (url.includes('math')) {
+          this.cubeStateService.setActivePage('math');
+        } else if (url.includes('custom')) {
+          this.cubeStateService.setActivePage('custom');
+        } else if (url.includes('timer')) {
+          this.cubeStateService.setActivePage('timer');
+        } else {
+          this.cubeStateService.setActivePage('home');
+        }
+        this.updateHighlights();
+      });
 
-    // Reactive synchronization for 3D Highlights and Visual Overlays
     effect(() => {
       this.cubeRenderer();
       this.activePage();
@@ -140,6 +138,132 @@ export class App implements AfterViewInit, OnDestroy {
 
       this.updateHighlights();
     });
+
+    if (typeof window !== 'undefined') {
+      const loaded = this.cubeStateService.loadStateFromUrl();
+      if (loaded) {
+        setTimeout(() => {
+          this.toastService.show(this.t().shareLoadedNotification);
+        }, 500);
+      }
+    }
+
+    this.destroyRef.onDestroy(() => {
+      const renderer = this.cubeRenderer();
+      if (renderer) {
+        renderer.destroy();
+        this.cubeRenderer.set(null);
+      }
+    });
+  }
+
+  ngAfterViewInit(): void {
+    const container = this.cubeContainerRef()?.nativeElement;
+    if (!container) return;
+
+    this.ngZone.runOutsideAngular(() => {
+      try {
+        const renderer = new RubiksCube3D(container);
+        renderer.onPieceClick = (pieceType, pieceId) => {
+          this.ngZone.run(() => {
+            if (this.activePage() !== 'math') return;
+            this.cubeStateService.setSelectedPiece(pieceType, pieceId);
+            this.updateHighlights();
+          });
+        };
+
+        renderer.onStickerClick = (event) => {
+          this.ngZone.run(() => {
+            if (this.cubeStateService.is3DPaintMode()) {
+              const brush = this.cubeStateService.activeBrushColor();
+              const color = this.getFaceColor(brush);
+              if (event.materialIndex >= 0) {
+                renderer.paintStickerMesh(event.bodyMesh, event.materialIndex, color);
+              }
+              this.cubeStateService.paintSticker(event.face, event.row, event.col, color);
+            }
+          });
+        };
+
+        this.ngZone.run(() => {
+          this.cubeRenderer.set(renderer);
+          this.updateHighlights();
+        });
+      } catch (err) {
+        console.warn('WebGL context unavailable or not supported:', err);
+      }
+    });
+
+    this.cubeStateService.moveRequest$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(({ move, onComplete }) => {
+        this.animateSingleMove(move, onComplete);
+      });
+
+    this.cubeStateService.algorithmRequest$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(({ moves, onComplete }) => {
+        this.animateAlgorithmMoves(moves, onComplete);
+      });
+
+    this.cubeStateService.tamperRequest$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((action) => {
+        const renderer = this.cubeRenderer();
+        if (renderer) {
+          if (action === 'twist') {
+            renderer.twistCornerMesh(0, 1);
+          } else if (action === 'flip') {
+            renderer.flipEdgeMesh(0);
+          } else if (action === 'swap') {
+            renderer.swapPiecesMesh('corner', 0, 1);
+          } else if (action === 'repair') {
+            renderer.resetToIdentity();
+          }
+        }
+        this.updateHighlights();
+      });
+
+    this.cubeStateService.resetRequest$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        const renderer = this.cubeRenderer();
+        if (renderer) {
+          renderer.resetToIdentity();
+          this.updateHighlights();
+        }
+      });
+
+    this.cubeStateService.scrambleRequest$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((moves) => {
+        const renderer = this.cubeRenderer();
+        if (renderer) {
+          for (const m of moves) {
+            renderer.applyMoveInstant(m);
+          }
+          this.updateHighlights();
+        }
+      });
+
+    this.cubeStateService.customStateRequest$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((state) => {
+        const renderer = this.cubeRenderer();
+        if (renderer) {
+          renderer.applyCustomState(state);
+          this.updateHighlights();
+        }
+      });
+
+    this.cubeStateService.netSync$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((net) => {
+        const renderer = this.cubeRenderer();
+        if (renderer) {
+          renderer.applyNetColors(net);
+        }
+      });
   }
 
   toggleViewMode(): void {
@@ -193,129 +317,10 @@ export class App implements AfterViewInit, OnDestroy {
     });
   }
 
-  ngAfterViewInit(): void {
-    if (!this.cubeContainerRef?.nativeElement) return;
-
-    this.ngZone.runOutsideAngular(() => {
-      try {
-        const renderer = new RubiksCube3D(this.cubeContainerRef.nativeElement);
-        renderer.onPieceClick = (pieceType, pieceId) => {
-          this.ngZone.run(() => {
-            if (this.activePage() !== 'math') return;
-            this.cubeStateService.setSelectedPiece(pieceType, pieceId);
-            this.updateHighlights();
-          });
-        };
-
-        renderer.onStickerClick = (event) => {
-          this.ngZone.run(() => {
-            if (this.cubeStateService.is3DPaintMode()) {
-              const brush = this.cubeStateService.activeBrushColor();
-              const color = this.getFaceColor(brush);
-              if (event.materialIndex >= 0) {
-                renderer.paintStickerMesh(event.bodyMesh, event.materialIndex, color);
-              }
-              this.cubeStateService.paintSticker(event.face, event.row, event.col, color);
-            }
-          });
-        };
-
-        this.ngZone.run(() => {
-          this.cubeRenderer.set(renderer);
-          this.updateHighlights();
-        });
-      } catch (err) {
-        console.warn('WebGL context unavailable or not supported:', err);
-      }
-    });
-
-    // Subscribe to state service events to animate the 3D renderer
-    this.subs.add(
-      this.cubeStateService.moveRequest$.subscribe(({ move, onComplete }) => {
-        this.animateSingleMove(move, onComplete);
-      })
-    );
-
-    this.subs.add(
-      this.cubeStateService.algorithmRequest$.subscribe(({ moves, onComplete }) => {
-        this.animateAlgorithmMoves(moves, onComplete);
-      })
-    );
-
-    this.subs.add(
-      this.cubeStateService.tamperRequest$.subscribe((action) => {
-        const renderer = this.cubeRenderer();
-        if (renderer) {
-          if (action === 'twist') {
-            renderer.twistCornerMesh(0, 1);
-          } else if (action === 'flip') {
-            renderer.flipEdgeMesh(0);
-          } else if (action === 'swap') {
-            renderer.swapPiecesMesh('corner', 0, 1);
-          } else if (action === 'repair') {
-            renderer.resetToIdentity();
-          }
-        }
-        this.updateHighlights();
-      })
-    );
-
-    this.subs.add(
-      this.cubeStateService.resetRequest$.subscribe(() => {
-        const renderer = this.cubeRenderer();
-        if (renderer) {
-          renderer.resetToIdentity();
-          this.updateHighlights();
-        }
-      })
-    );
-
-    this.subs.add(
-      this.cubeStateService.scrambleRequest$.subscribe((moves) => {
-        const renderer = this.cubeRenderer();
-        if (renderer) {
-          for (const m of moves) {
-            renderer.applyMoveInstant(m);
-          }
-          this.updateHighlights();
-        }
-      })
-    );
-
-    this.subs.add(
-      this.cubeStateService.customStateRequest$.subscribe((state) => {
-        const renderer = this.cubeRenderer();
-        if (renderer) {
-          renderer.applyCustomState(state);
-          this.updateHighlights();
-        }
-      })
-    );
-
-    this.subs.add(
-      this.cubeStateService.netSync$.subscribe((net) => {
-        const renderer = this.cubeRenderer();
-        if (renderer) {
-          renderer.applyNetColors(net);
-        }
-      })
-    );
-  }
-
-  ngOnDestroy(): void {
-    this.subs.unsubscribe();
-    this.stopSolveAutoPlay();
-    const renderer = this.cubeRenderer();
-    if (renderer) {
-      renderer.destroy();
-      this.cubeRenderer.set(null);
-    }
-  }
-
   private animateSingleMove(move: StandardMove, onComplete?: () => void): void {
     const renderer = this.cubeRenderer();
     if (!renderer) {
-      if (onComplete) onComplete();
+      onComplete?.();
       return;
     }
 
@@ -325,7 +330,7 @@ export class App implements AfterViewInit, OnDestroy {
         this.ngZone.run(() => {
           this.cubeStateService.setIsAnimating(false);
           this.updateHighlights();
-          if (onComplete) onComplete();
+          onComplete?.();
         });
       });
     });
@@ -334,7 +339,7 @@ export class App implements AfterViewInit, OnDestroy {
   private animateAlgorithmMoves(moves: StandardMove[], onComplete?: () => void): void {
     const renderer = this.cubeRenderer();
     if (!renderer) {
-      if (onComplete) onComplete();
+      onComplete?.();
       return;
     }
 
@@ -348,7 +353,7 @@ export class App implements AfterViewInit, OnDestroy {
             this.ngZone.run(() => {
               this.cubeStateService.setIsAnimating(false);
               this.updateHighlights();
-              if (onComplete) onComplete();
+              onComplete?.();
             });
           }
         });
@@ -386,10 +391,7 @@ export class App implements AfterViewInit, OnDestroy {
   }
 
   handleResetCamera(): void {
-    const renderer = this.cubeRenderer();
-    if (renderer) {
-      renderer.resetCamera();
-    }
+    this.cubeRenderer()?.resetCamera();
   }
 
   setShowCycleArrows(show: boolean): void {
@@ -433,125 +435,103 @@ export class App implements AfterViewInit, OnDestroy {
     this.cubeStateService.closeTour();
   }
 
-  // ==========================================
-  // SOLVER MODAL ACTIONS
-  // ==========================================
-
   openSolveModal(): void {
-    const result = this.cubeStateService.solveCurrentCube();
-    this.solveResult.set(result);
-    this.activeSolveStageIndex.set(0);
-    this.currentSolveMoveIndex.set(0);
     this.isSolveModalOpen.set(true);
   }
 
   closeSolveModal(): void {
-    this.stopSolveAutoPlay();
     this.isSolveModalOpen.set(false);
   }
 
-  selectSolveStage(index: number): void {
-    this.activeSolveStageIndex.set(index);
+  toggleSound(): void {
+    this.soundService.toggleMute();
   }
 
-  stepForwardSolve(): void {
-    const res = this.solveResult();
-    if (!res) return;
-    const idx = this.currentSolveMoveIndex();
-    if (idx >= res.allMoves.length) return;
-
-    const move = res.allMoves[idx];
-    this.cubeStateService.applyMove(move);
-    this.currentSolveMoveIndex.set(idx + 1);
-
-    let countSoFar = 0;
-    for (let i = 0; i < res.stages.length; i++) {
-      countSoFar += res.stages[i].moves.length;
-      if (idx + 1 >= countSoFar && i + 1 < res.stages.length) {
-        this.activeSolveStageIndex.set(i + 1);
-      }
-    }
+  openShortcutsModal(): void {
+    this.isShortcutsModalOpen.set(true);
   }
 
-  stepBackwardSolve(): void {
-    const res = this.solveResult();
-    if (!res) return;
-    const idx = this.currentSolveMoveIndex();
-    if (idx <= 0) return;
-
-    const prevMove = res.allMoves[idx - 1];
-    const inverted = RubikGroupAlgebra.invertAlgorithm(prevMove)[0] as StandardMove;
-    this.cubeStateService.applyMove(inverted);
-    this.currentSolveMoveIndex.set(idx - 1);
-
-    let countSoFar = 0;
-    for (let i = 0; i < res.stages.length; i++) {
-      countSoFar += res.stages[i].moves.length;
-      if (idx - 1 < countSoFar) {
-        this.activeSolveStageIndex.set(i);
-        break;
-      }
-    }
+  closeShortcutsModal(): void {
+    this.isShortcutsModalOpen.set(false);
   }
 
-  toggleSolveAutoPlay(): void {
-    if (this.isSolveAutoPlaying()) {
-      this.stopSolveAutoPlay();
-    } else {
-      this.startSolveAutoPlay();
-    }
+  toggleShortcutsModal(): void {
+    this.isShortcutsModalOpen.update((v) => !v);
   }
 
-  startSolveAutoPlay(): void {
-    const res = this.solveResult();
-    if (!res || this.currentSolveMoveIndex() >= res.allMoves.length) {
-      return;
-    }
-    this.isSolveAutoPlaying.set(true);
-    this.executeNextSolveAutoPlayMove();
+  openShareModal(): void {
+    this.isShareModalOpen.set(true);
   }
 
-  private executeNextSolveAutoPlayMove(): void {
-    if (!this.isSolveAutoPlaying()) return;
-    const res = this.solveResult();
-    if (!res || this.currentSolveMoveIndex() >= res.allMoves.length) {
-      this.stopSolveAutoPlay();
+  closeShareModal(): void {
+    this.isShareModalOpen.set(false);
+  }
+
+  handleGlobalKeyDown(event: KeyboardEvent): void {
+    const target = event.target as HTMLElement | null;
+    if (
+      target &&
+      (target.tagName === 'INPUT' ||
+        target.tagName === 'TEXTAREA' ||
+        target.tagName === 'SELECT' ||
+        target.isContentEditable)
+    ) {
       return;
     }
 
-    const move = res.allMoves[this.currentSolveMoveIndex()];
-    this.cubeStateService.applyMove(move, () => {
-      this.currentSolveMoveIndex.update((i) => i + 1);
-
-      let countSoFar = 0;
-      for (let i = 0; i < res.stages.length; i++) {
-        countSoFar += res.stages[i].moves.length;
-        if (this.currentSolveMoveIndex() >= countSoFar && i + 1 < res.stages.length) {
-          this.activeSolveStageIndex.set(i + 1);
-        }
+    if (event.key === 'Escape') {
+      if (this.isShareModalOpen()) {
+        this.closeShareModal();
+        return;
       }
+      if (this.isShortcutsModalOpen()) {
+        this.closeShortcutsModal();
+        return;
+      }
+      if (this.isSolveModalOpen()) {
+        this.closeSolveModal();
+        return;
+      }
+      if (this.isTheoryOpen()) {
+        this.cubeStateService.closeTheory();
+        return;
+      }
+      if (this.isTourOpen()) {
+        this.cubeStateService.closeTour();
+        return;
+      }
+    }
 
-      if (this.currentSolveMoveIndex() >= res.allMoves.length) {
-        this.stopSolveAutoPlay();
+    if (event.key === '?' || (event.shiftKey && event.key === '/')) {
+      event.preventDefault();
+      this.toggleShortcutsModal();
+      return;
+    }
+
+    if (this.activePage() === 'timer' && (event.code === 'Space' || event.key === ' ')) {
+      return;
+    }
+
+    if ((event.ctrlKey || event.metaKey) && (event.key === 'z' || event.key === 'Z')) {
+      event.preventDefault();
+      this.cubeStateService.undoLastMove();
+      return;
+    }
+
+    if (!event.ctrlKey && !event.altKey && !event.metaKey) {
+      if (event.key.toLowerCase() === 'z') {
+        event.preventDefault();
+        this.cubeStateService.undoLastMove();
         return;
       }
 
-      const delay = Math.max(150, Math.round(500 / this.solvePlaybackSpeed()));
-      this.solveAutoPlayTimer = setTimeout(() => {
-        this.executeNextSolveAutoPlayMove();
-      }, delay);
-    });
-  }
-
-  stopSolveAutoPlay(): void {
-    this.isSolveAutoPlaying.set(false);
-    if (this.solveAutoPlayTimer) {
-      clearTimeout(this.solveAutoPlayTimer);
-      this.solveAutoPlayTimer = null;
+      const keyUpper = event.key.toUpperCase();
+      const validFaces = ['R', 'L', 'U', 'D', 'F', 'B', 'M', 'E', 'S'];
+      if (validFaces.includes(keyUpper)) {
+        event.preventDefault();
+        const move = event.shiftKey ? `${keyUpper}'` : keyUpper;
+        this.cubeStateService.applyMove(move as StandardMove);
+      }
     }
-  }
-
-  setSolvePlaybackSpeed(speed: number): void {
-    this.solvePlaybackSpeed.set(speed);
   }
 }

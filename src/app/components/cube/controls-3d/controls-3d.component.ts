@@ -1,5 +1,4 @@
-import { Component, inject, input, output, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ChangeDetectionStrategy, inject, input, output, computed } from '@angular/core';
 import { StandardMove } from '../../../types/cube';
 import { LanguageService } from '../../../services/language.service';
 import { CubeStateService } from '../../../services/cube-state.service';
@@ -7,7 +6,7 @@ import { CubeStateService } from '../../../services/cube-state.service';
 @Component({
   selector: 'app-controls-3d',
   standalone: true,
-  imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './controls-3d.component.html',
   styleUrl: './controls-3d.component.css',
 })
@@ -28,14 +27,26 @@ export class Controls3DComponent {
   reset = output<void>();
   scramble = output<void>();
   solve = output<void>();
+  share = output<void>();
   explodeChange = output<number>();
   speedChange = output<number>();
   toggleCycleArrows = output<boolean>();
   resetCamera = output<void>();
 
   readonly isSolved = this.cubeStateService.isSolved;
+  readonly moveHistory = this.cubeStateService.moveHistory;
+  readonly redoHistory = this.cubeStateService.redoHistory;
+  readonly recentMoves = computed(() => this.moveHistory().slice(-14));
 
   readonly sliceMoves: StandardMove[] = ['M', 'E', 'S'];
+
+  onUndo(): void {
+    this.cubeStateService.undoLastMove();
+  }
+
+  onRedo(): void {
+    this.cubeStateService.redoLastMove();
+  }
 
   readonly faces = computed(() => {
     const lang = this.language();

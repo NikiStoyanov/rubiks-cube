@@ -1,22 +1,18 @@
-import { Component, inject, input, output, signal, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ChangeDetectionStrategy, inject, input, output, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MathViewComponent } from '../../shared/math-view/math-view.component';
-import { 
-  makeCommutator, 
-  makeConjugate, 
-  invertAlgorithm 
-} from '../../../math/rubikGroup';
+import { RubikGroupAlgebra } from '../../../math/group-algebra';
 import { LanguageService } from '../../../services/language.service';
 
 @Component({
   selector: 'app-commutator-lab',
   standalone: true,
-  imports: [CommonModule, FormsModule, MathViewComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [FormsModule, MathViewComponent],
   templateUrl: './commutator-lab.component.html',
 })
 export class CommutatorLabComponent {
-  private languageService = inject(LanguageService);
+  private readonly languageService = inject(LanguageService);
   readonly t = this.languageService.t;
   readonly language = this.languageService.language;
 
@@ -27,10 +23,10 @@ export class CommutatorLabComponent {
   readonly algoB = signal<string>('U');
   readonly mode = signal<'commutator' | 'conjugate'>('commutator');
 
-  readonly commutatorStr = computed(() => makeCommutator(this.algoA(), this.algoB()));
-  readonly conjugateStr = computed(() => makeConjugate(this.algoA(), this.algoB()));
-  readonly invA = computed(() => invertAlgorithm(this.algoA()));
-  readonly invB = computed(() => invertAlgorithm(this.algoB()));
+  readonly commutatorStr = computed(() => RubikGroupAlgebra.makeCommutator(this.algoA(), this.algoB()));
+  readonly conjugateStr = computed(() => RubikGroupAlgebra.makeConjugate(this.algoA(), this.algoB()));
+  readonly invA = computed(() => RubikGroupAlgebra.invertAlgorithm(this.algoA()));
+  readonly invB = computed(() => RubikGroupAlgebra.invertAlgorithm(this.algoB()));
 
   readonly formulaPrefix = computed(() => {
     return this.mode() === 'commutator'

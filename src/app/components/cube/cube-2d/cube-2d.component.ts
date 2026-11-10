@@ -1,13 +1,14 @@
-import { Component, inject, input, output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ChangeDetectionStrategy, inject, input, output } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 import { FaceName, Facelet2D, Net2DFaces, PieceType, StandardMove } from '../../../types/cube';
 import { LanguageService } from '../../../services/language.service';
-import { FACE_COLORS } from '../../../math/rubikGroup';
+import { FACE_COLORS } from '../../../math/group-algebra';
 
 @Component({
   selector: 'app-cube-2d',
   standalone: true,
-  imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [NgTemplateOutlet],
   templateUrl: './cube-2d.component.html',
   styleUrl: './cube-2d.component.css',
 })

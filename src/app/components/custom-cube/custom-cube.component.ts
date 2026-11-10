@@ -1,7 +1,13 @@
-import { Component, signal, computed, inject, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
-import { Subscription } from 'rxjs';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  DestroyRef,
+  signal,
+  computed,
+  inject,
+  OnInit,
+} from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { CubeStateService } from '../../services/cube-state.service';
 import { LanguageService } from '../../services/language.service';
 import {
@@ -12,8 +18,9 @@ import {
   INITIAL_EDGES,
   type ReconstructionResult,
 } from '../../math/group-algebra';
-import { CubeSolver, type SolveResult, type SolverStage } from '../../math/cube-solver';
-import { Net2DFaces, FaceName, CubeState, Facelet2D, StandardMove } from '../../types/cube';
+import { type SolveResult, type SolverStage } from '../../math/cube-solver';
+import { FaceName, CubeState, StandardMove } from '../../types/cube';
+import { WebcamScannerComponent } from './webcam-scanner/webcam-scanner.component';
 
 export interface ColorPaletteItem {
   face: FaceName;
@@ -25,21 +32,22 @@ export interface ColorPaletteItem {
 @Component({
   selector: 'app-custom-cube',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [RouterLink, WebcamScannerComponent],
   templateUrl: './custom-cube.component.html',
   styleUrl: './custom-cube.component.css',
 })
-export class CustomCubeComponent implements OnInit, OnDestroy {
+export class CustomCubeComponent implements OnInit {
   private readonly cubeStateService = inject(CubeStateService);
   private readonly languageService = inject(LanguageService);
-  private readonly sub = new Subscription();
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly language = this.languageService.language;
   readonly t = this.languageService.t;
   readonly isBg = computed(() => this.language() === 'bg');
 
-  // Input modes: '2d' (Net Painter) or 'pieces' (Piece by Piece Inspector)
-  readonly activeMode = signal<'2d' | 'pieces'>('2d');
+  // Input modes: '2d' (Net Painter), 'camera' (Webcam Scanner), or 'pieces' (Piece by Piece Inspector)
+  readonly activeMode = signal<'2d' | 'camera' | 'pieces'>('2d');
 
   // Active brush color from palette
   readonly activeColor = this.cubeStateService.activeBrushColor;
@@ -84,7 +92,14 @@ export class CustomCubeComponent implements OnInit, OnDestroy {
   readonly isAutoPlaying = signal<boolean>(false);
   readonly playbackSpeed = signal<number>(1);
   readonly isCubeLoadedIn3D = signal<boolean>(false);
-  private autoPlayTimer: any = null;
+  private autoPlayTimer: ReturnType<typeof setTimeout> | null = null;
+
+  constructor() {
+    this.destroyRef.onDestroy(() => {
+      this.stopAutoPlay();
+      this.cubeStateService.set3DPaintMode(false);
+    });
+  }
 
   readonly activeStage = computed<SolverStage | null>(() => {
     const res = this.solveResult();
@@ -108,12 +123,6 @@ export class CustomCubeComponent implements OnInit, OnDestroy {
     this.cubeStateService.set3DPaintMode(true);
     // Sync current net to 3D cube model
     this.cubeStateService.syncNetTo3D(this.editableNet());
-  }
-
-  ngOnDestroy(): void {
-    this.sub.unsubscribe();
-    this.stopAutoPlay();
-    this.cubeStateService.set3DPaintMode(false);
   }
 
   // ==========================================

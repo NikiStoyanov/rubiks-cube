@@ -8,11 +8,11 @@
   -webkit-backdrop-filter: blur(12px);
   border-radius: var(--radius-xl);
   border: 1px solid var(--border-medium);
-  padding: 1rem;
+  padding: 0.75rem 0.9rem;
   box-shadow: var(--shadow-lg);
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.65rem;
   animation: fadeIn 0.25s ease-out;
 }
 
@@ -22,7 +22,9 @@
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid var(--border-medium);
-  padding-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  flex-wrap: wrap;
+  gap: 0.4rem;
 }
 
 .header-left {
@@ -344,37 +346,153 @@
   cursor: not-allowed;
 }
 
+/* Visual Move History Tape & Undo/Redo Bar */
+.history-tape-bar {
+  border-top: 1px solid var(--border-medium);
+  padding-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.history-undo-btns {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.btn-history-ctrl {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-history-ctrl:hover:not(:disabled) {
+  background: #334155;
+  color: #38bdf8;
+  border-color: rgba(56, 189, 248, 0.4);
+}
+
+.btn-history-ctrl:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.history-pills-scroll {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  overflow-x: auto;
+  padding: 0.2rem 0.4rem;
+  background: rgba(2, 6, 23, 0.55);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  min-height: 1.65rem;
+  scrollbar-width: none;
+}
+
+.history-pills-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.history-empty-hint {
+  font-size: 0.68rem;
+  font-family: var(--font-mono);
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.history-more-tag {
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  color: var(--text-dim);
+  padding: 0.05rem 0.25rem;
+  background: rgba(30, 41, 59, 0.8);
+  border-radius: 4px;
+}
+
+.history-move-chip {
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  padding: 0.05rem 0.35rem;
+  border-radius: 4px;
+  background: rgba(30, 41, 59, 0.9);
+  color: var(--text-secondary);
+  border: 1px solid rgba(71, 85, 105, 0.5);
+  white-space: nowrap;
+}
+
+.history-move-chip.latest {
+  background: rgba(6, 182, 212, 0.2);
+  color: #67e8f9;
+  border-color: rgba(6, 182, 212, 0.5);
+  font-weight: 700;
+}
+
+.history-count-badge {
+  font-size: 0.68rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: #a5b4fc;
+  background: rgba(99, 102, 241, 0.15);
+  border: 1px solid rgba(99, 102, 241, 0.35);
+  padding: 0.15rem 0.45rem;
+  border-radius: 9999px;
+  flex-shrink: 0;
+}
+
 /* Sliders & Toggles Section */
 .sliders-section {
   border-top: 1px solid var(--border-medium);
-  padding-top: 0.75rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+  padding-top: 0.5rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.45rem;
+}
+
+@media (min-width: 640px) {
+  .sliders-section {
+    grid-template-columns: 1fr 1fr auto;
+    align-items: center;
+    gap: 0.75rem;
+  }
 }
 
 .slider-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
-  font-size: 0.75rem;
+  gap: 0.4rem;
+  font-size: 0.72rem;
 }
 
 .slider-label {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.3rem;
   color: var(--text-secondary);
   font-weight: 500;
+  white-space: nowrap;
 }
 
 .slider-controls {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.35rem;
   flex: 1;
-  max-width: 160px;
+  max-width: 110px;
 }
 
 .range-input {
@@ -417,8 +535,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 0.75rem;
-  padding-top: 0.25rem;
+  gap: 0.4rem;
+  font-size: 0.72rem;
 }
 
 .toggle-switch-btn {

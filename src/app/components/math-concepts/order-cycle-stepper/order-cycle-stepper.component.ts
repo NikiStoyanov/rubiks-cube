@@ -1,17 +1,28 @@
-import { Component, inject, input, output, signal, computed, effect, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  DestroyRef,
+  inject,
+  input,
+  output,
+  signal,
+  computed,
+  effect,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { computeElementOrder } from '../../../math/rubikGroup';
+import { RubikGroupAlgebra } from '../../../math/group-algebra';
 import { LanguageService } from '../../../services/language.service';
 
 @Component({
   selector: 'app-order-cycle-stepper',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [FormsModule],
   templateUrl: './order-cycle-stepper.component.html',
 })
-export class OrderCycleStepperComponent implements OnDestroy {
-  private languageService = inject(LanguageService);
+export class OrderCycleStepperComponent {
+  private readonly languageService = inject(LanguageService);
+  private readonly destroyRef = inject(DestroyRef);
   readonly t = this.languageService.t;
   readonly language = this.languageService.language;
 
@@ -25,7 +36,7 @@ export class OrderCycleStepperComponent implements OnDestroy {
   readonly currentStep = signal<number>(0);
   readonly isAutoPlaying = signal<boolean>(false);
 
-  private timer: any = null;
+  private timer: ReturnType<typeof setTimeout> | null = null;
 
   readonly presets = computed(() => {
     const lang = this.language();
@@ -73,11 +84,17 @@ export class OrderCycleStepperComponent implements OnDestroy {
         }, 350);
       }
     });
+
+    this.destroyRef.onDestroy(() => {
+      if (this.timer) {
+        clearTimeout(this.timer);
+      }
+    });
   }
 
   selectPreset(alg: string): void {
     this.selectedAlgo.set(alg);
-    const ord = computeElementOrder(alg);
+    const ord = RubikGroupAlgebra.computeElementOrder(alg);
     this.order.set(ord);
     this.currentStep.set(0);
     this.isAutoPlaying.set(false);
@@ -85,7 +102,7 @@ export class OrderCycleStepperComponent implements OnDestroy {
 
   onAlgoInputChange(val: string): void {
     this.selectedAlgo.set(val);
-    const ord = computeElementOrder(val);
+    const ord = RubikGroupAlgebra.computeElementOrder(val);
     this.order.set(ord);
     this.currentStep.set(0);
     this.isAutoPlaying.set(false);
@@ -108,11 +125,5 @@ export class OrderCycleStepperComponent implements OnDestroy {
   handleResetCounter(): void {
     this.currentStep.set(0);
     this.isAutoPlaying.set(false);
-  }
-
-  ngOnDestroy(): void {
-    if (this.timer) {
-      clearTimeout(this.timer);
-    }
   }
 }

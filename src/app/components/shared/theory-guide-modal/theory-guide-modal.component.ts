@@ -1,12 +1,12 @@
-import { Component, inject, input, output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ChangeDetectionStrategy, inject, input, output } from '@angular/core';
 import { MathViewComponent } from '../math-view/math-view.component';
 import { LanguageService } from '../../../services/language.service';
 
 @Component({
   selector: 'app-theory-guide-modal',
   standalone: true,
-  imports: [CommonModule, MathViewComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [MathViewComponent],
   templateUrl: './theory-guide-modal.component.html',
   styleUrl: './theory-guide-modal.component.css',
 })

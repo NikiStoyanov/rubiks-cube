@@ -24,23 +24,7 @@
     </div>
   </div>
 
-  <!-- Intuitive Beginner Guide Box -->
-  <div class="p-3.5 rounded-xl bg-gradient-to-r from-cyan-950/40 to-slate-950 border border-cyan-500/30 text-xs text-slate-300 space-y-2">
-    <div class="flex items-center gap-2 font-bold text-cyan-300">
-      <span>💡</span>
-      <span>{{ t().orbitCalloutTitle }}</span>
-    </div>
-    <p class="text-[11px] leading-relaxed text-slate-300">
-      {{ t().orbitCalloutDesc }}
-    </p>
-    <div class="p-2 bg-slate-900/90 rounded-lg border border-slate-800 text-[11px] space-y-1 text-slate-400">
-      <div class="text-amber-300 font-semibold">{{ t().tryThisLabel }}</div>
-      <div>1. {{ t().orbitCalloutStep1 }}</div>
-      <div>2. {{ t().orbitCalloutStep2 }}</div>
-    </div>
-  </div>
-
-  <!-- Target Set Selector & Active Piece Selection -->
+  <!-- Target Set Selector & Active Piece Selection FIRST -->
   <div class="grid grid-cols-2 gap-3">
     <!-- Set X Selection -->
     <div>
@@ -107,6 +91,22 @@
           {{ p.name }}
         </button>
       }
+    </div>
+  </div>
+
+  <!-- Intuitive Beginner Guide Box -->
+  <div class="p-3.5 rounded-xl bg-gradient-to-r from-cyan-950/40 to-slate-950 border border-cyan-500/30 text-xs text-slate-300 space-y-2">
+    <div class="flex items-center gap-2 font-bold text-cyan-300">
+      <span>💡</span>
+      <span>{{ t().orbitCalloutTitle }}</span>
+    </div>
+    <p class="text-[11px] leading-relaxed text-slate-300">
+      {{ t().orbitCalloutDesc }}
+    </p>
+    <div class="p-2 bg-slate-900/90 rounded-lg border border-slate-800 text-[11px] space-y-1 text-slate-400">
+      <div class="text-amber-300 font-semibold">{{ t().tryThisLabel }}</div>
+      <div>1. {{ t().orbitCalloutStep1 }}</div>
+      <div>2. {{ t().orbitCalloutStep2 }}</div>
     </div>
   </div>
 

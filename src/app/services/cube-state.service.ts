@@ -1,5 +1,6 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
+import { SoundService } from './sound.service';
 import {
   CubeState,
   StandardMove,
@@ -23,7 +24,7 @@ import {
 } from '../math/group-algebra';
 import { CubeSolver, type SolveResult, type SolverStage } from '../math/cube-solver';
 
-export type ActiveTab = 'orbit' | 'stabilizer' | 'cycles' | 'order' | 'subgroups';
+export type ActiveTab = 'orbit' | 'stabilizer' | 'cycles' | 'commutator' | 'order' | 'subgroups';
 
 export interface MoveExecutionEvent {
   move: StandardMove;
@@ -39,6 +40,8 @@ export interface MoveExecutionEvent {
   providedIn: 'root',
 })
 export class CubeStateService {
+  readonly soundService = inject(SoundService);
+
   // ==========================================
   // CORE STATE SIGNALS
   // ==========================================
@@ -46,6 +49,7 @@ export class CubeStateService {
   readonly previousState = signal<CubeState>(RubikGroupAlgebra.createIdentityState());
   readonly lastMove = signal<string>('e (Identity)');
   readonly moveHistory = signal<string[]>([]);
+  readonly redoHistory = signal<string[]>([]);
   readonly isAnimating = signal<boolean>(false);
 
   // ==========================================
@@ -135,6 +139,10 @@ export class CubeStateService {
     return RubikGroupAlgebra.isIdentity(this.cubeState());
   });
 
+  readonly isSolvable = computed<boolean>(() => {
+    return this.orbitValidation().isValidOrbit;
+  });
+
   /**
    * Permutation transformation analysis for the last applied move.
    */
@@ -215,8 +223,78 @@ export class CubeStateService {
     this.cubeState.set(next);
     this.lastMove.set(move);
     this.moveHistory.update((h) => [...h, move]);
+    this.redoHistory.set([]);
+
+    const isSlice = move === 'M' || move === 'E' || move === 'S';
+    this.soundService.playTurnSound(isSlice);
+
+    const wasSolved = RubikGroupAlgebra.isIdentity(current);
+    const isNowSolved = RubikGroupAlgebra.isIdentity(next);
+    if (!wasSolved && isNowSolved) {
+      this.soundService.playSolvedFanfare();
+    }
 
     this.moveRequestSubject.next({ move, onComplete });
+  }
+
+  /**
+   * Undo the last applied move by inverting it and storing it in redoHistory.
+   */
+  undoLastMove(): void {
+    const history = this.moveHistory();
+    if (history.length === 0) return;
+
+    const last = history[history.length - 1];
+    const invertedStr = RubikGroupAlgebra.invertAlgorithm(last);
+    const invertedMoves = RubikGroupAlgebra.parseAlgorithm(invertedStr);
+
+    if (invertedMoves.length === 1) {
+      const invMove = invertedMoves[0];
+      const current = this.cubeState();
+      const next = RubikGroupAlgebra.applyMove(current, invMove);
+
+      this.previousState.set(current);
+      this.cubeState.set(next);
+      this.lastMove.set(invMove);
+      this.moveHistory.update((h) => h.slice(0, -1));
+      this.redoHistory.update((r) => [last, ...r]);
+
+      const isSlice = invMove === 'M' || invMove === 'E' || invMove === 'S';
+      this.soundService.playTurnSound(isSlice);
+      this.moveRequestSubject.next({ move: invMove });
+    } else if (invertedMoves.length > 1) {
+      const current = this.cubeState();
+      const next = RubikGroupAlgebra.applyAlgorithm(current, invertedMoves);
+
+      this.previousState.set(current);
+      this.cubeState.set(next);
+      this.lastMove.set(invertedStr);
+      this.moveHistory.update((h) => h.slice(0, -1));
+      this.redoHistory.update((r) => [last, ...r]);
+
+      this.soundService.playTurnSound(false);
+      this.algorithmRequestSubject.next({ moves: invertedMoves });
+    }
+  }
+
+  /**
+   * Redo the most recently undone move or algorithm.
+   */
+  redoLastMove(): void {
+    const redo = this.redoHistory();
+    if (redo.length === 0) return;
+
+    const nextEntry = redo[0];
+    const remainingRedo = redo.slice(1);
+    const parsedMoves = RubikGroupAlgebra.parseAlgorithm(nextEntry);
+
+    if (parsedMoves.length === 1) {
+      this.applyMove(parsedMoves[0]);
+      this.redoHistory.set(remainingRedo);
+    } else if (parsedMoves.length > 1) {
+      this.applyAlgorithm(nextEntry);
+      this.redoHistory.set(remainingRedo);
+    }
   }
 
   /**
@@ -238,6 +316,7 @@ export class CubeStateService {
     this.cubeState.set(next);
     this.lastMove.set(algoStr);
     this.moveHistory.update((h) => [...h, algoStr]);
+    this.redoHistory.set([]);
 
     this.algorithmRequestSubject.next({
       moves,
@@ -256,6 +335,7 @@ export class CubeStateService {
     this.cubeState.set(identity);
     this.lastMove.set('e (Identity)');
     this.moveHistory.set([]);
+    this.redoHistory.set([]);
     this.resetRequestSubject.next();
   }
 
@@ -352,6 +432,36 @@ export class CubeStateService {
   setCustomNet(net: Net2DFaces): void {
     this.customNet.set(net);
     this.netSyncSubject.next(net);
+  }
+
+  /**
+   * Updates all 9 stickers of a single face on the custom 2D net (e.g. from Webcam Scanner),
+   * keeping the center (1, 1) locked to its canonical face color.
+   */
+  setFaceStickers(face: FaceName, colors: string[][]): void {
+    this.customNet.update((net) => {
+      const copy: Net2DFaces = {
+        U: net.U.map((r) => r.map((c) => ({ ...c }))),
+        D: net.D.map((r) => r.map((c) => ({ ...c }))),
+        F: net.F.map((r) => r.map((c) => ({ ...c }))),
+        B: net.B.map((r) => r.map((c) => ({ ...c }))),
+        L: net.L.map((r) => r.map((c) => ({ ...c }))),
+        R: net.R.map((r) => r.map((c) => ({ ...c }))),
+      };
+
+      for (let r = 0; r < 3; r++) {
+        for (let c = 0; c < 3; c++) {
+          if (r === 1 && c === 1) {
+            copy[face][r][c].color = FACE_COLORS[face];
+          } else if (colors[r]?.[c]) {
+            copy[face][r][c].color = colors[r][c];
+          }
+        }
+      }
+      return copy;
+    });
+
+    this.netSyncSubject.next(this.customNet());
   }
 
   resetCustomNetToSolved(): void {
@@ -510,5 +620,129 @@ export class CubeStateService {
         localStorage.setItem('rubik_tour_seen', 'true');
       } catch {}
     }
+  }
+
+  // ==========================================
+  // STATE SERIALIZATION & URL SHARING
+  // ==========================================
+
+  /**
+   * Serializes current cube state into a compact 54-character string of face names (U, D, F, B, L, R).
+   * Order: U (9), D (9), F (9), B (9), L (9), R (9).
+   */
+  get54FaceletString(state: CubeState = this.cubeState()): string {
+    const net = RubikGroupAlgebra.compute2DNet(state);
+    let result = '';
+
+    const colorToFace = (color: string): FaceName => {
+      const col = color.toLowerCase();
+      for (const fn of FACE_NAMES) {
+        if (FACE_COLORS[fn].toLowerCase() === col) return fn;
+      }
+      return 'U';
+    };
+
+    for (const fn of FACE_NAMES) {
+      for (let r = 0; r < 3; r++) {
+        for (let c = 0; c < 3; c++) {
+          const stickerColor = net[fn][r][c].color;
+          result += colorToFace(stickerColor);
+        }
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Reconstructs 2D Net from a 54-character facelet string.
+   */
+  parse54FaceletString(str: string): Net2DFaces | null {
+    if (!str || str.length !== 54) return null;
+    const clean = str.toUpperCase().trim();
+    const validLetters = new Set(['U', 'D', 'F', 'B', 'L', 'R']);
+    for (const ch of clean) {
+      if (!validLetters.has(ch)) return null;
+    }
+
+    const net = RubikGroupAlgebra.compute2DNet(RubikGroupAlgebra.createIdentityState());
+    let idx = 0;
+    for (const fn of FACE_NAMES) {
+      for (let r = 0; r < 3; r++) {
+        for (let c = 0; c < 3; c++) {
+          const faceLetter = clean[idx++] as FaceName;
+          net[fn][r][c].color = FACE_COLORS[faceLetter];
+        }
+      }
+    }
+    return net;
+  }
+
+  /**
+   * Generates a complete shareable URL containing the current cube state.
+   */
+  getShareUrl(): string {
+    if (typeof window === 'undefined') return '';
+    try {
+      const url = new URL(window.location.href);
+      const stateStr = this.get54FaceletString();
+      url.searchParams.set('state', stateStr);
+
+      const history = this.moveHistory();
+      if (history.length > 0) {
+        const cleanMoves: string[] = [];
+        for (const item of history) {
+          const parsed = RubikGroupAlgebra.parseAlgorithm(item);
+          cleanMoves.push(...parsed);
+        }
+        if (cleanMoves.length > 0) {
+          url.searchParams.set('moves', cleanMoves.join('_'));
+        }
+      }
+      return url.toString();
+    } catch {
+      return '';
+    }
+  }
+
+  /**
+   * Loads state from query parameters if present in the given URL (or current location).
+   */
+  loadStateFromUrl(urlStr?: string): boolean {
+    if (typeof window === 'undefined') return false;
+    try {
+      const url = new URL(urlStr || window.location.href);
+      const movesParam = url.searchParams.get('moves');
+      const stateParam = url.searchParams.get('state');
+
+      // 1. Try loading via move sequence if provided
+      if (movesParam) {
+        const moves = RubikGroupAlgebra.parseAlgorithm(movesParam.replace(/_/g, ' '));
+        if (moves.length > 0) {
+          this.setupPracticePosition(moves, 'Споделено разбъркване');
+          return true;
+        }
+      }
+
+      // 2. Try loading via 54-facelet representation
+      if (stateParam && stateParam.length === 54) {
+        const net = this.parse54FaceletString(stateParam);
+        if (net) {
+          const recon = RubikGroupAlgebra.reconstructFrom2DNet(net);
+          if (recon.success && recon.state) {
+            if (recon.orbitValidation?.isValidOrbit) {
+              const sol = CubeSolver.solve(recon.state);
+              this.loadCustomPhysicalCube(recon.state, sol.allMoves, 'Споделено кубче');
+            } else {
+              this.setCustomNet(net);
+              this.setCustomCubeState(recon.state, 'Споделено кубче');
+            }
+            return true;
+          }
+        }
+      }
+    } catch {
+      return false;
+    }
+    return false;
   }
 }

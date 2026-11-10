@@ -1,11 +1,11 @@
-import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { LanguageService } from '../../services/language.service';
 import { CubeStateService, ActiveTab } from '../../services/cube-state.service';
 import { StandardMove } from '../../types/cube';
 import { OrbitVisualizerComponent } from './orbit-visualizer/orbit-visualizer.component';
 import { StabilizerInspectorComponent } from './stabilizer-inspector/stabilizer-inspector.component';
 import { CycleNotationPanelComponent } from './cycle-notation-panel/cycle-notation-panel.component';
+import { CommutatorLabComponent } from './commutator-lab/commutator-lab.component';
 import { OrderCycleStepperComponent } from './order-cycle-stepper/order-cycle-stepper.component';
 import { SubgroupExplorerComponent } from './subgroup-explorer/subgroup-explorer.component';
 
@@ -14,11 +14,12 @@ export type { ActiveTab };
 @Component({
   selector: 'app-math-concepts',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     OrbitVisualizerComponent,
     StabilizerInspectorComponent,
     CycleNotationPanelComponent,
+    CommutatorLabComponent,
     OrderCycleStepperComponent,
     SubgroupExplorerComponent,
   ],

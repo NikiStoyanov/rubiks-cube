@@ -1,0 +1,295 @@
+<div class="scanner-container">
+  <!-- Hidden offscreen canvas for video frame pixel sampling -->
+  <canvas #sampleCanvas class="hidden-canvas" aria-hidden="true"></canvas>
+
+  <!-- Top Controls & 6-Face Stepper Card -->
+  <div class="scanner-header-card">
+    <div class="scanner-header-top">
+      <div>
+        <h3 class="scanner-title">{{ t().camTitle }}</h3>
+        <p class="scanner-subtitle">{{ t().camSubtitle }}</p>
+      </div>
+
+      <div class="scanner-actions">
+        @if (!isCameraActive()) {
+          <button type="button" (click)="startCamera()" class="btn-cam-start">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+              <circle cx="12" cy="13" r="4" />
+            </svg>
+            <span>{{ t().camStartBtn }}</span>
+          </button>
+        } @else {
+          <button type="button" (click)="toggleMirror()" class="btn-cam-tool" [class.active]="isMirrored()">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M8 3H5a2 2 0 0 0-2 2v14c0 1.1.9 2 2 2h3" />
+              <path d="M16 3h3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-3" />
+              <path d="M12 20v2" />
+              <path d="M12 14v2" />
+              <path d="M12 8v2" />
+              <path d="M12 2v2" />
+            </svg>
+            <span>{{ t().camMirrorBtn }}</span>
+          </button>
+
+          <button type="button" (click)="switchCameraFacing()" class="btn-cam-tool">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 11A8.1 8.1 0 0 0 4.5 9M4 5v4h4" />
+              <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4" />
+            </svg>
+            <span>{{ t().camSwitchCameraBtn }}</span>
+          </button>
+
+          <button type="button" (click)="stopCamera()" class="btn-cam-stop">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="6" y="6" width="12" height="12" rx="2" />
+            </svg>
+            <span>{{ t().camStopBtn }}</span>
+          </button>
+        }
+
+        <button type="button" (click)="simulateDemoScan()" class="btn-cam-demo">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+          </svg>
+          <span>{{ t().camDemoScanBtn }}</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 6-Face Guided Progress Rail -->
+    <div class="face-steps-rail">
+      <div class="rail-header">
+        <span class="rail-label">{{ t().camScannedFaces }} ({{ scannedCount() }} / 6)</span>
+        @if (allFacesScanned()) {
+          <button type="button" (click)="switchToNetMode.emit()" class="btn-review-net">
+            <span>✓ {{ t().camViewInNetBtn }}</span>
+          </button>
+        }
+      </div>
+
+      <div class="face-steps-grid">
+        @for (step of scanSteps; track step.face; let idx = $index) {
+          <button
+            type="button"
+            (click)="selectStep(idx)"
+            class="face-step-btn"
+            [class.active]="currentStepIndex() === idx"
+            [class.scanned]="scannedFaces()[step.face]"
+          >
+            <div class="step-mini-net">
+              @for (r of [0, 1, 2]; track r) {
+                @for (c of [0, 1, 2]; track c) {
+                  <span
+                    class="mini-dot"
+                    [style.background-color]="customNet()[step.face][r][c].color"
+                  ></span>
+                }
+              }
+            </div>
+            <div class="step-meta">
+              <div class="step-title-row">
+                <span class="step-face-code">{{ step.face }}</span>
+                @if (scannedFaces()[step.face]) {
+                  <span class="step-check">✓</span>
+                }
+              </div>
+              <span class="step-face-name">{{ isBg() ? step.nameBg : step.nameEn }}</span>
+            </div>
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+
+  @if (cameraError()) {
+    <div class="cam-error-banner">
+      <svg class="w-5 h-5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+        <line x1="12" y1="9" x2="12" y2="13" />
+        <line x1="12" y1="17" x2="12.01" y2="17" />
+      </svg>
+      <span>{{ cameraError() }}</span>
+    </div>
+  }
+
+  @if (allFacesScanned()) {
+    <div class="cam-complete-banner">
+      <div class="complete-text">
+        <strong>🎉 {{ t().camAllScannedTitle }}</strong>
+        <span>{{ t().camAllScannedDesc }}</span>
+      </div>
+      <button type="button" (click)="switchToNetMode.emit()" class="btn-cam-start">
+        <span>{{ t().camViewInNetBtn }}</span>
+      </button>
+    </div>
+  }
+
+  <!-- Main Split Grid: Left = Video Viewport + Reticle, Right = Live 3x3 Preview + Manual Touch-up -->
+  <div class="scanner-workspace">
+    <!-- Left Column: Live Video Feed & 3x3 Alignment Reticle -->
+    <div class="video-card">
+      <div class="target-instruction-bar">
+        <span
+          class="target-color-dot"
+          [style.background-color]="currentStep().colorHex"
+        ></span>
+        <div class="target-instruction-text">
+          <span class="target-face-label">
+            {{ t().camCurrentFaceLabel }} <strong>{{ currentStep().face }} — {{ isBg() ? currentStep().nameBg : currentStep().nameEn }}</strong>
+          </span>
+          <span class="target-hold-guide">{{ holdInstruction() }}</span>
+        </div>
+      </div>
+
+      <div class="video-viewport">
+        <video
+          #videoEl
+          playsinline
+          muted
+          class="webcam-video"
+          [class.mirrored]="isMirrored()"
+          [class.hidden-video]="!isCameraActive()"
+        ></video>
+
+        @if (!isCameraActive()) {
+          <div class="video-idle-overlay">
+            <div class="idle-camera-icon">
+              <svg class="w-10 h-10 text-purple-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                <circle cx="12" cy="13" r="4" />
+              </svg>
+            </div>
+            <p class="idle-prompt-text">{{ t().camIdlePrompt }}</p>
+            <div class="idle-cta-row">
+              <button type="button" (click)="startCamera()" class="btn-cam-start">
+                <span>{{ t().camStartBtn }}</span>
+              </button>
+              <button type="button" (click)="simulateDemoScan()" class="btn-cam-demo">
+                <span>{{ t().camDemoScanBtn }}</span>
+              </button>
+            </div>
+          </div>
+        } @else {
+          <!-- 3x3 Alignment Grid Overlay over Live Video -->
+          <div class="reticle-overlay">
+            <div class="reticle-grid">
+              @for (r of [0, 1, 2]; track r) {
+                @for (c of [0, 1, 2]; track c) {
+                  <div class="reticle-cell" [class.center-cell]="r === 1 && c === 1">
+                    <span
+                      class="reticle-sample-pip"
+                      [style.background-color]="faceColors[detectedGrid()[r][c]]"
+                    >
+                      @if (r === 1 && c === 1) {
+                        {{ currentFace() }}
+                      }
+                    </span>
+                  </div>
+                }
+              }
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Capture Action Bar -->
+      <div class="video-footer-bar">
+        <div
+          class="center-match-pill"
+          [class.ok]="isCenterMatching()"
+          [class.warn]="!isCenterMatching()"
+        >
+          <span>{{ isCenterMatching() ? '✓ ' + t().camCenterMatchOk : '⚠ ' + t().camCenterMatchWarn }}</span>
+        </div>
+
+        <div class="scanner-actions">
+          @if (isCameraActive()) {
+            <button
+              type="button"
+              (click)="calibrateCurrentCenter()"
+              class="btn-cam-tool"
+              [class.active]="!!calibratedLab()[currentFace()]"
+            >
+              <span>🎯 {{ t().camCalibrateBtn }} ({{ currentFace() }})</span>
+            </button>
+          }
+
+          @if (hasCalibration()) {
+            <button
+              type="button"
+              (click)="resetCalibration()"
+              class="btn-cam-tool"
+            >
+              <span>↺ {{ t().camResetCalibrationBtn }}</span>
+            </button>
+          }
+
+          <button
+            type="button"
+            (click)="captureCurrentFace()"
+            class="btn-capture-face"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <circle cx="12" cy="12" r="10" />
+              <circle cx="12" cy="12" r="4" fill="currentColor" />
+            </svg>
+            <span>{{ t().camCaptureBtn }} ({{ currentFace() }})</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Detected 3x3 Face Preview & Quick Touch-Up -->
+    <div class="preview-card">
+      <div>
+        <h4 class="preview-title">{{ t().camLivePreviewTitle }} — {{ currentFace() }}</h4>
+        <p class="preview-hint">{{ t().camLivePreviewHint }}</p>
+      </div>
+
+      <!-- Interactive 3x3 Preview Grid -->
+      <div class="preview-3x3-wrapper">
+        <div class="preview-3x3-grid">
+          @for (r of [0, 1, 2]; track r) {
+            @for (c of [0, 1, 2]; track c) {
+              <button
+                type="button"
+                (click)="cyclePreviewCell(r, c)"
+                class="preview-cell-btn"
+                [class.is-center]="r === 1 && c === 1"
+                [style.background-color]="r === 1 && c === 1 ? faceColors[currentFace()] : faceColors[detectedGrid()[r][c]]"
+              >
+                @if (r === 1 && c === 1) {
+                  <span class="preview-center-tag">🔒 {{ currentFace() }}</span>
+                } @else {
+                  <span class="preview-cell-code">{{ detectedGrid()[r][c] }}</span>
+                }
+              </button>
+            }
+          }
+        </div>
+      </div>
+
+      <!-- Optional Quick Color Brush Selector for Manual Correction -->
+      <div class="correction-palette">
+        @for (step of scanSteps; track step.face) {
+          <button
+            type="button"
+            (click)="selectCorrectionBrush(step.face)"
+            class="correction-swatch"
+            [class.active]="activeCorrectionFace() === step.face"
+            [title]="isBg() ? step.nameBg : step.nameEn"
+          >
+            <span class="swatch-dot" [style.background-color]="step.colorHex"></span>
+            <span>{{ step.face }}</span>
+          </button>
+        }
+      </div>
+
+      <div class="preview-tip-box">
+        <span>💡 {{ t().camCalibrateHint }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+

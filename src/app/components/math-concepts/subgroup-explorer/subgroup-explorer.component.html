@@ -16,23 +16,7 @@
     </p>
   </div>
 
-  <!-- Intuitive Beginner Guide Box -->
-  <div class="p-3.5 rounded-xl bg-gradient-to-r from-sky-950/40 to-slate-950 border border-sky-500/30 text-xs text-slate-300 space-y-2">
-    <div class="flex items-center gap-2 font-bold text-sky-300">
-      <span>💡</span>
-      <span>{{ t().subgroupCalloutTitle }}</span>
-    </div>
-    <p class="text-[11px] leading-relaxed text-slate-300">
-      {{ t().subgroupCalloutDesc }}
-    </p>
-    <div class="p-2 bg-slate-900/90 rounded-lg border border-slate-800 text-[11px] space-y-1 text-slate-400">
-      <div class="text-amber-300 font-semibold">{{ t().tryThisLabel }}</div>
-      <div>1. {{ t().subgroupCalloutStep1 }}</div>
-      <div>2. {{ t().subgroupCalloutStep2 }}</div>
-    </div>
-  </div>
-
-  <!-- Subgroups List -->
+  <!-- Subgroups Interactive List FIRST -->
   <div class="flex flex-col gap-2.5">
     <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
       {{ t().famousSubgroupsHeading }}
@@ -105,6 +89,22 @@
           </button>
         </div>
       }
+    </div>
+  </div>
+
+  <!-- Intuitive Beginner Guide Box -->
+  <div class="p-3.5 rounded-xl bg-gradient-to-r from-sky-950/40 to-slate-950 border border-sky-500/30 text-xs text-slate-300 space-y-2">
+    <div class="flex items-center gap-2 font-bold text-sky-300">
+      <span>💡</span>
+      <span>{{ t().subgroupCalloutTitle }}</span>
+    </div>
+    <p class="text-[11px] leading-relaxed text-slate-300">
+      {{ t().subgroupCalloutDesc }}
+    </p>
+    <div class="p-2 bg-slate-900/90 rounded-lg border border-slate-800 text-[11px] space-y-1 text-slate-400">
+      <div class="text-amber-300 font-semibold">{{ t().tryThisLabel }}</div>
+      <div>1. {{ t().subgroupCalloutStep1 }}</div>
+      <div>2. {{ t().subgroupCalloutStep2 }}</div>
     </div>
   </div>
 </div>

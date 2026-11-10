@@ -1,0 +1,205 @@
+@if (isOpen()) {
+  <div class="solve-modal-backdrop animate-fade-in" (click)="onClose()">
+    <div class="solve-modal-card" (click)="$event.stopPropagation()">
+      <!-- Modal Top Bar -->
+      <div class="solve-modal-header">
+        <div class="solve-modal-header-left">
+          <span class="solve-modal-badge">
+            <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path
+                d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"
+              />
+            </svg>
+            <span>{{ t().solveModalBadge }}</span>
+          </span>
+          <h3 class="solve-modal-title">
+            {{ isSolved() ? t().solveModalSolvedTitle : t().solveModalTitle }}
+          </h3>
+        </div>
+        <button
+          type="button"
+          (click)="onClose()"
+          class="solve-modal-close-btn"
+          [title]="t().modalCloseBtn"
+        >
+          &times;
+        </button>
+      </div>
+
+      @if (solveResult(); as sol) {
+        @if (sol.totalMoves === 0 || isSolved()) {
+          <div class="solve-already-done-card">
+            <div class="solve-done-icon">🎉</div>
+            <h4 class="solve-done-title">
+              {{ t().solveModalAlreadyDoneTitle }}
+            </h4>
+            <p class="solve-done-desc">
+              {{ t().solveModalAlreadyDoneDesc }}
+            </p>
+            <div class="solve-done-actions">
+              <button type="button" (click)="onScrambleAndClose()" class="btn-scramble-modal">
+                {{ t().solveModalScrambleBtn }}
+              </button>
+            </div>
+          </div>
+        } @else {
+          <!-- Stats & Progress Bar -->
+          <div class="solve-modal-stats-row">
+            <div class="solve-stat-item">
+              <span class="solve-stat-val">{{ sol.totalMoves }}</span>
+              <span class="solve-stat-lbl">{{ t().solveModalTotalMoves }}</span>
+            </div>
+            <div class="solve-stat-item">
+              <span class="solve-stat-val">{{ sol.stages.length }}</span>
+              <span class="solve-stat-lbl">{{ t().solveModalStages }}</span>
+            </div>
+            <div class="solve-stat-item" style="flex: 1;">
+              <div class="solve-progress-meta">
+                <span>
+                  {{ t().solveModalExecutedMoves }}
+                  <strong>{{ currentSolveMoveIndex() }} / {{ sol.totalMoves }}</strong>
+                </span>
+                <span class="solve-progress-pct">{{ solveProgressPercent() }}%</span>
+              </div>
+              <div class="solve-modal-track">
+                <div class="solve-modal-fill" [style.width.%]="solveProgressPercent()"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 7 Stages Rail Tabs -->
+          <div class="solve-stages-tabs">
+            @for (st of sol.stages; track st.stageNumber; let i = $index) {
+              <button
+                type="button"
+                (click)="selectSolveStage(i)"
+                class="solve-stage-tab"
+                [class.active]="activeSolveStageIndex() === i"
+                [class.is-empty]="st.moves.length === 0"
+              >
+                <span class="stage-tab-num">#{{ st.stageNumber }}</span>
+                <span class="stage-tab-name">
+                  {{
+                    language() === 'bg'
+                      ? (st.nameBg.split(':')[1]?.trim() || st.nameBg)
+                      : (st.nameEn.split(':')[1]?.trim() || st.nameEn)
+                  }}
+                </span>
+                @if (st.moves.length === 0) {
+                  <span class="stage-tab-ok">✓</span>
+                } @else {
+                  <span class="stage-tab-count">{{ st.moves.length }}h</span>
+                }
+              </button>
+            }
+          </div>
+
+          <!-- Active Stage Details Card -->
+          @if (activeSolveStage(); as currStage) {
+            <div class="solve-stage-detail-box">
+              <div class="stage-detail-header">
+                <div>
+                  <span class="stage-detail-num">
+                    {{ t().solveModalStagePrefix }} {{ currStage.stageNumber }} {{ t().solveModalStageOf }} 7
+                  </span>
+                  <h4 class="stage-detail-title">
+                    {{ language() === 'bg' ? currStage.nameBg : currStage.nameEn }}
+                  </h4>
+                  <p class="stage-detail-goal">
+                    <strong>{{ t().solveModalGoalPrefix }} </strong>
+                    {{ language() === 'bg' ? currStage.goalBg : currStage.goalEn }}
+                  </p>
+                </div>
+                <a routerLink="/tutorial" (click)="onClose()" class="btn-stage-academy-link">
+                  📖 {{ t().solveModalAcademyLink }}
+                </a>
+              </div>
+
+              <!-- Sequence of moves -->
+              <div class="stage-algo-display">
+                <div class="algo-display-title">
+                  {{ t().solveModalMovesForStage }}
+                  @if (currStage.moves.length > 0) {
+                    <span class="algo-pill-count">{{ currStage.moves.length }} {{ t().solveModalTotalMoves }}</span>
+                  }
+                </div>
+
+                @if (currStage.moves.length === 0) {
+                  <div class="stage-already-done-notice">✓ {{ t().solveModalStageAlreadySolved }}</div>
+                } @else {
+                  <div class="stage-algo-pills">
+                    @for (m of currStage.moves; track $index) {
+                      <span
+                        class="stage-pill-move"
+                        [class.is-prime]="m.includes('\'')"
+                        [class.is-double]="m.includes('2')"
+                      >
+                        {{ m }}
+                      </span>
+                    }
+                  </div>
+                }
+
+                <div class="stage-hint-text">
+                  💡 {{ language() === 'bg' ? currStage.explanationBg : currStage.explanationEn }}
+                </div>
+              </div>
+
+              <!-- Playback Controllers -->
+              <div class="solve-modal-controls">
+                <div class="solve-modal-buttons">
+                  <button
+                    type="button"
+                    (click)="stepBackwardSolve()"
+                    [disabled]="currentSolveMoveIndex() <= 0"
+                    class="btn-solve-step"
+                  >
+                    ⏮ {{ t().solveModalStepBack }}
+                  </button>
+
+                  <button
+                    type="button"
+                    (click)="toggleSolveAutoPlay()"
+                    class="btn-solve-play"
+                    [class.is-active]="isSolveAutoPlaying()"
+                  >
+                    @if (isSolveAutoPlaying()) {
+                      ⏸ {{ t().solveModalPause }}
+                    } @else {
+                      ▶ {{ t().solveModalAutoPlay }}
+                    }
+                  </button>
+
+                  <button
+                    type="button"
+                    (click)="stepForwardSolve()"
+                    [disabled]="currentSolveMoveIndex() >= sol.allMoves.length"
+                    class="btn-solve-step"
+                  >
+                    {{ t().solveModalStepNext }} ⏭
+                  </button>
+                </div>
+
+                <!-- Speed Selector -->
+                <div class="solve-speed-row">
+                  <span class="speed-txt">{{ t().solveModalSpeed }}</span>
+                  @for (spd of speeds; track spd) {
+                    <button
+                      type="button"
+                      (click)="setSolvePlaybackSpeed(spd)"
+                      class="solve-spd-btn"
+                      [class.active]="solvePlaybackSpeed() === spd"
+                    >
+                      {{ spd }}x
+                    </button>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+        }
+      }
+    </div>
+  </div>
+}
+

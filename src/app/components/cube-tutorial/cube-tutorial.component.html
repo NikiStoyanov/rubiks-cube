@@ -176,16 +176,23 @@
       </div>
     }
 
-    <!-- Goal Description -->
-    <div class="goal-box">
-      <div class="goal-header">
-        <span class="goal-icon">🎯</span>
-        <span class="goal-title">{{ t().tutorialStepObjective }}</span>
+    <!-- CRITICAL ACTION FIRST: LOAD PRACTICE POSITION ONTO 3D CUBE -->
+    <button
+      type="button"
+      (click)="setupPracticeCase()"
+      [disabled]="isAnimating()"
+      class="btn-setup-case"
+    >
+      <span class="setup-icon">🎯</span>
+      <div class="setup-text">
+        <span class="setup-title">
+          {{ t().tutorialSetupCubeBtn }}
+        </span>
+        <span class="setup-subtitle">
+          {{ language() === 'bg' ? 'Настройва физическия 3D модел в точната позиция за упражнение' : 'Physically arranges 3D cube into the exact situation so you can practice' }}
+        </span>
       </div>
-      <p class="goal-text">
-        {{ language() === 'bg' ? currentStep().goalBg : currentStep().goal }}
-      </p>
-    </div>
+    </button>
 
     <!-- Algorithm Sequence Display with Step-by-Step Highlight -->
     <div class="algorithm-card">
@@ -211,24 +218,6 @@
         }
       </div>
     </div>
-
-    <!-- CRITICAL ACTION: LOAD PRACTICE POSITION ONTO 3D CUBE -->
-    <button
-      type="button"
-      (click)="setupPracticeCase()"
-      [disabled]="isAnimating()"
-      class="btn-setup-case"
-    >
-      <span class="setup-icon">🎯</span>
-      <div class="setup-text">
-        <span class="setup-title">
-          {{ t().tutorialSetupCubeBtn }}
-        </span>
-        <span class="setup-subtitle">
-          {{ language() === 'bg' ? 'Настройва физическия 3D модел в точната позиция за упражнение' : 'Physically arranges 3D cube into the exact situation so you can practice' }}
-        </span>
-      </div>
-    </button>
 
     <!-- STEP-BY-STEP PLAYER CONTROLLER TOOLBAR -->
     <div class="player-toolbar-card">
@@ -390,6 +379,17 @@
         </span>
       </div>
     }
+
+    <!-- Goal Description -->
+    <div class="goal-box">
+      <div class="goal-header">
+        <span class="goal-icon">🎯</span>
+        <span class="goal-title">{{ t().tutorialStepObjective }}</span>
+      </div>
+      <p class="goal-text">
+        {{ language() === 'bg' ? currentStep().goalBg : currentStep().goal }}
+      </p>
+    </div>
 
     <!-- Pro Tip Card -->
     <div class="tip-card">

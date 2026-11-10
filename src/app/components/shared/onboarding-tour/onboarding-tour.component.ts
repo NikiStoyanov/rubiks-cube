@@ -1,5 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ChangeDetectionStrategy, computed, inject, signal } from '@angular/core';
 import { LanguageService } from '../../../services/language.service';
 import { CubeStateService } from '../../../services/cube-state.service';
 import { MathViewComponent } from '../math-view/math-view.component';
@@ -27,7 +26,8 @@ export interface TourStepData {
 @Component({
   selector: 'app-onboarding-tour',
   standalone: true,
-  imports: [CommonModule, MathViewComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [MathViewComponent],
   templateUrl: './onboarding-tour.component.html',
   styleUrl: './onboarding-tour.component.css',
 })
