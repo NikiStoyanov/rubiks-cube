@@ -36,13 +36,6 @@ export const routes: Routes = [
       ),
   },
   {
-    path: 'timer',
-    loadComponent: () =>
-      import('./components/speed-timer/speed-timer.component').then(
-        (m) => m.SpeedTimerComponent
-      ),
-  },
-  {
     path: '**',
     redirectTo: '',
   },

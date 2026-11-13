@@ -67,28 +67,32 @@
 
 /* Mode Switcher Pill */
 .mode-pill {
-  display: inline-flex;
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 100%;
   background: var(--bg-surface-dark);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-xl);
   padding: 0.25rem;
   gap: 0.25rem;
   align-self: flex-start;
+  box-sizing: border-box;
 }
 
 .mode-btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.4rem 0.85rem;
+  gap: 0.35rem;
+  padding: 0.35rem 0.75rem;
   background: transparent;
   border: none;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-lg);
   color: var(--text-muted);
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .mode-btn:hover {
@@ -340,15 +344,16 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 0.5rem;
+  min-width: 0;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 500px) {
   .palette-swatches {
     grid-template-columns: repeat(3, 1fr);
   }
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1400px) {
   .palette-swatches {
     grid-template-columns: repeat(6, 1fr);
   }
@@ -503,25 +508,36 @@
   flex-direction: column;
   gap: 0.5rem;
   align-items: center;
+  width: 100%;
+  max-width: 100%;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   padding: 0.5rem 0;
+  box-sizing: border-box;
 }
 
 .cross-row {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.4rem;
 }
 
 .cross-cell-empty {
-  width: 90px;
-  height: 90px;
+  width: 80px;
+  height: 80px;
   visibility: hidden;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 640px) and (max-width: 1023px) {
   .cross-cell-empty {
-    width: 110px;
-    height: 110px;
+    width: 105px;
+    height: 105px;
+  }
+}
+
+@media (min-width: 1350px) {
+  .cross-cell-empty {
+    width: 105px;
+    height: 105px;
   }
 }
 
@@ -555,8 +571,8 @@
 }
 
 .facelet-btn {
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
   border: 1px solid rgba(0, 0, 0, 0.5);
   border-radius: 3px;
   cursor: pointer;
@@ -568,10 +584,17 @@
   box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.35);
 }
 
-@media (min-width: 640px) {
+@media (min-width: 640px) and (max-width: 1023px) {
   .facelet-btn {
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
+  }
+}
+
+@media (min-width: 1350px) {
+  .facelet-btn {
+    width: 30px;
+    height: 30px;
   }
 }
 
@@ -619,9 +642,10 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.25rem;
+  min-width: 0;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1350px) {
   .pieces-layout {
     grid-template-columns: repeat(2, 1fr);
   }

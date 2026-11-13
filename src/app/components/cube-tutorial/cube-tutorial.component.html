@@ -145,6 +145,15 @@
       </div>
     </div>
 
+    <!-- How to Hold the Cube (Clear Orientation Instruction) -->
+    <div class="orientation-card">
+      <span class="orientation-icon">{{ currentOrientationGuide().icon }}</span>
+      <div class="orientation-content">
+        <span class="orientation-label">{{ t().tutorialOrientationTitle }}</span>
+        <span class="orientation-text">{{ isBg ? currentOrientationGuide().textBg : currentOrientationGuide().textEn }}</span>
+      </div>
+    </div>
+
     <!-- Sub-Cases Selector Chips (If step has variants) -->
     @if (currentStep().cases && currentStep().cases.length > 0) {
       <div class="cases-box">
@@ -167,32 +176,51 @@
           }
         </div>
 
-        @if (currentCase(); as activeC) {
-          <div class="case-info-bar">
-            💡 <strong>{{ t().tutorialRecognition }}</strong>
-            {{ language() === 'bg' ? activeC.descriptionBg : activeC.description }}
+        <div class="case-visual-row">
+          <!-- 3x3 Mini Pattern Diagram (Top/Face View) -->
+          <div class="pattern-widget">
+            <span class="pattern-caption">{{ t().tutorialPatternTitle }}</span>
+            <div class="pattern-grid">
+              @for (row of currentCasePattern(); track $index) {
+                @for (cell of row; track $index) {
+                  <span class="pattern-cell" [style.background-color]="cell"></span>
+                }
+              }
+            </div>
           </div>
-        }
+
+          <div class="case-details-col">
+            @if (currentCase(); as activeC) {
+              <div class="case-info-bar">
+                💡 <strong>{{ t().tutorialRecognition }}</strong>
+                {{ language() === 'bg' ? activeC.descriptionBg : activeC.description }}
+              </div>
+            }
+            <button
+              type="button"
+              (click)="setupPracticeCase()"
+              [disabled]="isAnimating()"
+              class="btn-reload-case-sm"
+              [title]="t().tutorialReloadCaseBtn"
+            >
+              <span>🔄</span>
+              <span>{{ t().tutorialReloadCaseBtn }}</span>
+            </button>
+          </div>
+        </div>
       </div>
     }
 
-    <!-- CRITICAL ACTION FIRST: LOAD PRACTICE POSITION ONTO 3D CUBE -->
-    <button
-      type="button"
-      (click)="setupPracticeCase()"
-      [disabled]="isAnimating()"
-      class="btn-setup-case"
-    >
-      <span class="setup-icon">🎯</span>
-      <div class="setup-text">
-        <span class="setup-title">
-          {{ t().tutorialSetupCubeBtn }}
-        </span>
-        <span class="setup-subtitle">
-          {{ language() === 'bg' ? 'Настройва физическия 3D модел в точната позиция за упражнение' : 'Physically arranges 3D cube into the exact situation so you can practice' }}
-        </span>
+    <!-- Memory Trick / Mnemonic (If available for step) -->
+    @if (currentMnemonic(); as mn) {
+      <div class="mnemonic-card">
+        <span class="mnemonic-icon">🧠</span>
+        <div class="mnemonic-body">
+          <span class="mnemonic-title">{{ t().tutorialMnemonicTitle }} {{ isBg ? mn.titleBg : mn.titleEn }}</span>
+          <span class="mnemonic-desc">{{ isBg ? mn.descBg : mn.descEn }}</span>
+        </div>
       </div>
-    </button>
+    }
 
     <!-- Algorithm Sequence Display with Step-by-Step Highlight -->
     <div class="algorithm-card">
@@ -218,6 +246,49 @@
         }
       </div>
     </div>
+
+    <!-- Active Move Guidance Card -->
+    @if (currentMoveIndex() < currentStepMoves().length) {
+      <div class="active-move-card">
+        <div class="active-move-main">
+          <div class="move-pill-large">
+            <span class="move-code">{{ currentStepMoves()[currentMoveIndex()] }}</span>
+            <span class="move-arrow">{{ getMoveDetail(currentStepMoves()[currentMoveIndex()]).arrow }}</span>
+          </div>
+          <div class="move-instruction">
+            <div class="move-name">
+              {{ isBg ? getMoveDetail(currentStepMoves()[currentMoveIndex()]).nameBg : getMoveDetail(currentStepMoves()[currentMoveIndex()]).nameEn }}
+            </div>
+            <div class="move-action">
+              {{ isBg ? getMoveDetail(currentStepMoves()[currentMoveIndex()]).actionBg : getMoveDetail(currentStepMoves()[currentMoveIndex()]).actionEn }}
+            </div>
+          </div>
+        </div>
+
+        @if (currentMoveIndex() + 1 < currentStepMoves().length) {
+          <div class="active-move-upcoming">
+            <span class="upcoming-label">{{ isBg ? 'Следващ:' : 'Next:' }}</span>
+            <span class="upcoming-badge">
+              {{ currentStepMoves()[currentMoveIndex() + 1] }} {{ getMoveDetail(currentStepMoves()[currentMoveIndex() + 1]).arrow }}
+            </span>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="step-solved-card animate-fade-in">
+        <span class="solved-icon">🎉</span>
+        <div class="solved-content">
+          <h4 class="solved-heading">{{ isBg ? 'Браво! Всички ходове за тази ситуация са изпълнени!' : 'Great job! All moves for this case are completed!' }}</h4>
+          <p class="solved-sub">{{ isBg ? 'Кубчето премина в правилната форма за следващата стъпка.' : 'The cube advanced to the correct form for the next step.' }}</p>
+        </div>
+        @if (currentStepIndex() < steps.length - 1) {
+          <button type="button" class="btn-proceed-next" (click)="nextStep()">
+            <span>{{ t().tutorialNextBtn }}</span>
+            <span>→</span>
+          </button>
+        }
+      </div>
+    }
 
     <!-- STEP-BY-STEP PLAYER CONTROLLER TOOLBAR -->
     <div class="player-toolbar-card">
@@ -301,10 +372,20 @@
         <!-- Manual Practice Move Pad -->
         <div class="manual-pad">
           <div class="manual-target-row">
-            <span>{{ language() === 'bg' ? 'Следващ очакван ход:' : 'Expected next move:' }}</span>
-            <span class="expected-pill">
-              {{ currentStepMoves()[currentMoveIndex()] || (language() === 'bg' ? 'Завършено! 🎉' : 'Done! 🎉') }}
-            </span>
+            <div class="target-left">
+              <span>{{ language() === 'bg' ? 'Следващ ход:' : 'Expected next move:' }}</span>
+              <span class="expected-pill">
+                {{ currentStepMoves()[currentMoveIndex()] ? (currentStepMoves()[currentMoveIndex()] + ' ' + getMoveDetail(currentStepMoves()[currentMoveIndex()]).arrow) : (language() === 'bg' ? 'Завършено! 🎉' : 'Done! 🎉') }}
+              </span>
+            </div>
+            <button
+              type="button"
+              class="btn-hint-toggle"
+              [class.active]="showHint()"
+              (click)="toggleHint()"
+            >
+              {{ t().tutorialHintBtn }}
+            </button>
           </div>
 
           <div class="manual-keys-grid">
@@ -312,10 +393,13 @@
               <button
                 type="button"
                 class="move-key-btn"
+                [class.highlight-next-btn]="isNextExpectedMove(key)"
                 [disabled]="isAnimating() || currentMoveIndex() >= currentStepMoves().length"
                 (click)="onManualMove(key)"
+                [title]="isBg ? getMoveDetail(key).actionBg : getMoveDetail(key).actionEn"
               >
-                {{ key }}
+                <span class="key-code">{{ key }}</span>
+                <span class="key-arrow">{{ getMoveDetail(key).arrow }}</span>
               </button>
             }
           </div>
@@ -337,7 +421,7 @@
               [disabled]="isAnimating()"
             >
               <span>🔄</span>
-              <span>{{ language() === 'bg' ? 'Рестартирай ситуацията' : 'Reload case' }}</span>
+              <span>{{ t().tutorialReloadCaseBtn }}</span>
             </button>
           </div>
         </div>

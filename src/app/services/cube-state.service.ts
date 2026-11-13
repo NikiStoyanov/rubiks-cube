@@ -70,11 +70,19 @@ export class CubeStateService {
       '3d'
   );
   readonly explodeFactor = signal<number>(0);
-  readonly animSpeed = signal<number>(0.22);
-  readonly showCycleArrows = signal<boolean>(true);
-  readonly isTheoryOpen = signal<boolean>(false);
-  readonly isTourOpen = signal<boolean>(
-    typeof localStorage !== 'undefined' && !localStorage.getItem('rubik_tour_seen')
+  readonly animSpeed = signal<number>(
+    (() => {
+      if (typeof localStorage !== 'undefined') {
+        const val = parseFloat(localStorage.getItem('rubik_anim_speed') || '');
+        if (!isNaN(val) && val >= 0.05 && val <= 0.5) return val;
+      }
+      return 0.22;
+    })()
+  );
+  readonly showCycleArrows = signal<boolean>(
+    typeof localStorage !== 'undefined'
+      ? localStorage.getItem('rubik_cycle_arrows') !== 'false'
+      : true
   );
   readonly is3DPaintMode = signal<boolean>(false);
   readonly activeBrushColor = signal<FaceName>('U');
@@ -214,6 +222,9 @@ export class CubeStateService {
 
   /**
    * Apply a standard move algebraically and emit animation event.
+   * Automatically cancels out or merges adjacent moves on the same face:
+   * - Inverse actions (e.g. R followed by R') cancel out and are deleted from history (g * g^-1 = e).
+   * - Consecutive turns on the same face merge modulo 4 (e.g. R + R = R2, R2 + R = R').
    */
   applyMove(move: StandardMove, onComplete?: () => void): void {
     const current = this.cubeState();
@@ -221,8 +232,34 @@ export class CubeStateService {
 
     this.previousState.set(current);
     this.cubeState.set(next);
-    this.lastMove.set(move);
-    this.moveHistory.update((h) => [...h, move]);
+
+    // Check if new move acts on the same face as the last move in history
+    const history = this.moveHistory();
+    const lastEntry = history.length > 0 ? history[history.length - 1] : null;
+    const pInfo = lastEntry ? this.getTurnInfo(lastEntry) : null;
+    const cInfo = this.getTurnInfo(move);
+
+    if (pInfo && cInfo && pInfo.face === cInfo.face) {
+      const totalTurns = (pInfo.turns + cInfo.turns) % 4;
+      const remainingHistory = history.slice(0, -1);
+
+      if (totalTurns === 0) {
+        // Complete cancellation (g * g^-1 = e) -> delete from history
+        this.moveHistory.set(remainingHistory);
+        this.lastMove.set(
+          remainingHistory.length > 0 ? remainingHistory[remainingHistory.length - 1] : 'e (Identity)'
+        );
+      } else {
+        // Merge turns on the same face modulo 4 (e.g. R + R = R2, R2 + R = R')
+        const combinedMove = this.formatMoveFromTurns(pInfo.face, totalTurns);
+        this.moveHistory.set([...remainingHistory, combinedMove]);
+        this.lastMove.set(combinedMove);
+      }
+    } else {
+      this.moveHistory.update((h) => [...h, move]);
+      this.lastMove.set(move);
+    }
+
     this.redoHistory.set([]);
 
     const isSlice = move === 'M' || move === 'E' || move === 'S';
@@ -235,6 +272,24 @@ export class CubeStateService {
     }
 
     this.moveRequestSubject.next({ move, onComplete });
+  }
+
+  private getTurnInfo(m: string): { face: string; turns: number } | null {
+    if (!m || m.length === 0) return null;
+    const parsed = RubikGroupAlgebra.parseAlgorithm(m);
+    if (parsed.length !== 1) return null;
+    const single = parsed[0];
+    const face = single[0];
+    if (single.endsWith('2')) return { face, turns: 2 };
+    if (single.endsWith("'")) return { face, turns: 3 };
+    return { face, turns: 1 };
+  }
+
+  private formatMoveFromTurns(face: string, turns: number): StandardMove {
+    const mod = turns % 4;
+    if (mod === 2) return `${face}2` as StandardMove;
+    if (mod === 3) return `${face}'` as StandardMove;
+    return face as StandardMove;
   }
 
   /**
@@ -591,35 +646,31 @@ export class CubeStateService {
 
   setAnimSpeed(val: number): void {
     this.animSpeed.set(val);
+    if (typeof localStorage !== 'undefined') {
+      try {
+        localStorage.setItem('rubik_anim_speed', String(val));
+      } catch {}
+    }
   }
 
   setShowCycleArrows(show: boolean): void {
     this.showCycleArrows.set(show);
+    if (typeof localStorage !== 'undefined') {
+      try {
+        localStorage.setItem('rubik_cycle_arrows', String(show));
+      } catch {}
+    }
+  }
+
+  resetSettingsToDefault(): void {
+    this.setAnimSpeed(0.22);
+    this.setShowCycleArrows(true);
+    this.setExplodeFactor(0);
+    this.setViewMode('3d');
   }
 
   setIsAnimating(animating: boolean): void {
     this.isAnimating.set(animating);
-  }
-
-  openTheory(): void {
-    this.isTheoryOpen.set(true);
-  }
-
-  closeTheory(): void {
-    this.isTheoryOpen.set(false);
-  }
-
-  openTour(): void {
-    this.isTourOpen.set(true);
-  }
-
-  closeTour(): void {
-    this.isTourOpen.set(false);
-    if (typeof localStorage !== 'undefined') {
-      try {
-        localStorage.setItem('rubik_tour_seen', 'true');
-      } catch {}
-    }
   }
 
   // ==========================================

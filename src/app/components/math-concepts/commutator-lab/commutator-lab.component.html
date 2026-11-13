@@ -114,29 +114,29 @@
     </div>
 
     <!-- Step Breakdown Cards -->
-    <div [class]="'grid gap-2 text-center text-xs ' + (mode() === 'commutator' ? 'grid-cols-4' : 'grid-cols-3')">
-      <div class="p-2 bg-slate-900 rounded-lg border border-slate-800">
+    <div [class]="'grid gap-2 text-center text-xs min-w-0 ' + (mode() === 'commutator' ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-3')">
+      <div class="p-2 bg-slate-900 rounded-lg border border-slate-800 min-w-0">
         <div class="text-[10px] text-slate-500 uppercase font-semibold">{{ t().step1 }}</div>
-        <div class="font-mono text-slate-200 font-bold mt-0.5">{{ algoA() }}</div>
+        <div class="font-mono text-slate-200 font-bold mt-0.5 break-all">{{ algoA() }}</div>
         <div class="text-[10px] text-slate-400 mt-0.5">{{ t().applyA }}</div>
       </div>
 
-      <div class="p-2 bg-slate-900 rounded-lg border border-slate-800">
+      <div class="p-2 bg-slate-900 rounded-lg border border-slate-800 min-w-0">
         <div class="text-[10px] text-slate-500 uppercase font-semibold">{{ t().step2 }}</div>
-        <div class="font-mono text-slate-200 font-bold mt-0.5">{{ algoB() }}</div>
+        <div class="font-mono text-slate-200 font-bold mt-0.5 break-all">{{ algoB() }}</div>
         <div class="text-[10px] text-slate-400 mt-0.5">{{ t().applyB }}</div>
       </div>
 
-      <div class="p-2 bg-slate-900 rounded-lg border border-slate-800">
+      <div class="p-2 bg-slate-900 rounded-lg border border-slate-800 min-w-0">
         <div class="text-[10px] text-slate-500 uppercase font-semibold">{{ t().step3 }}</div>
-        <div class="font-mono text-slate-200 font-bold mt-0.5">{{ invA() }}</div>
+        <div class="font-mono text-slate-200 font-bold mt-0.5 break-all">{{ invA() }}</div>
         <div class="text-[10px] text-slate-400 mt-0.5">{{ t().undoA }}</div>
       </div>
 
       @if (mode() === 'commutator') {
-        <div class="p-2 bg-slate-900 rounded-lg border border-slate-800">
+        <div class="p-2 bg-slate-900 rounded-lg border border-slate-800 min-w-0">
           <div class="text-[10px] text-slate-500 uppercase font-semibold">{{ t().step4 }}</div>
-          <div class="font-mono text-slate-200 font-bold mt-0.5">{{ invB() }}</div>
+          <div class="font-mono text-slate-200 font-bold mt-0.5 break-all">{{ invB() }}</div>
           <div class="text-[10px] text-slate-400 mt-0.5">{{ t().undoB }}</div>
         </div>
       }

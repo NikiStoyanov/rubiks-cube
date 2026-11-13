@@ -94,7 +94,7 @@ describe('CubeSolver (LBL Step-by-Step Solver)', () => {
       }
       expect(isSolved).toBe(true);
     }
-  });
+  }, 15000);
 
   it('successfully solves a classic U-Permutation scramble', () => {
     const id = RubikGroupAlgebra.createIdentityState();

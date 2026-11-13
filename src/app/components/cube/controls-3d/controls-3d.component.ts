@@ -15,7 +15,6 @@ export class Controls3DComponent {
   readonly cubeStateService = inject(CubeStateService);
   readonly t = this.languageService.t;
   readonly language = this.languageService.language;
-  readonly is3DPaintMode = this.cubeStateService.is3DPaintMode;
   readonly Math = Math;
 
   explodeFactor = input<number>(0);
@@ -28,6 +27,7 @@ export class Controls3DComponent {
   scramble = output<void>();
   solve = output<void>();
   share = output<void>();
+  openSettings = output<void>();
   explodeChange = output<number>();
   speedChange = output<number>();
   toggleCycleArrows = output<boolean>();
@@ -51,18 +51,14 @@ export class Controls3DComponent {
   readonly faces = computed(() => {
     const lang = this.language();
     return [
-      { name: 'U' as StandardMove, label: lang === 'bg' ? 'U (Горе)' : 'U (Up)', color: 'bg-slate-200 text-slate-900 border-slate-300' },
-      { name: 'D' as StandardMove, label: lang === 'bg' ? 'D (Долу)' : 'D (Down)', color: 'bg-yellow-500 text-slate-900 border-yellow-400' },
+      { name: 'U' as StandardMove, label: lang === 'bg' ? 'U (Горе)' : 'U (Up)', color: 'bg-yellow-500 text-slate-900 border-yellow-400' },
+      { name: 'D' as StandardMove, label: lang === 'bg' ? 'D (Долу)' : 'D (Down)', color: 'bg-slate-200 text-slate-900 border-slate-300' },
       { name: 'F' as StandardMove, label: lang === 'bg' ? 'F (Предна)' : 'F (Front)', color: 'bg-emerald-600 text-white border-emerald-500' },
       { name: 'B' as StandardMove, label: lang === 'bg' ? 'B (Задна)' : 'B (Back)', color: 'bg-blue-600 text-white border-blue-500' },
       { name: 'L' as StandardMove, label: lang === 'bg' ? 'L (Лява)' : 'L (Left)', color: 'bg-orange-600 text-white border-orange-500' },
       { name: 'R' as StandardMove, label: lang === 'bg' ? 'R (Дясна)' : 'R (Right)', color: 'bg-red-600 text-white border-red-500' },
     ];
   });
-
-  toggle3DPaint(): void {
-    this.cubeStateService.toggle3DPaintMode();
-  }
 
   onMoveClick(m: StandardMove): void {
     this.move.emit(m);

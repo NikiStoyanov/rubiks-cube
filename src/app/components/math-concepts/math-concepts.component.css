@@ -12,17 +12,36 @@
 /* Tab Navigation Pill Bar */
 .tabs-pill-bar {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.25rem;
-  padding: 0.25rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.3rem;
+  padding: 0.3rem;
   background: var(--bg-surface-glass);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-radius: var(--radius-xl);
   border: 1px solid var(--border-medium);
+  min-width: 0;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 480px) and (max-width: 1023px) {
+  .tabs-pill-bar {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .tabs-pill-bar {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .tabs-pill-bar {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1400px) {
   .tabs-pill-bar {
     grid-template-columns: repeat(6, 1fr);
   }

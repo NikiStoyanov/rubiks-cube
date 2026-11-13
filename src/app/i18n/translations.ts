@@ -6,14 +6,12 @@ export interface Translations {
   appSubtitle: string;
   groupOrder: string;
   solvedBadge: string;
-  theoryGuideBtn: string;
   languageName: string;
   pageHome: string;
   pageMath: string;
   pageValidator: string;
   pageTutorial: string;
   pageCustomCube: string;
-  pageTimer: string;
 
   // Sound & Shortcuts
   soundToggleMute: string;
@@ -29,25 +27,30 @@ export interface Translations {
   shortcutsReset: string;
   shortcutsHelpBtn: string;
 
-  // Speedcubing Timer
-  timerTitle: string;
-  timerSubtitle: string;
-  timerHoldPrompt: string;
-  timerReleasePrompt: string;
-  timerInspectionPrompt: string;
-  timerStopPrompt: string;
-  timerInspectionToggle: string;
-  timerNewScramble: string;
-  timerApplyScramble: string;
-  timerStatsHeading: string;
-  timerBest: string;
-  timerAo5: string;
-  timerAo12: string;
-  timerSolvesCount: string;
-  timerHistory: string;
-  timerNoSolves: string;
-  timerClearHistory: string;
-  timerDeleteSolve: string;
+  // Settings Menu
+  settingsTitle: string;
+  settingsSubtitle: string;
+  settingsBtn: string;
+  settingsLanguageSection: string;
+  settingsLangEn: string;
+  settingsLangBg: string;
+  settingsAudioSection: string;
+  settingsAudioToggle: string;
+  settingsAudioDesc: string;
+  settingsAudioTest: string;
+  settingsAudioTestLabel: string;
+  settingsMotionSection: string;
+  settingsMotionDesc: string;
+  settingsSpeedSlow: string;
+  settingsSpeedNormal: string;
+  settingsSpeedFast: string;
+  settingsTestMoveBtn: string;
+  settingsViewSection: string;
+  settingsCycleArrowsDesc: string;
+  settingsExplodedDesc: string;
+  settingsResetDefaults: string;
+  settingsResetSuccess: string;
+  settingsCloseBtn: string;
 
   // 3D Canvas instructions
   canvasInstructions: string;
@@ -190,18 +193,6 @@ export interface Translations {
   orderApprox: string;
   canonicalHeading: string;
   applyPatternBtn: string;
-
-  // Onboarding Tour
-  tourBtn: string;
-  tourTitle: string;
-  tourSubtitle: string;
-  tourStepCount: string;
-  tourPrevBtn: string;
-  tourNextBtn: string;
-  tourFinishBtn: string;
-  tourSkipBtn: string;
-  tourTryMoveBtn: string;
-  tourTakeawayLabel: string;
 
   // Live Math HUD
   hudTitle: string;
@@ -433,36 +424,14 @@ export interface Translations {
   tutorialPracticeBtn: string;
   tutorialPracticeTitle: string;
   tutorialPracticeDesc: string;
+  tutorialOrientationTitle: string;
+  tutorialMnemonicTitle: string;
+  tutorialPatternTitle: string;
+  tutorialHintBtn: string;
+  tutorialReloadCaseBtn: string;
 
-  // Theory Modal
-  modalTitle: string;
+  // Shared Modal Actions
   modalCloseBtn: string;
-  theorySec1Title: string;
-  theorySec1Desc: string;
-  theorySec1AxiomsTitle: string;
-  theorySec1Identity: string;
-  theorySec1Compatibility: string;
-  theorySec2Title: string;
-  theorySec2CornersTitle: string;
-  theorySec2CornersDesc: string;
-  theorySec2EdgesTitle: string;
-  theorySec2EdgesDesc: string;
-  theorySec2StickersTitle: string;
-  theorySec2StickersDesc: string;
-  theorySec2StatesTitle: string;
-  theorySec2StatesDesc: string;
-  theorySec3Title: string;
-  theorySec3Desc: string;
-  theorySec3InvariantsTitle: string;
-  theorySec3Inv1: string;
-  theorySec3Inv2: string;
-  theorySec3Inv3: string;
-  theorySec3OrderDesc: string;
-  theorySec4Title: string;
-  theorySec4Desc: string;
-  theorySec4IndexDesc: string;
-  theorySec5Title: string;
-  theorySec5Desc: string;
 
   // State Sharing
   shareBtn: string;
@@ -491,14 +460,12 @@ export const translations: Record<Language, Translations> = {
     appSubtitle: '3D Abstract Algebra',
     groupOrder: 'Group order:',
     solvedBadge: 'Solved Identity State (e)',
-    theoryGuideBtn: 'Theory Guide',
     languageName: 'Български',
-    pageHome: 'Overview',
-    pageMath: 'Math Concepts',
-    pageValidator: 'Orbit Validator',
-    pageTutorial: 'Cube Tutorial',
-    pageCustomCube: 'Physical Cube',
-    pageTimer: 'Speed Timer',
+    pageHome: 'Home',
+    pageMath: 'Math',
+    pageValidator: 'Validator',
+    pageTutorial: 'Tutorial',
+    pageCustomCube: 'My Cube',
 
     // Sound & Shortcuts
     soundToggleMute: 'Mute Audio',
@@ -514,8 +481,33 @@ export const translations: Record<Language, Translations> = {
     shortcutsReset: 'Reset to Identity (Space / Esc)',
     shortcutsHelpBtn: 'Hotkeys',
 
+    // Settings Menu
+    settingsTitle: 'Settings',
+    settingsSubtitle: 'Customize animation speed, interface language, tactile audio, and 3D visual effects',
+    settingsBtn: 'Settings',
+    settingsLanguageSection: 'Interface Language',
+    settingsLangEn: 'English',
+    settingsLangBg: 'Български',
+    settingsAudioSection: 'Audio & Sound Effects',
+    settingsAudioToggle: 'Tactile Turn Sound Effects',
+    settingsAudioDesc: 'Realistic magnetic snap and mechanism click on every face rotation',
+    settingsAudioTest: 'Test Sound',
+    settingsAudioTestLabel: 'Play Click',
+    settingsMotionSection: 'Rotation & Animation Speed',
+    settingsMotionDesc: 'Controls how quickly 3D cube layers rotate during manual moves and algorithm execution',
+    settingsSpeedSlow: 'Slow (0.08)',
+    settingsSpeedNormal: 'Normal (0.22)',
+    settingsSpeedFast: 'Fast (0.42)',
+    settingsTestMoveBtn: 'Test Animation Turn',
+    settingsViewSection: '3D View & Visualizations',
+    settingsCycleArrowsDesc: 'Show 3D permutation cycle arcs on pieces when inspecting groups',
+    settingsExplodedDesc: 'Separates cubies outward from the core to inspect the internal mechanism',
+    settingsResetDefaults: 'Reset to Defaults',
+    settingsResetSuccess: 'All settings have been restored to defaults',
+    settingsCloseBtn: 'Close',
+
     // State Sharing
-    shareBtn: 'Share State',
+    shareBtn: 'Share',
     shareModalTitle: 'Share Cube State',
     shareModalDesc: 'Share your exact 3D cube configuration via link, scramble sequence, or social apps',
     shareDirectLink: 'Direct Web Link',
@@ -533,26 +525,6 @@ export const translations: Record<Language, Translations> = {
     shareViaWhatsApp: 'WhatsApp',
     shareViaTelegram: 'Telegram',
     shareViaX: 'X / Twitter',
-
-    // Speedcubing Timer
-    timerTitle: 'WCA Speedcubing Timer',
-    timerSubtitle: 'Practice speedcubing with official 15s inspection, live scramble, and WCA stats',
-    timerHoldPrompt: 'Hold Spacebar or Click & Hold to Ready',
-    timerReleasePrompt: 'Release to Start!',
-    timerInspectionPrompt: 'Inspection Time (Hold Space to Ready)',
-    timerStopPrompt: 'Press Space or solve the cube to stop!',
-    timerInspectionToggle: '15s WCA Inspection',
-    timerNewScramble: 'New Scramble',
-    timerApplyScramble: 'Apply Scramble to 3D Cube',
-    timerStatsHeading: 'Session Statistics',
-    timerBest: 'Personal Best (PB)',
-    timerAo5: 'Average of 5 (Ao5)',
-    timerAo12: 'Average of 12 (Ao12)',
-    timerSolvesCount: 'Total Solves',
-    timerHistory: 'Solve History',
-    timerNoSolves: 'No solves recorded yet. Ready to start your first run?',
-    timerClearHistory: 'Clear History',
-    timerDeleteSolve: 'Delete',
 
     canvasInstructions: 'Rotate: Left Click + Drag | Pan: Right Click | Zoom: Scroll',
     activeSelection: 'Active Selection:',
@@ -687,46 +659,7 @@ export const translations: Record<Language, Translations> = {
     canonicalHeading: 'Canonical Elements & Patterns in G:',
     applyPatternBtn: 'Apply Pattern',
 
-    modalTitle: "Group Actions & The Rubik's Cube Group",
     modalCloseBtn: "Got it, Let's Explore!",
-    theorySec1Title: '1. What is a Group Action?',
-    theorySec1Desc: 'Let (G, ·) be a group and X a set. A group action of G on X is a function:',
-    theorySec1AxiomsTitle: 'satisfying two fundamental axioms:',
-    theorySec1Identity: 'Identity: e · x = x for all x ∈ X.',
-    theorySec1Compatibility: 'Compatibility: (g · h) · x = g · (h · x) for all g, h ∈ G and x ∈ X.',
-    theorySec2Title: "2. The Natural Sets X Acted Upon by Rubik's Group",
-    theorySec2CornersTitle: 'Corners: X_C (|X| = 8)',
-    theorySec2CornersDesc: 'The 8 corner cubies permute in S₈ with 3 possible orientations in ℤ₃ each.',
-    theorySec2EdgesTitle: 'Edges: X_E (|X| = 12)',
-    theorySec2EdgesDesc: 'The 12 edge cubies permute in S₁₂ with 2 orientations in ℤ₂ each.',
-    theorySec2StickersTitle: 'Stickers: X_S (|X| = 54)',
-    theorySec2StickersDesc: 'The colored facelets permute under face turns as permutations in S₅₄.',
-    theorySec2StatesTitle: 'Cube States: C',
-    theorySec2StatesDesc: 'The legal configuration space containing ≈ 4.3 × 10¹⁹ states forming a single connected orbit.',
-    theorySec3Title: '3. Group Structure & Order |G|',
-    theorySec3Desc: "The Rubik's cube group decomposes as a semi-direct product:",
-    theorySec3InvariantsTitle: 'Subject to the First Fundamental Theorem of Rubikology:',
-    theorySec3Inv1: '1. Corner orientation sum is zero mod 3',
-    theorySec3Inv2: '2. Edge flip sum is zero mod 2',
-    theorySec3Inv3: '3. Equal permutation parity (sgn(σ) = sgn(τ))',
-    theorySec3OrderDesc: 'Dividing the total unrestricted combinations by 3 × 2 × 2 = 12 yields:',
-    theorySec4Title: '4. The Orbit-Stabilizer Theorem',
-    theorySec4Desc: 'For any piece x ∈ X:',
-    theorySec4IndexDesc: 'Because the group action on corners is transitive, |Orb(x)| = 8. Therefore, the subgroup of moves fixing a specific corner has size:',
-    theorySec5Title: '5. Commutators and 3-Cycles',
-    theorySec5Desc: 'The commutator [A, B] = A B A⁻¹ B⁻¹ isolates changes. When the supports of A and B intersect in exactly 1 element, [A, B] induces a pure 3-cycle. Since 3-cycles generate the alternating group A_n, the commutator subgroup [G, G] is the mathematical engine of all cube algorithms!',
-
-    // Onboarding Tour
-    tourBtn: 'Quick Tour',
-    tourTitle: 'Interactive Tour: Rubik Algebra for Everyone',
-    tourSubtitle: 'How the Rubik’s Cube demonstrates Abstract Algebra in 5 easy steps',
-    tourStepCount: 'Step',
-    tourPrevBtn: 'Previous',
-    tourNextBtn: 'Next Step',
-    tourFinishBtn: 'Start Exploring!',
-    tourSkipBtn: 'Skip Tour',
-    tourTryMoveBtn: 'Try this move!',
-    tourTakeawayLabel: 'Key Takeaway for Engineers & Leaders:',
 
     // Live Math HUD
     hudTitle: 'Live Algebraic Feedback',
@@ -916,12 +849,12 @@ export const translations: Record<Language, Translations> = {
     camDemoScanBtn: 'Simulate Scan (Demo)',
     camScannedFaces: 'Scanned Faces',
     camCurrentFaceLabel: 'Target Face:',
-    camHoldInstructionF: 'Hold GREEN center facing camera, WHITE on top (U)',
-    camHoldInstructionR: 'Hold RED center facing camera, WHITE on top (U)',
-    camHoldInstructionB: 'Hold BLUE center facing camera, WHITE on top (U)',
-    camHoldInstructionL: 'Hold ORANGE center facing camera, WHITE on top (U)',
-    camHoldInstructionU: 'Hold WHITE center facing camera, GREEN on bottom (towards you)',
-    camHoldInstructionD: 'Hold YELLOW center facing camera, GREEN on top (away from you)',
+    camHoldInstructionF: 'Hold GREEN center facing camera, YELLOW on top (U)',
+    camHoldInstructionR: 'Hold RED center facing camera, YELLOW on top (U)',
+    camHoldInstructionB: 'Hold BLUE center facing camera, YELLOW on top (U)',
+    camHoldInstructionL: 'Hold ORANGE center facing camera, YELLOW on top (U)',
+    camHoldInstructionU: 'Hold YELLOW center facing camera, GREEN on bottom (towards you)',
+    camHoldInstructionD: 'Hold WHITE center facing camera, GREEN on top (away from you)',
     camLivePreviewTitle: 'Detected 3×3 Face Preview',
     camLivePreviewHint: 'Click any sticker below to manually correct its color before or after capturing.',
     camCenterMatchOk: 'Center matches target face',
@@ -958,20 +891,23 @@ export const translations: Record<Language, Translations> = {
     tutorialPracticeBtn: 'Try It Yourself',
     tutorialPracticeTitle: 'Interactive Move Pad:',
     tutorialPracticeDesc: 'Execute the moves using the interactive buttons below or follow the step-by-step player.',
+    tutorialOrientationTitle: 'How to Hold the Cube:',
+    tutorialMnemonicTitle: 'Easy Memory Trick:',
+    tutorialPatternTitle: 'Target Pattern (Top View):',
+    tutorialHintBtn: '💡 Hint',
+    tutorialReloadCaseBtn: '🔄 Reload Case',
   },
   bg: {
     appTitle: 'Групови действия върху Кубчето на Рубик',
     appSubtitle: '3D Абстрактна Алгебра',
     groupOrder: 'Ред на групата:',
     solvedBadge: 'Решено състояние / Идентитет (e)',
-    theoryGuideBtn: 'Теоретично ръководство',
     languageName: 'English',
-    pageHome: 'Преглед',
-    pageMath: 'Математически Концепции',
-    pageValidator: 'Валидатор на Орбитата',
-    pageTutorial: 'Интерактивен Урок',
-    pageCustomCube: 'Физическо кубче',
-    pageTimer: 'Таймер',
+    pageHome: 'Начало',
+    pageMath: 'Математика',
+    pageValidator: 'Валидатор',
+    pageTutorial: 'Урок',
+    pageCustomCube: 'Моето кубче',
 
     // Sound & Shortcuts
     soundToggleMute: 'Заглуши звука',
@@ -987,8 +923,33 @@ export const translations: Record<Language, Translations> = {
     shortcutsReset: 'Ресет към идентитет (Esc)',
     shortcutsHelpBtn: 'Клавиши',
 
+    // Settings Menu
+    settingsTitle: 'Настройки',
+    settingsSubtitle: 'Персонализиране на бързина на въртене, език на интерфейса, звукови ефекти и 3D визуализация',
+    settingsBtn: 'Настройки',
+    settingsLanguageSection: 'Език на интерфейса',
+    settingsLangEn: 'English',
+    settingsLangBg: 'Български',
+    settingsAudioSection: 'Звук и аудио ефекти',
+    settingsAudioToggle: 'Тактилни звукови ефекти при въртене',
+    settingsAudioDesc: 'Реалистично магнитно щракване на механизма при всяко завъртане на слой',
+    settingsAudioTest: 'Тествай звука',
+    settingsAudioTestLabel: 'Чуй щракване',
+    settingsMotionSection: 'Бързина на въртене и анимация',
+    settingsMotionDesc: 'Регулира колко бързо се завъртат слоевете на 3D кубчето при ръчни ходове и алгоритми',
+    settingsSpeedSlow: 'Бавно (0.08)',
+    settingsSpeedNormal: 'Нормално (0.22)',
+    settingsSpeedFast: 'Бързо (0.42)',
+    settingsTestMoveBtn: 'Тест завъртане',
+    settingsViewSection: '3D Изглед и Визуализации',
+    settingsCycleArrowsDesc: 'Показва 3D стрелки на пермутационните цикли върху елементите при изследване',
+    settingsExplodedDesc: 'Разглобява елементите навън от ядрото за инспекция на вътрешния механизъм',
+    settingsResetDefaults: 'Възстанови по подразбиране',
+    settingsResetSuccess: 'Всички настройки бяха възстановени по подразбиране',
+    settingsCloseBtn: 'Затвори',
+
     // State Sharing
-    shareBtn: 'Сподели състояние',
+    shareBtn: 'Сподели',
     shareModalTitle: 'Споделяне на текущото състояние',
     shareModalDesc: 'Споделете точната конфигурация на 3D кубчето чрез уникален линк, последователност от ходове или в приложения',
     shareDirectLink: 'Директен линк за зареждане',
@@ -1006,26 +967,6 @@ export const translations: Record<Language, Translations> = {
     shareViaWhatsApp: 'WhatsApp',
     shareViaTelegram: 'Telegram',
     shareViaX: 'X / Twitter',
-
-    // Speedcubing Timer
-    timerTitle: 'WCA Таймер за Спийдкюбинг',
-    timerSubtitle: 'Тренирайте бързо нареждане с официална 15 сек. инспекция, разбъркване и статистика',
-    timerHoldPrompt: 'Задръжте Space или кликнете и задръжте за готовност',
-    timerReleasePrompt: 'Пуснете клавиша, за да стартирате!',
-    timerInspectionPrompt: 'Време за инспекция (Задръжте Space за готовност)',
-    timerStopPrompt: 'Натиснете Space или наредете кубчето за стоп!',
-    timerInspectionToggle: '15 сек. WCA инспекция',
-    timerNewScramble: 'Ново разбъркване',
-    timerApplyScramble: 'Приложи разбъркване в 3D',
-    timerStatsHeading: 'Статистика за сесията',
-    timerBest: 'Личен рекорд (PB)',
-    timerAo5: 'Средно от 5 (Ao5)',
-    timerAo12: 'Средно от 12 (Ao12)',
-    timerSolvesCount: 'Общо нареждания',
-    timerHistory: 'История на опитите',
-    timerNoSolves: 'Все още няма записани опити. Готови ли сте за първия си старт?',
-    timerClearHistory: 'Изчисти историята',
-    timerDeleteSolve: 'Изтрий',
 
     canvasInstructions: 'Въртене: Ляв бутон + влачене | Панорама: Десен бутон | Мащаб: Скрол',
     activeSelection: 'Активен избор:',
@@ -1160,46 +1101,7 @@ export const translations: Record<Language, Translations> = {
     canonicalHeading: 'Канонични елементи и симетрии в G:',
     applyPatternBtn: 'Приложи конфигурация',
 
-    modalTitle: 'Групови действия и Групата на Кубчето на Рубик',
     modalCloseBtn: 'Разбрах, да започваме!',
-    theorySec1Title: '1. Какво е групово действие?',
-    theorySec1Desc: 'Нека (G, ·) е група и X е множество. Групово действие на G върху X е изображение:',
-    theorySec1AxiomsTitle: 'удовлетворяващо двете фундаментални аксиоми:',
-    theorySec1Identity: 'Идентитет: e · x = x за всяко x ∈ X.',
-    theorySec1Compatibility: 'Съвместимост: (g · h) · x = g · (h · x) за всички g, h ∈ G и x ∈ X.',
-    theorySec2Title: '2. Естествените множества X в Кубчето на Рубик',
-    theorySec2CornersTitle: 'Върхове: X_C (|X| = 8)',
-    theorySec2CornersDesc: 'Осемте върхови кубчета се пермутират в S₈ с по 3 възможни ориентации в ℤ₃ всяко.',
-    theorySec2EdgesTitle: 'Ръбове: X_E (|X| = 12)',
-    theorySec2EdgesDesc: 'Дванадесетте ръбови кубчета се пермутират в S₁₂ с по 2 ориентации в ℤ₂ всяко.',
-    theorySec2StickersTitle: 'Стикери: X_S (|X| = 54)',
-    theorySec2StickersDesc: 'Цветните стикери се пермутират при завъртания като пермутации в S₅₄.',
-    theorySec2StatesTitle: 'Състояния на куба: C',
-    theorySec2StatesDesc: 'Пространството от легални конфигурации съдържа ≈ 4.3 × 10¹⁹ състояния, образуващи една свързана орбита.',
-    theorySec3Title: '3. Структура и ред на групата |G|',
-    theorySec3Desc: 'Групата на Рубик се разлага като полудиректно произведение:',
-    theorySec3InvariantsTitle: 'Съгласно Първата фундаментална теорема на Рубикологията:',
-    theorySec3Inv1: '1. Сумата от ориентациите на върховете е нула по модул 3',
-    theorySec3Inv2: '2. Сумата от обръщанията на ръбовете е нула по модул 2',
-    theorySec3Inv3: '3. Еднаква четност на пермутациите (sgn(σ) = sgn(τ))',
-    theorySec3OrderDesc: 'Разделянето на общите неограничени комбинации на 3 × 2 × 2 = 12 дава:',
-    theorySec4Title: '4. Теорема за орбитата и стабилизатора',
-    theorySec4Desc: 'За всяко парче x ∈ X:',
-    theorySec4IndexDesc: 'Тъй като действието на групата върху върховете е транзитивно, |Orb(x)| = 8. Следователно подгрупата от движения, фиксиращи даден връх, има мощност:',
-    theorySec5Title: '5. Комутатори и 3-цикли',
-    theorySec5Desc: 'Комутаторът [A, B] = A B A⁻¹ B⁻¹ изолира промените. Когато носителите на A и B се пресичат в точно 1 елемент, [A, B] индуцира чист 3-цикъл. Тъй като 3-циклите пораждат алтерниращата група A_n, комутаторната подгрупа [G, G] е математическият двигател на всички алгоритми!',
-
-    // Onboarding Tour
-    tourBtn: 'Обиколка за неспециалисти',
-    tourTitle: 'Интерактивна обиколка: Алгебрата за всеки',
-    tourSubtitle: 'Как Кубчето на Рубик демонстрира абстрактна алгебра в 5 лесни стъпки',
-    tourStepCount: 'Стъпка',
-    tourPrevBtn: 'Предишна',
-    tourNextBtn: 'Следваща стъпка',
-    tourFinishBtn: 'Да започваме!',
-    tourSkipBtn: 'Пропусни',
-    tourTryMoveBtn: 'Изпробвай този ход!',
-    tourTakeawayLabel: 'Ключов извод за инженери и лидери:',
 
     // Live Math HUD
     hudTitle: 'Алгебрично състояние на живо',
@@ -1216,8 +1118,8 @@ export const translations: Record<Language, Translations> = {
     hudGeneralExplain: 'Извърши се трансформация. Алгебричният двигател изчисли всеки цикъл, четност и ред на елемента директно в паметта.',
 
     // Header, Canvas & Solver
-    brandTitle: 'Групови Действия върху Кубчето на Рубик',
-    solveBtn: 'Реши кубчето',
+    brandTitle: 'Кубче на Рубик',
+    solveBtn: 'Реши',
     paint3DBtn: '3D Четка',
     paint3DBrushPrefix: '3D Четка: ',
     paint3DInstruction: 'Кликнете върху стикер от 3D куба',
@@ -1389,12 +1291,12 @@ export const translations: Record<Language, Translations> = {
     camDemoScanBtn: 'Симулирай Сканиране (Демо)',
     camScannedFaces: 'Сканирани Стени',
     camCurrentFaceLabel: 'Текуща Стена:',
-    camHoldInstructionF: 'Дръжте ЗЕЛЕНИЯ център към камерата, БЯЛОТО отгоре (U)',
-    camHoldInstructionR: 'Дръжте ЧЕРВЕНИЯ център към камерата, БЯЛОТО отгоре (U)',
-    camHoldInstructionB: 'Дръжте СИНИЯ център към камерата, БЯЛОТО отгоре (U)',
-    camHoldInstructionL: 'Дръжте ОРАНЖЕВИЯ център към камерата, БЯЛОТО отгоре (U)',
-    camHoldInstructionU: 'Дръжте БЕЛИЯ център към камерата, ЗЕЛЕНОТО отдолу (към вас)',
-    camHoldInstructionD: 'Дръжте ЖЪЛТИЯ център към камерата, ЗЕЛЕНОТО отгоре (напред)',
+    camHoldInstructionF: 'Дръжте ЗЕЛЕНИЯ център към камерата, ЖЪЛТОТО отгоре (U)',
+    camHoldInstructionR: 'Дръжте ЧЕРВЕНИЯ център към камерата, ЖЪЛТОТО отгоре (U)',
+    camHoldInstructionB: 'Дръжте СИНИЯ център към камерата, ЖЪЛТОТО отгоре (U)',
+    camHoldInstructionL: 'Дръжте ОРАНЖЕВИЯ център към камерата, ЖЪЛТОТО отгоре (U)',
+    camHoldInstructionU: 'Дръжте ЖЪЛТИЯ център към камерата, ЗЕЛЕНОТО отдолу (към вас)',
+    camHoldInstructionD: 'Дръжте БЕЛИЯ център към камерата, ЗЕЛЕНОТО отгоре (напред)',
     camLivePreviewTitle: 'Разпознати Цветове (3×3 Преглед)',
     camLivePreviewHint: 'Кликнете върху който и да е стикер долу, за да коригирате цвета му ръчно при нужда.',
     camCenterMatchOk: 'Центърът съвпада с търсената стена',
@@ -1431,5 +1333,10 @@ export const translations: Record<Language, Translations> = {
     tutorialPracticeBtn: 'Опитай сам',
     tutorialPracticeTitle: 'Интерактивен контролер:',
     tutorialPracticeDesc: 'Изпълнете ходовете с бутоните по-долу или следвайте пошаговия плейър.',
+    tutorialOrientationTitle: 'Как да държите кубчето:',
+    tutorialMnemonicTitle: 'Лесно запомняне на формулата:',
+    tutorialPatternTitle: 'Търсен модел (Изглед отгоре):',
+    tutorialHintBtn: '💡 Подсказка',
+    tutorialReloadCaseBtn: '🔄 Зареди отначало',
   },
 };

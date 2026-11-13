@@ -23,11 +23,10 @@ import { ToastService } from './services/toast.service';
 import { Controls3DComponent } from './components/cube/controls-3d/controls-3d.component';
 import { Cube2DComponent } from './components/cube/cube-2d/cube-2d.component';
 import { AlgebraHudComponent } from './components/cube/algebra-hud/algebra-hud.component';
-import { TheoryGuideModalComponent } from './components/shared/theory-guide-modal/theory-guide-modal.component';
-import { OnboardingTourComponent } from './components/shared/onboarding-tour/onboarding-tour.component';
 import { SolveModalComponent } from './components/shared/solve-modal/solve-modal.component';
 import { ShareModalComponent } from './components/shared/share-modal/share-modal.component';
 import { ShortcutsModalComponent } from './components/shared/shortcuts-modal/shortcuts-modal.component';
+import { SettingsModalComponent } from './components/shared/settings-modal/settings-modal.component';
 
 @Component({
   selector: 'app-root',
@@ -38,11 +37,10 @@ import { ShortcutsModalComponent } from './components/shared/shortcuts-modal/sho
     Controls3DComponent,
     Cube2DComponent,
     AlgebraHudComponent,
-    TheoryGuideModalComponent,
-    OnboardingTourComponent,
     SolveModalComponent,
     ShareModalComponent,
     ShortcutsModalComponent,
+    SettingsModalComponent,
   ],
   templateUrl: './app.html',
   styleUrl: './app.css',
@@ -82,8 +80,6 @@ export class App implements AfterViewInit {
   readonly animSpeed = this.cubeStateService.animSpeed;
   readonly showCycleArrows = this.cubeStateService.showCycleArrows;
   readonly isAnimating = this.cubeStateService.isAnimating;
-  readonly isTheoryOpen = this.cubeStateService.isTheoryOpen;
-  readonly isTourOpen = this.cubeStateService.isTourOpen;
   readonly is3DPaintMode = this.cubeStateService.is3DPaintMode;
   readonly activeBrushColor = this.cubeStateService.activeBrushColor;
   readonly faceNames = FACE_NAMES;
@@ -100,6 +96,7 @@ export class App implements AfterViewInit {
   readonly isSolveModalOpen = signal<boolean>(false);
   readonly isShortcutsModalOpen = signal<boolean>(false);
   readonly isShareModalOpen = signal<boolean>(false);
+  readonly isSettingsModalOpen = signal<boolean>(false);
 
   constructor() {
     this.router.events
@@ -117,16 +114,21 @@ export class App implements AfterViewInit {
           this.cubeStateService.setActivePage('math');
         } else if (url.includes('custom')) {
           this.cubeStateService.setActivePage('custom');
-        } else if (url.includes('timer')) {
-          this.cubeStateService.setActivePage('timer');
         } else {
           this.cubeStateService.setActivePage('home');
+        }
+        if (!url.includes('custom') && this.cubeStateService.is3DPaintMode()) {
+          this.cubeStateService.set3DPaintMode(false);
         }
         this.updateHighlights();
       });
 
     effect(() => {
-      this.cubeRenderer();
+      const renderer = this.cubeRenderer();
+      const speed = this.animSpeed();
+      if (renderer) {
+        renderer.animationSpeed = speed;
+      }
       this.activePage();
       this.selectedPieceType();
       this.selectedPieceId();
@@ -164,6 +166,7 @@ export class App implements AfterViewInit {
     this.ngZone.runOutsideAngular(() => {
       try {
         const renderer = new RubiksCube3D(container);
+        renderer.animationSpeed = this.cubeStateService.animSpeed();
         renderer.onPieceClick = (pieceType, pieceId) => {
           this.ngZone.run(() => {
             if (this.activePage() !== 'math') return;
@@ -174,7 +177,7 @@ export class App implements AfterViewInit {
 
         renderer.onStickerClick = (event) => {
           this.ngZone.run(() => {
-            if (this.cubeStateService.is3DPaintMode()) {
+            if (this.activePage() === 'custom' && this.cubeStateService.is3DPaintMode()) {
               const brush = this.cubeStateService.activeBrushColor();
               const color = this.getFaceColor(brush);
               if (event.materialIndex >= 0) {
@@ -403,14 +406,6 @@ export class App implements AfterViewInit {
     this.languageService.toggleLanguage();
   }
 
-  openTheory(): void {
-    this.cubeStateService.openTheory();
-  }
-
-  closeTheory(): void {
-    this.cubeStateService.closeTheory();
-  }
-
   getFaceColor(face: FaceName): string {
     return FACE_COLORS[face];
   }
@@ -420,19 +415,14 @@ export class App implements AfterViewInit {
   }
 
   toggle3DPaintMode(): void {
+    if (this.activePage() !== 'custom') {
+      return;
+    }
     this.cubeStateService.toggle3DPaintMode();
   }
 
   exit3DPaintMode(): void {
     this.cubeStateService.set3DPaintMode(false);
-  }
-
-  openTour(): void {
-    this.cubeStateService.openTour();
-  }
-
-  closeTour(): void {
-    this.cubeStateService.closeTour();
   }
 
   openSolveModal(): void {
@@ -467,6 +457,32 @@ export class App implements AfterViewInit {
     this.isShareModalOpen.set(false);
   }
 
+  openSettingsModal(): void {
+    this.isSettingsModalOpen.set(true);
+  }
+
+  closeSettingsModal(): void {
+    this.isSettingsModalOpen.set(false);
+  }
+
+  toggleSettingsModal(): void {
+    this.isSettingsModalOpen.update((v) => !v);
+  }
+
+  openShortcutsFromSettings(): void {
+    this.closeSettingsModal();
+    this.openShortcutsModal();
+  }
+
+  handleTestMove(): void {
+    // Quickly rotate U then U' so user immediately sees/hears the animation speed and sound
+    if (this.isAnimating()) return;
+    this.handleApplyMove('U');
+    setTimeout(() => {
+      this.handleApplyMove("U'");
+    }, 450);
+  }
+
   handleGlobalKeyDown(event: KeyboardEvent): void {
     const target = event.target as HTMLElement | null;
     if (
@@ -480,6 +496,10 @@ export class App implements AfterViewInit {
     }
 
     if (event.key === 'Escape') {
+      if (this.isSettingsModalOpen()) {
+        this.closeSettingsModal();
+        return;
+      }
       if (this.isShareModalOpen()) {
         this.closeShareModal();
         return;
@@ -492,23 +512,11 @@ export class App implements AfterViewInit {
         this.closeSolveModal();
         return;
       }
-      if (this.isTheoryOpen()) {
-        this.cubeStateService.closeTheory();
-        return;
-      }
-      if (this.isTourOpen()) {
-        this.cubeStateService.closeTour();
-        return;
-      }
     }
 
     if (event.key === '?' || (event.shiftKey && event.key === '/')) {
       event.preventDefault();
       this.toggleShortcutsModal();
-      return;
-    }
-
-    if (this.activePage() === 'timer' && (event.code === 'Space' || event.key === ' ')) {
       return;
     }
 

@@ -43,7 +43,7 @@ describe('CubeStateService (Reactive Signals & Separation of Concerns)', () => {
 
     service.applyMove("U'");
     expect(service.isSolved()).toBe(true);
-    expect(service.moveHistory()).toEqual(['U', "U'"]);
+    expect(service.moveHistory()).toEqual([]);
   });
 
   it('executes algorithms and updates state', () => {
@@ -192,5 +192,56 @@ describe('CubeStateService (Reactive Signals & Separation of Concerns)', () => {
     expect(service.isSolved()).toBe(false);
     expect(service.moveHistory()).toEqual(['R']);
     expect(service.redoHistory()).toEqual(['U']);
+  });
+
+  it('cancels out inverse moves and deletes them from moveHistory (g * g^-1 = e)', () => {
+    // 1. Single inverse cancellation
+    service.applyMove('R');
+    expect(service.moveHistory()).toEqual(['R']);
+    expect(service.lastMove()).toBe('R');
+
+    service.applyMove("R'");
+    expect(service.moveHistory()).toEqual([]);
+    expect(service.lastMove()).toBe('e (Identity)');
+    expect(service.isSolved()).toBe(true);
+
+    // 2. Multi-move nested cancellation
+    service.applyMove('F');
+    service.applyMove('U');
+    expect(service.moveHistory()).toEqual(['F', 'U']);
+
+    service.applyMove("U'");
+    expect(service.moveHistory()).toEqual(['F']);
+    expect(service.lastMove()).toBe('F');
+
+    service.applyMove("F'");
+    expect(service.moveHistory()).toEqual([]);
+    expect(service.lastMove()).toBe('e (Identity)');
+    expect(service.isSolved()).toBe(true);
+
+    // 3. Double turn cancellation: R2 followed by R2
+    service.applyMove('R2');
+    expect(service.moveHistory()).toEqual(['R2']);
+    service.applyMove('R2');
+    expect(service.moveHistory()).toEqual([]);
+    expect(service.isSolved()).toBe(true);
+  });
+
+  it('merges consecutive turns on the same face modulo 4', () => {
+    // R + R -> R2
+    service.applyMove('R');
+    service.applyMove('R');
+    expect(service.moveHistory()).toEqual(['R2']);
+    expect(service.lastMove()).toBe('R2');
+
+    // R2 + R -> R'
+    service.applyMove('R');
+    expect(service.moveHistory()).toEqual(["R'"]);
+    expect(service.lastMove()).toBe("R'");
+
+    // R' + R2 -> R
+    service.applyMove('R2');
+    expect(service.moveHistory()).toEqual(['R']);
+    expect(service.lastMove()).toBe('R');
   });
 });

@@ -61,8 +61,8 @@ export class CustomCubeComponent implements OnInit {
 
   // Palette definition
   readonly palette: ColorPaletteItem[] = [
-    { face: 'U', nameEn: 'White (Up)', nameBg: 'Бяло (U - Горе)', color: FACE_COLORS.U },
-    { face: 'D', nameEn: 'Yellow (Down)', nameBg: 'Жълто (D - Долу)', color: FACE_COLORS.D },
+    { face: 'U', nameEn: 'Yellow (Up)', nameBg: 'Жълто (U - Горе)', color: FACE_COLORS.U },
+    { face: 'D', nameEn: 'White (Down)', nameBg: 'Бяло (D - Долу)', color: FACE_COLORS.D },
     { face: 'F', nameEn: 'Green (Front)', nameBg: 'Зелено (F - Отпред)', color: FACE_COLORS.F },
     { face: 'B', nameEn: 'Blue (Back)', nameBg: 'Синьо (B - Отзад)', color: FACE_COLORS.B },
     { face: 'L', nameEn: 'Orange (Left)', nameBg: 'Оранжево (L - Отляво)', color: FACE_COLORS.L },

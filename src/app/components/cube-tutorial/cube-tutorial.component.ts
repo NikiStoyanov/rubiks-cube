@@ -2,6 +2,7 @@ import {
   Component,
   ChangeDetectionStrategy,
   DestroyRef,
+  OnInit,
   computed,
   inject,
   signal,
@@ -16,6 +17,33 @@ import {
 } from '../../math/group-algebra';
 import { type SolveResult } from '../../math/cube-solver';
 import { StandardMove } from '../../types/cube';
+
+export interface MoveGuideDetail {
+  code: StandardMove;
+  arrow: string;
+  nameBg: string;
+  nameEn: string;
+  actionBg: string;
+  actionEn: string;
+}
+
+export const MOVE_DETAILS: Record<string, MoveGuideDetail> = {
+  'R': { code: 'R', arrow: '⬆️', nameBg: 'Дясна нагоре', nameEn: 'Right Up', actionBg: 'Завъртете дясната страна на 90° нагоре (по часовника)', actionEn: 'Rotate right face 90° upwards (clockwise)' },
+  "R'": { code: "R'", arrow: '⬇️', nameBg: 'Дясна надолу', nameEn: 'Right Down', actionBg: 'Завъртете дясната страна на 90° надолу (обратно)', actionEn: 'Rotate right face 90° downwards (counter-clockwise)' },
+  'U': { code: 'U', arrow: '⬅️', nameBg: 'Горна наляво', nameEn: 'Up Left', actionBg: 'Завъртете горната страна на 90° наляво (по часовника)', actionEn: 'Rotate top face 90° to the left (clockwise)' },
+  "U'": { code: "U'", arrow: '➡️', nameBg: 'Горна надясно', nameEn: 'Up Right', actionBg: 'Завъртете горната страна на 90° надясно (обратно)', actionEn: 'Rotate top face 90° to the right (counter-clockwise)' },
+  'F': { code: 'F', arrow: '↻', nameBg: 'Лице по часовника', nameEn: 'Front Clockwise', actionBg: 'Завъртете предната страна на 90° по часовника', actionEn: 'Rotate front face 90° clockwise' },
+  "F'": { code: "F'", arrow: '↺', nameBg: 'Лице обратно', nameEn: 'Front Counter', actionBg: 'Завъртете предната страна на 90° обратно на часовника', actionEn: 'Rotate front face 90° counter-clockwise' },
+  'L': { code: 'L', arrow: '⬇️', nameBg: 'Лява надолу', nameEn: 'Left Down', actionBg: 'Завъртете лявата страна на 90° надолу (по часовника)', actionEn: 'Rotate left face 90° downwards (clockwise)' },
+  "L'": { code: "L'", arrow: '⬆️', nameBg: 'Лява нагоре', nameEn: 'Left Up', actionBg: 'Завъртете лявата страна на 90° нагоре (обратно)', actionEn: 'Rotate left face 90° upwards (counter-clockwise)' },
+  'D': { code: 'D', arrow: '➡️', nameBg: 'Долна надясно', nameEn: 'Down Right', actionBg: 'Завъртете долната страна на 90° надясно (по часовника)', actionEn: 'Rotate bottom face 90° to the right (clockwise)' },
+  "D'": { code: "D'", arrow: '⬅️', nameBg: 'Долна наляво', nameEn: 'Down Left', actionBg: 'Завъртете долната страна на 90° наляво (обратно)', actionEn: 'Rotate bottom face 90° to the left (counter-clockwise)' },
+  'B': { code: 'B', arrow: '↺', nameBg: 'Задна страна', nameEn: 'Back Clockwise', actionBg: 'Завъртете задната страна на 90° по часовника', actionEn: 'Rotate back face 90° clockwise' },
+  "B'": { code: "B'", arrow: '↻', nameBg: 'Задна обратно', nameEn: 'Back Counter', actionBg: 'Завъртете задната страна на 90° обратно на часовника', actionEn: 'Rotate back face 90° counter-clockwise' },
+  'R2': { code: 'R2', arrow: '🔄', nameBg: 'Дясна 180°', nameEn: 'Right Double (180°)', actionBg: 'Завъртете десния слой на 180° (два пъти)', actionEn: 'Rotate right face 180° (two quarter turns)' },
+  'U2': { code: 'U2', arrow: '🔄', nameBg: 'Горна 180°', nameEn: 'Up Double (180°)', actionBg: 'Завъртете горния слой на 180° (два пъти)', actionEn: 'Rotate top face 180° (two quarter turns)' },
+  'F2': { code: 'F2', arrow: '🔄', nameBg: 'Лице 180°', nameEn: 'Front Double (180°)', actionBg: 'Завъртете предния слой на 180° (два пъти)', actionEn: 'Rotate front face 180° (two quarter turns)' },
+};
 
 export interface NotationGuideItem {
   code: StandardMove;
@@ -33,7 +61,7 @@ export interface NotationGuideItem {
   templateUrl: './cube-tutorial.component.html',
   styleUrl: './cube-tutorial.component.css',
 })
-export class CubeTutorialComponent {
+export class CubeTutorialComponent implements OnInit {
   private readonly languageService = inject(LanguageService);
   private readonly cubeStateService = inject(CubeStateService);
   private readonly destroyRef = inject(DestroyRef);
@@ -55,6 +83,7 @@ export class CubeTutorialComponent {
   readonly isAutoPlaying = signal<boolean>(false);
   readonly playbackSpeed = signal<number>(1);
   readonly isPracticeMode = signal<boolean>(false);
+  readonly showHint = signal<boolean>(true);
   readonly showNotationGuide = signal<boolean>(false);
   readonly showSolver = signal<boolean>(false);
   readonly solveResult = signal<SolveResult | null>(null);
@@ -64,6 +93,13 @@ export class CubeTutorialComponent {
 
   constructor() {
     this.destroyRef.onDestroy(() => this.stopAutoPlay());
+  }
+
+  ngOnInit(): void {
+    // Automatically prepare the practice position on the 3D cube when entering tutorial
+    setTimeout(() => {
+      this.setupPracticeCase();
+    }, 150);
   }
 
   // Notation reference catalog for Rubik's cube Singmaster notation
@@ -228,6 +264,365 @@ export class CubeTutorialComponent {
     return this.currentMoveIndex() >= this.currentStepMoves().length && this.currentStepMoves().length > 0;
   });
 
+  toggleHint(): void {
+    this.showHint.update((v) => !v);
+  }
+
+  getMoveDetail(move: string | undefined): MoveGuideDetail {
+    if (!move) {
+      return {
+        code: 'U' as StandardMove,
+        arrow: '✓',
+        nameBg: 'Завършено',
+        nameEn: 'Done',
+        actionBg: 'Алгоритъмът е завършен',
+        actionEn: 'Algorithm completed',
+      };
+    }
+    return (
+      MOVE_DETAILS[move] || {
+        code: move as StandardMove,
+        arrow: '🔄',
+        nameBg: move,
+        nameEn: move,
+        actionBg: `Завъртане ${move}`,
+        actionEn: `Turn ${move}`,
+      }
+    );
+  }
+
+  readonly nextExpectedMove = computed<string>(() => {
+    const moves = this.currentStepMoves();
+    const idx = this.currentMoveIndex();
+    return moves[idx] || '';
+  });
+
+  isNextExpectedMove(key: string): boolean {
+    return this.showHint() && this.nextExpectedMove() === key;
+  }
+
+  readonly currentOrientationGuide = computed<{ icon: string; textBg: string; textEn: string }>(() => {
+    const step = this.currentStep();
+    const c = this.currentCase();
+    const cId = c?.id;
+
+    if (step.id === 'white_cross') {
+      if (cId === 'daisy') {
+        return {
+          icon: '🌼',
+          textBg: 'Дръжте ЖЪЛТИЯ център отгоре (U), а белия отдолу (D). Събираме 4-те бели ръба около жълтия център.',
+          textEn: 'Hold YELLOW center on top (U), white on bottom (D). Gather 4 white edges around the yellow center.',
+        };
+      }
+      return {
+        icon: '⚪',
+        textBg: 'Дръжте БЕЛИЯ център отдолу (D) или отгоре (U). Напаснете страничния цвят на ръба с центъра.',
+        textEn: 'Hold WHITE center on bottom (D) or top (U). Match edge side color with its center.',
+      };
+    }
+
+    if (step.id === 'first_layer_corners') {
+      return {
+        icon: '⚪',
+        textBg: 'БЯЛАТА стена е отдолу (D). Завъртете горния слой така, че бялото ъгълче да застане горе-вдясно точно над целевия си слот.',
+        textEn: 'WHITE face on bottom (D). Turn top layer so white corner is top-right directly above target slot.',
+      };
+    }
+
+    if (step.id === 'second_layer_edges') {
+      return {
+        icon: '🟧',
+        textBg: 'БЯЛОТО е отдолу (D), ЖЪЛТОТО е отгоре (U). Напаснете цвета на предния ръб с предния център (прави буква „Т“).',
+        textEn: 'WHITE on bottom (D), YELLOW on top (U). Match front edge color with front center (forms a "T").',
+      };
+    }
+
+    if (step.id === 'yellow_cross') {
+      if (cId === 'l_shape') {
+        return {
+          icon: '↖️',
+          textBg: 'ЖЪЛТОТО е отгоре (U). Дръжте малката жълта стрелка горе-вляво (на 9 и 12 часа ↖️), сочеща нагоре и наляво.',
+          textEn: 'YELLOW on top (U). Hold yellow L-shape in top-left (9 and 12 o\'clock ↖️).',
+        };
+      }
+      if (cId === 'horizontal_line') {
+        return {
+          icon: '➖',
+          textBg: 'ЖЪЛТОТО е отгоре (U). Дръжте жълтата линия хоризонтално (отляво надясно ➖).',
+          textEn: 'YELLOW on top (U). Hold yellow line horizontally (left-to-right ➖).',
+        };
+      }
+      return {
+        icon: '🟡',
+        textBg: 'ЖЪЛТОТО е отгоре (U). При единична точка изпълнете формулата веднъж от произволна страна.',
+        textEn: 'YELLOW on top (U). For a single dot, execute the formula from any angle.',
+      };
+    }
+
+    if (step.id === 'orient_corners_sune') {
+      if (cId === 'fish') {
+        return {
+          icon: '🐟',
+          textBg: 'ЖЪЛТОТО е отгоре (U). Завъртете куба така, че главата на рибката (единственият жълт връх) да сочи долу-вляво ↙️.',
+          textEn: 'YELLOW on top (U). Rotate cube so fish head (single yellow corner) points bottom-left ↙️.',
+        };
+      }
+      if (cId === 'cross_no_corners') {
+        return {
+          icon: '👀',
+          textBg: 'ЖЪЛТОТО е отгоре (U). Завъртете куба така, че жълтият фар на лявата страна да сочи наляво ⬅️.',
+          textEn: 'YELLOW on top (U). Rotate cube so yellow headlight on left face points left ⬅️.',
+        };
+      }
+      return {
+        icon: '🟡',
+        textBg: 'ЖЪЛТОТО е отгоре (U). Дръжте така, че предният ляв връх да има жълто, сочещо напред.',
+        textEn: 'YELLOW on top (U). Hold so front-left corner has yellow facing front.',
+      };
+    }
+
+    if (step.id === 'permute_corners') {
+      if (cId === 'headlights_back') {
+        return {
+          icon: '🚗',
+          textBg: 'Дръжте стената с двата еднакви ъгъла („фаровете“) откъм ГЪРБА (задната страна B).',
+          textEn: 'Hold face with two matching corner stickers (headlights) at the BACK (B face).',
+        };
+      }
+      return {
+        icon: '🔍',
+        textBg: 'Ако няма фарове никъде, изпълнете от произволна страна; след това ще се появят фарове и ги сложете отзад.',
+        textEn: 'If no headlights anywhere, execute from any side; headlights will appear, then place them at the back.',
+      };
+    }
+
+    if (step.id === 'permute_edges_solved') {
+      if (cId === 'clockwise' || cId === 'counter_clockwise') {
+        return {
+          icon: '🏁',
+          textBg: 'Дръжте напълно готовата едноцветна стена откъм ГЪРБА (задната страна B). Останалите 3 ръба се циклират.',
+          textEn: 'Hold fully solved solid face at the BACK (B face). Remaining 3 edges cycle into place.',
+        };
+      }
+      return {
+        icon: '🔄',
+        textBg: 'Ако няма готова стена, изпълнете формулата веднъж; ще получите готова стена — сложете я отзад и повторете.',
+        textEn: 'If no solid face, execute once; you will get one solved face — place it at back and repeat.',
+      };
+    }
+
+    return {
+      icon: '🧭',
+      textBg: 'Дръжте бялото отдолу, жълтото отгоре.',
+      textEn: 'Hold white on bottom, yellow on top.',
+    };
+  });
+
+  readonly currentMnemonic = computed<{ titleBg: string; titleEn: string; descBg: string; descEn: string } | null>(() => {
+    const step = this.currentStep();
+    if (step.id === 'first_layer_corners') {
+      return {
+        titleBg: 'Десен тригер (Sexy Move) [R U R\' U\']',
+        titleEn: 'Right Trigger (Sexy Move) [R U R\' U\']',
+        descBg: '⬆️ Вдигаш дясното → ⬅️ Горната бяга наляво → ⬇️ Връщаш дясното → ➡️ Горната се връща. Повтори 1 до 5 пъти, докато бялото слезе долу!',
+        descEn: '⬆️ Right up → ⬅️ Top left → ⬇️ Right down → ➡️ Top right. Repeat 1 to 5 times until white faces down!',
+      };
+    }
+    if (step.id === 'second_layer_edges') {
+      return {
+        titleBg: 'Конюгиран тригер: Буташ → Десен тригер → Ляв тригер',
+        titleEn: 'Conjugated Trigger: Push Away → Right Trigger → Left Trigger',
+        descBg: 'За вмъкване Надясно: U (буташ наляво) → правиш Десен тригер [R U R\' U\'] → завърташ към съседната стена и затваряш с Ляв тригер [F\' U F].',
+        descEn: 'To insert Right: U (push away) → Right Trigger [R U R\' U\'] → turn to adjacent face and close with Left Trigger [F\' U F].',
+      };
+    }
+    if (step.id === 'yellow_cross') {
+      return {
+        titleBg: 'Лице ↻ → Десен тригер → Лице ↺ [F (R U R\' U\') F\']',
+        titleEn: 'Front ↻ → Right Trigger → Front ↺ [F (R U R\' U\') F\']',
+        descBg: 'Сваляш лицевата стена по часовника (F) → изпълняваш познатия Десен тригер (R U R\' U\') → връщаш лицевата стена обратно (F\'). Изключително лесно!',
+        descEn: 'Rotate front clockwise (F) → execute the familiar Right Trigger (R U R\' U\') → rotate front counter-clockwise (F\'). Super easy!',
+      };
+    }
+    if (step.id === 'orient_corners_sune') {
+      return {
+        titleBg: 'Трансформация „Сюне“ (Sune)',
+        titleEn: 'Sune Transformation',
+        descBg: '⬆️ Вдигаш десния → ⬅️ Горният бяга → ⬇️ Сваляш десния → ⬅️ Горният продължава → ⬆️ Вдигаш десния → 🔄 Двойно завъртане на 180° и ⬇️ сваляш!',
+        descEn: '⬆️ Right up → ⬅️ Top moves → ⬇️ Right down → ⬅️ Top moves again → ⬆️ Right up → 🔄 Double 180° turn and ⬇️ down!',
+      };
+    }
+    if (step.id === 'permute_corners') {
+      return {
+        titleBg: 'A-пермутация („Фарове“)',
+        titleEn: 'A-Permutation (Headlights)',
+        descBg: 'R\' F R\' B2 R F\' R\' B2 R2. Разменя предните 2 върха и запазва фаровете отзад!',
+        descEn: 'R\' F R\' B2 R F\' R\' B2 R2. Swaps the 2 front corners while keeping the back headlights intact!',
+      };
+    }
+    if (step.id === 'permute_edges_solved') {
+      return {
+        titleBg: 'U-пермутация (Финално нареждане!)',
+        titleEn: 'U-Permutation (Final Solve!)',
+        descBg: 'Разменя по часовника последните 3 нерешени ръба. Дръж готовата стена отзад и кубът е 100% нареден!',
+        descEn: 'Cycles the remaining 3 unsolved edges clockwise. Keep solid face at back and cube is 100% solved!',
+      };
+    }
+    return null;
+  });
+
+  readonly currentCasePattern = computed<string[][]>(() => {
+    const step = this.currentStep();
+    const c = this.currentCase();
+    const cId = c?.id;
+    const Y = '#fbbf24'; // yellow
+    const W = '#f8fafc'; // white
+    const D = '#334155'; // dim / neutral grey
+    const G = '#10b981'; // green
+    const R = '#ef4444'; // red
+    const B = '#3b82f6'; // blue
+    const O = '#f97316'; // orange
+
+    if (step.id === 'white_cross') {
+      if (cId === 'daisy') {
+        return [
+          [D, W, D],
+          [W, Y, W],
+          [D, W, D],
+        ];
+      }
+      return [
+        [D, W, D],
+        [W, W, W],
+        [D, W, D],
+      ];
+    }
+
+    if (step.id === 'first_layer_corners') {
+      if (cId === 'white_up') {
+        return [
+          [D, W, D],
+          [W, W, W],
+          [D, W, W],
+        ];
+      }
+      return [
+        [D, W, D],
+        [W, W, W],
+        [D, W, B],
+      ];
+    }
+
+    if (step.id === 'second_layer_edges') {
+      if (cId === 'insert_left') {
+        return [
+          [D, G, D],
+          [D, G, D],
+          [B, G, D],
+        ];
+      }
+      return [
+        [D, G, D],
+        [D, G, D],
+        [D, G, R],
+      ];
+    }
+
+    if (step.id === 'yellow_cross') {
+      if (cId === 'dot') {
+        return [
+          [D, D, D],
+          [D, Y, D],
+          [D, D, D],
+        ];
+      }
+      if (cId === 'l_shape') {
+        return [
+          [D, Y, D],
+          [Y, Y, D],
+          [D, D, D],
+        ];
+      }
+      if (cId === 'horizontal_line') {
+        return [
+          [D, D, D],
+          [Y, Y, Y],
+          [D, D, D],
+        ];
+      }
+      return [
+        [D, Y, D],
+        [Y, Y, Y],
+        [D, Y, D],
+      ];
+    }
+
+    if (step.id === 'orient_corners_sune') {
+      if (cId === 'fish') {
+        return [
+          [D, Y, D],
+          [Y, Y, Y],
+          [Y, Y, D],
+        ];
+      }
+      if (cId === 'cross_no_corners') {
+        return [
+          [D, Y, D],
+          [Y, Y, Y],
+          [D, Y, D],
+        ];
+      }
+      if (cId === 'two_corners') {
+        return [
+          [Y, Y, D],
+          [Y, Y, Y],
+          [Y, Y, D],
+        ];
+      }
+      return [
+        [D, Y, D],
+        [Y, Y, Y],
+        [Y, Y, D],
+      ];
+    }
+
+    if (step.id === 'permute_corners') {
+      if (cId === 'headlights_back') {
+        return [
+          [G, D, G],
+          [D, Y, D],
+          [R, D, B],
+        ];
+      }
+      return [
+        [G, D, O],
+        [D, Y, D],
+        [R, D, B],
+      ];
+    }
+
+    if (step.id === 'permute_edges_solved') {
+      if (cId === 'clockwise' || cId === 'counter_clockwise') {
+        return [
+          [G, G, G],
+          [O, Y, R],
+          [B, G, B],
+        ];
+      }
+      return [
+        [G, R, G],
+        [O, Y, B],
+        [B, O, B],
+      ];
+    }
+
+    return [
+      [D, Y, D],
+      [Y, Y, Y],
+      [D, Y, D],
+    ];
+  });
+
   prevStep(): void {
     if (this.currentStepIndex() > 0) {
       this.stopAutoPlay();
@@ -236,6 +631,7 @@ export class CubeTutorialComponent {
       this.currentMoveIndex.set(0);
       this.showMathNote.set(false);
       this.practiceFeedback.set(null);
+      this.setupPracticeCase();
     }
   }
 
@@ -247,6 +643,7 @@ export class CubeTutorialComponent {
       this.currentMoveIndex.set(0);
       this.showMathNote.set(false);
       this.practiceFeedback.set(null);
+      this.setupPracticeCase();
     }
   }
 
@@ -257,6 +654,7 @@ export class CubeTutorialComponent {
     this.currentMoveIndex.set(0);
     this.showMathNote.set(false);
     this.practiceFeedback.set(null);
+    this.setupPracticeCase();
   }
 
   selectCase(index: number): void {
@@ -264,6 +662,7 @@ export class CubeTutorialComponent {
     this.selectedCaseIndex.set(index);
     this.currentMoveIndex.set(0);
     this.practiceFeedback.set(null);
+    this.setupPracticeCase();
   }
 
   toggleMathNote(): void {

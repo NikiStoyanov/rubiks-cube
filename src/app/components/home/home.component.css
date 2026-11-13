@@ -110,9 +110,16 @@
   grid-template-columns: repeat(2, 1fr);
   gap: 0.75rem;
   margin-top: 1rem;
+  min-width: 0;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 640px) and (max-width: 1023px) {
+  .stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 1400px) {
   .stats-grid {
     grid-template-columns: repeat(4, 1fr);
   }
@@ -126,6 +133,8 @@
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .stat-val {
@@ -133,12 +142,18 @@
   font-size: 1rem;
   font-weight: 700;
   color: #38bdf8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .stat-label {
   font-size: 0.7rem;
   color: #94a3b8;
   font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* =========================================================
@@ -160,15 +175,22 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: 1rem;
+  min-width: 0;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 540px) and (max-width: 1023px) {
   .modules-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (min-width: 1200px) {
+@media (min-width: 1024px) {
+  .modules-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1600px) {
   .modules-grid {
     grid-template-columns: repeat(4, 1fr);
   }
@@ -185,6 +207,8 @@
   flex-direction: column;
   justify-content: space-between;
   gap: 1rem;
+  min-width: 0;
+  overflow: hidden;
   transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 

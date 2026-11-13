@@ -3,7 +3,8 @@
   <div class="controls-header">
     <div class="header-left">
       <!-- Layers Icon -->
-      <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
         <polygon points="12 2 2 7 12 12 22 7 12 2" />
         <polyline points="2 17 12 22 22 17" />
         <polyline points="2 12 12 17 22 12" />
@@ -12,43 +13,19 @@
     </div>
 
     <div class="header-actions">
-      <button
-        type="button"
-        (click)="toggle3DPaint()"
-        class="btn-paint-toggle"
-        [class.active]="is3DPaintMode()"
-        [title]="t().paint3DBtn"
-      >
-        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
-          <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
-          <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
-          <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
-          <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" />
-        </svg>
-        <span>{{ is3DPaintMode() ? t().customPaint3DOn : t().paint3DBtn }}</span>
-      </button>
-
-      <button
-        (click)="resetCamera.emit()"
-        [title]="t().resetCameraTitle"
-        class="btn-icon-sm"
-      >
+      <button (click)="resetCamera.emit()" [title]="t().resetCameraTitle" class="btn-icon-sm">
         <!-- Compass Icon -->
-        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10" />
           <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
         </svg>
       </button>
 
       <!-- Share Button -->
-      <button
-        type="button"
-        (click)="share.emit()"
-        [title]="t().shareBtn"
-        class="btn-icon-sm"
-      >
-        <svg class="w-4 h-4 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <button type="button" (click)="share.emit()" [title]="t().shareBtn" class="btn-icon-sm">
+        <svg class="w-4 h-4 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
           <circle cx="18" cy="5" r="3" />
           <circle cx="6" cy="12" r="3" />
           <circle cx="18" cy="19" r="3" />
@@ -57,47 +34,36 @@
         </svg>
       </button>
 
-      <button
-        (click)="solve.emit()"
-        [disabled]="isAnimating() || isSolved()"
-        [title]="t().solveBtn"
-        class="btn-solve"
-      >
-        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+      <button (click)="solve.emit()" [disabled]="isAnimating() || isSolved()" [title]="t().solveBtn" class="btn-solve">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path
+            d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
         </svg>
-        <span>{{ t().solveBtn }}</span>
+        <span class="btn-label">{{ t().solveBtn }}</span>
       </button>
 
-      <button
-        (click)="scramble.emit()"
-        [disabled]="isAnimating()"
-        [title]="t().scrambleBtn"
-        class="btn-scramble"
-      >
+      <button (click)="scramble.emit()" [disabled]="isAnimating()" [title]="t().scrambleBtn" class="btn-scramble">
         <!-- Shuffle Icon -->
-        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
           <polyline points="16 3 21 3 21 8" />
           <line x1="4" y1="20" x2="21" y2="3" />
           <polyline points="21 16 21 21 16 21" />
           <line x1="15" y1="15" x2="21" y2="21" />
           <line x1="4" y1="4" x2="9" y2="9" />
         </svg>
-        <span>{{ t().scrambleBtn }}</span>
+        <span class="btn-label">{{ t().scrambleBtn }}</span>
       </button>
 
-      <button
-        (click)="reset.emit()"
-        [disabled]="isAnimating()"
-        [title]="t().identityBtn"
-        class="btn-reset"
-      >
+      <button (click)="reset.emit()" [disabled]="isAnimating()" [title]="t().identityBtn" class="btn-reset">
         <!-- RotateCcw Icon -->
-        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
           <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
           <path d="M3 3v5h5" />
         </svg>
-        <span>{{ t().identityBtn }}</span>
+        <span class="btn-label">{{ t().identityBtn }}</span>
       </button>
     </div>
   </div>
@@ -110,35 +76,24 @@
     </div>
     <div class="generators-grid">
       @for (face of faces(); track face.name) {
-        <div class="face-col">
-          <!-- Clockwise -->
-          <button
-            (click)="onMoveClick(face.name)"
-            [disabled]="isAnimating()"
-            [title]="face.label + ' ' + (t().generatorsSub.split('/')[0].trim())"
-            [class]="'face-btn-main face-' + face.name"
-          >
-            {{ face.name }}
-          </button>
-          <!-- Counter-Clockwise (Inverse) -->
-          <button
-            (click)="onInverseMove(face.name)"
-            [disabled]="isAnimating()"
-            [title]="face.label + ' ' + (t().generatorsSub.split('/')[1]?.trim() || 'Inverse')"
-            class="face-btn-inv"
-          >
-            {{ face.name }}'
-          </button>
-          <!-- Double Turn 180° -->
-          <button
-            (click)="onDoubleMove(face.name)"
-            [disabled]="isAnimating()"
-            [title]="face.label + ' 180°'"
-            class="face-btn-double"
-          >
-            {{ face.name }}²
-          </button>
-        </div>
+      <div class="face-col">
+        <!-- Clockwise -->
+        <button (click)="onMoveClick(face.name)" [disabled]="isAnimating()"
+          [title]="face.label + ' ' + (t().generatorsSub.split('/')[0].trim())"
+          [class]="'face-btn-main face-' + face.name">
+          {{ face.name }}
+        </button>
+        <!-- Counter-Clockwise (Inverse) -->
+        <button (click)="onInverseMove(face.name)" [disabled]="isAnimating()"
+          [title]="face.label + ' ' + (t().generatorsSub.split('/')[1]?.trim() || 'Inverse')" class="face-btn-inv">
+          {{ face.name }}'
+        </button>
+        <!-- Double Turn 180° -->
+        <button (click)="onDoubleMove(face.name)" [disabled]="isAnimating()" [title]="face.label + ' 180°'"
+          class="face-btn-double">
+          {{ face.name }}²
+        </button>
+      </div>
       }
     </div>
   </div>
@@ -148,7 +103,8 @@
     <div class="section-subhead" style="margin-bottom: 0.35rem;">
       <span style="display: flex; align-items: center; gap: 0.25rem;">
         <!-- ArrowRightLeft Icon -->
-        <svg style="width: 0.75rem; height: 0.75rem; color: var(--color-cyan);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg style="width: 0.75rem; height: 0.75rem; color: var(--color-cyan);" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2">
           <path d="m16 3 4 4-4 4" />
           <path d="M20 7H4" />
           <path d="m8 21-4-4 4-4" />
@@ -156,33 +112,20 @@
         </svg>
         {{ t().sliceHeading }}
       </span>
-      <span class="subhead-tag">{{ t().fixedCornersTag }}</span>
     </div>
     <div class="slice-grid">
       @for (m of sliceMoves; track m) {
-        <div class="slice-group">
-          <button
-            (click)="onMoveClick(m)"
-            [disabled]="isAnimating()"
-            class="slice-btn-main"
-          >
-            {{ m }}
-          </button>
-          <button
-            (click)="onInverseMove(m)"
-            [disabled]="isAnimating()"
-            class="slice-btn-aux"
-          >
-            {{ m }}'
-          </button>
-          <button
-            (click)="onDoubleMove(m)"
-            [disabled]="isAnimating()"
-            class="slice-btn-aux"
-          >
-            {{ m }}²
-          </button>
-        </div>
+      <div class="slice-group">
+        <button (click)="onMoveClick(m)" [disabled]="isAnimating()" class="slice-btn-main">
+          {{ m }}
+        </button>
+        <button (click)="onInverseMove(m)" [disabled]="isAnimating()" class="slice-btn-aux">
+          {{ m }}'
+        </button>
+        <button (click)="onDoubleMove(m)" [disabled]="isAnimating()" class="slice-btn-aux">
+          {{ m }}²
+        </button>
+      </div>
       }
     </div>
   </div>
@@ -190,28 +133,20 @@
   <!-- Visual Move History Tape & Undo/Redo Bar -->
   <div class="history-tape-bar">
     <div class="history-undo-btns">
-      <button
-        type="button"
-        (click)="onUndo()"
-        [disabled]="isAnimating() || moveHistory().length === 0"
-        [title]="t().shortcutsUndo + ' (Ctrl+Z)'"
-        class="btn-history-ctrl"
-      >
-        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <button type="button" (click)="onUndo()" [disabled]="isAnimating() || moveHistory().length === 0"
+        [title]="t().shortcutsUndo + ' (Ctrl+Z)'" class="btn-history-ctrl">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
           <path d="M9 14 4 9l5-5" />
           <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11" />
         </svg>
         <span>{{ language() === 'bg' ? 'Назад' : 'Undo' }}</span>
       </button>
 
-      <button
-        type="button"
-        (click)="onRedo()"
-        [disabled]="isAnimating() || redoHistory().length === 0"
-        [title]="language() === 'bg' ? 'Повтори хода' : 'Redo move'"
-        class="btn-history-ctrl"
-      >
-        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <button type="button" (click)="onRedo()" [disabled]="isAnimating() || redoHistory().length === 0"
+        [title]="language() === 'bg' ? 'Повтори хода' : 'Redo move'" class="btn-history-ctrl">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
           <path d="m15 14 5-5-5-5" />
           <path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5A5.5 5.5 0 0 0 9.5 20H13" />
         </svg>
@@ -221,99 +156,25 @@
 
     <div class="history-pills-scroll">
       @if (moveHistory().length === 0) {
-        <span class="history-empty-hint">
-          {{ language() === 'bg' ? 'История на ходовете: e (Начално)' : 'Move tape: e (Identity)' }}
-        </span>
+      <span class="history-empty-hint">
+        {{ language() === 'bg' ? 'История на ходовете: e (Начално)' : 'Move tape: e (Identity)' }}
+      </span>
       } @else {
-        @if (moveHistory().length > 14) {
-          <span class="history-more-tag">+{{ moveHistory().length - 14 }}</span>
-        }
-        @for (m of recentMoves(); track $index; let isLast = $last) {
-          <span class="history-move-chip" [class.latest]="isLast">
-            {{ m }}
-          </span>
-        }
+      @if (moveHistory().length > 14) {
+      <span class="history-more-tag">+{{ moveHistory().length - 14 }}</span>
+      }
+      @for (m of recentMoves(); track $index; let isLast = $last) {
+      <span class="history-move-chip" [class.latest]="isLast">
+        {{ m }}
+      </span>
+      }
       }
     </div>
 
     @if (moveHistory().length > 0) {
-      <span class="history-count-badge" [title]="language() === 'bg' ? 'Общо ходове' : 'Total moves'">
-        {{ moveHistory().length }}
-      </span>
+    <span class="history-count-badge" [title]="language() === 'bg' ? 'Общо ходове' : 'Total moves'">
+      {{ moveHistory().length }}
+    </span>
     }
-  </div>
-
-  <!-- Sliders: Explode & Speed & 3D Vectors -->
-  <div class="sliders-section">
-    <!-- Exploded View Slider -->
-    <div class="slider-row">
-      <label class="slider-label">
-        <svg style="width: 0.875rem; height: 0.875rem; color: #38bdf8;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polyline points="15 3 21 3 21 9" />
-          <polyline points="9 21 3 21 3 15" />
-          <line x1="21" y1="3" x2="14" y2="10" />
-          <line x1="3" y1="21" x2="10" y2="14" />
-        </svg>
-        <span>{{ t().explodedView }}</span>
-      </label>
-      <div class="slider-controls">
-        <input
-          type="range"
-          min="0"
-          max="1"
-          step="0.02"
-          [value]="explodeFactor()"
-          (input)="onExplodeInput($event)"
-          class="range-input"
-        />
-        <span class="slider-val">
-          {{ Math.round(explodeFactor() * 100) }}%
-        </span>
-      </div>
-    </div>
-
-    <!-- Speed Slider -->
-    <div class="slider-row">
-      <label class="slider-label">
-        <svg style="width: 0.875rem; height: 0.875rem; color: var(--color-amber);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="m12 14 4-4" />
-          <path d="M3.34 19a10 10 0 1 1 17.32 0" />
-        </svg>
-        <span>{{ t().animSpeed }}</span>
-      </label>
-      <div class="slider-controls">
-        <input
-          type="range"
-          min="0.05"
-          max="0.45"
-          step="0.02"
-          [value]="animSpeed()"
-          (input)="onSpeedInput($event)"
-          class="range-input range-input-speed"
-        />
-        <span class="slider-val">
-          {{ animSpeed() > 0.3 ? t().speedFast : animSpeed() < 0.12 ? t().speedSlow : t().speedMed }}
-        </span>
-      </div>
-    </div>
-
-    <!-- Toggle 3D Cycle Arrows -->
-    <div class="toggle-row">
-      <span class="slider-label">
-        <svg style="width: 0.875rem; height: 0.875rem; color: var(--color-indigo);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
-          <circle cx="12" cy="12" r="3" />
-        </svg>
-        <span>{{ t().cycleVectorsToggle }}</span>
-      </span>
-      <button
-        type="button"
-        (click)="toggleCycleArrows.emit(!showCycleArrows())"
-        class="toggle-switch-btn"
-        [class.on]="showCycleArrows()"
-      >
-        <span class="toggle-knob" [class.on]="showCycleArrows()"></span>
-      </button>
-    </div>
   </div>
 </div>

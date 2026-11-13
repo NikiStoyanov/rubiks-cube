@@ -78,6 +78,8 @@ export class RubiksCube3D {
     bodyMesh: THREE.Mesh;
   }) => void;
 
+  private resizeObserver: ResizeObserver | null = null;
+
   constructor(container: HTMLElement) {
     this.container = container;
     const width = container.clientWidth || 600;
@@ -118,6 +120,10 @@ export class RubiksCube3D {
 
     // Event listeners
     window.addEventListener('resize', this.handleResize);
+    if (typeof ResizeObserver !== 'undefined' && this.container) {
+      this.resizeObserver = new ResizeObserver(() => this.handleResize());
+      this.resizeObserver.observe(this.container);
+    }
     this.renderer.domElement.addEventListener('pointerdown', this.handlePointerDown);
     window.addEventListener('pointerup', this.handlePointerUp);
 
@@ -162,8 +168,8 @@ export class RubiksCube3D {
           const materials: THREE.MeshStandardMaterial[] = [
             this.createFaceMaterial(x === 1 ? FACE_COLORS.R : innerColor, x === 1), // +X Right (Red)
             this.createFaceMaterial(x === -1 ? FACE_COLORS.L : innerColor, x === -1), // -X Left (Orange)
-            this.createFaceMaterial(y === 1 ? FACE_COLORS.U : innerColor, y === 1), // +Y Up (White)
-            this.createFaceMaterial(y === -1 ? FACE_COLORS.D : innerColor, y === -1), // -Y Down (Yellow)
+            this.createFaceMaterial(y === 1 ? FACE_COLORS.U : innerColor, y === 1), // +Y Up (Yellow)
+            this.createFaceMaterial(y === -1 ? FACE_COLORS.D : innerColor, y === -1), // -Y Down (White)
             this.createFaceMaterial(z === 1 ? FACE_COLORS.F : innerColor, z === 1), // +Z Front (Green)
             this.createFaceMaterial(z === -1 ? FACE_COLORS.B : innerColor, z === -1), // -Z Back (Blue)
           ];
@@ -1147,9 +1153,17 @@ export class RubiksCube3D {
     this.renderer.render(this.scene, this.camera);
   }
 
+  public resize(): void {
+    this.handleResize();
+  }
+
   public destroy(): void {
     if (this.animationFrameId !== null) {
       cancelAnimationFrame(this.animationFrameId);
+    }
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
+      this.resizeObserver = null;
     }
     window.removeEventListener('resize', this.handleResize);
     this.renderer.domElement.removeEventListener('pointerdown', this.handlePointerDown);

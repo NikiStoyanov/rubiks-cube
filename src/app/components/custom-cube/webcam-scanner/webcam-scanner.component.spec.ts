@@ -26,31 +26,31 @@ describe('WebcamScannerComponent', () => {
   });
 
   it('accurately classifies standard Rubik RGB colors into U, D, F, B, L, R', () => {
-    expect(component.classifyRubikColor(245, 245, 245)).toBe('U'); // White
-    expect(component.classifyRubikColor(235, 200, 15)).toBe('D');  // Yellow
+    expect(component.classifyRubikColor(245, 245, 245)).toBe('D'); // White (D)
+    expect(component.classifyRubikColor(235, 200, 15)).toBe('U');  // Yellow (U)
     expect(component.classifyRubikColor(30, 195, 85)).toBe('F');   // Green
     expect(component.classifyRubikColor(45, 115, 235)).toBe('B');  // Blue
     expect(component.classifyRubikColor(248, 120, 20)).toBe('L');  // Orange
     expect(component.classifyRubikColor(215, 30, 30)).toBe('R');   // Red
   });
 
-  it('distinguishes White (U) and Yellow (D) under warm lighting, glare, and neon shades', () => {
+  it('distinguishes Yellow (U) and White (D) under warm lighting, glare, and neon shades', () => {
     // Overexposed / glare-washed webcam yellow stickers
-    expect(component.classifyRubikColor(250, 246, 175)).toBe('D');
-    expect(component.classifyRubikColor(250, 248, 200)).toBe('D');
+    expect(component.classifyRubikColor(250, 246, 175)).toBe('U');
+    expect(component.classifyRubikColor(250, 248, 200)).toBe('U');
     // Neon / chartreuse speedcube yellow
-    expect(component.classifyRubikColor(210, 238, 45)).toBe('D');
+    expect(component.classifyRubikColor(210, 238, 45)).toBe('U');
     // Warm-lit golden yellow
-    expect(component.classifyRubikColor(234, 179, 8)).toBe('D');
+    expect(component.classifyRubikColor(234, 179, 8)).toBe('U');
 
     // Warm indoor bulb (2700K) on white sticker
-    expect(component.classifyRubikColor(235, 212, 175)).toBe('U');
+    expect(component.classifyRubikColor(235, 212, 175)).toBe('D');
     // Shaded / greyish white sticker
-    expect(component.classifyRubikColor(150, 155, 162)).toBe('U');
+    expect(component.classifyRubikColor(150, 155, 162)).toBe('D');
   });
 
   it('captures current face into CubeStateService.customNet and advances to next step', () => {
-    // Tweak cell (0,0) on F face to 'U' (White)
+    // Tweak cell (0,0) on F face to 'U' (Yellow)
     component.selectCorrectionBrush('U');
     component.cyclePreviewCell(0, 0);
     expect(component.detectedGrid()[0][0]).toBe('U');

@@ -27,8 +27,8 @@ const SCAN_ORDER: ScanFaceStep[] = [
   { face: 'R', nameEn: 'Right (Red)', nameBg: 'Дясно (Червено)', colorHex: FACE_COLORS.R },
   { face: 'B', nameEn: 'Back (Blue)', nameBg: 'Отзад (Синьо)', colorHex: FACE_COLORS.B },
   { face: 'L', nameEn: 'Left (Orange)', nameBg: 'Ляво (Оранжево)', colorHex: FACE_COLORS.L },
-  { face: 'U', nameEn: 'Up (White)', nameBg: 'Горе (Бяло)', colorHex: FACE_COLORS.U },
-  { face: 'D', nameEn: 'Down (Yellow)', nameBg: 'Долу (Жълто)', colorHex: FACE_COLORS.D },
+  { face: 'U', nameEn: 'Up (Yellow)', nameBg: 'Горе (Жълто)', colorHex: FACE_COLORS.U },
+  { face: 'D', nameEn: 'Down (White)', nameBg: 'Долу (Бяло)', colorHex: FACE_COLORS.D },
 ];
 
 const CYCLE_FACES: FaceName[] = ['U', 'D', 'F', 'B', 'L', 'R'];
@@ -476,7 +476,7 @@ export class WebcamScannerComponent {
 
   /**
    * Classifies an RGB pixel patch into one of the 6 standard Rubik's cube faces:
-   * U (White), D (Yellow), F (Green), B (Blue), L (Orange), R (Red)
+   * U (Yellow), D (White), F (Green), B (Blue), L (Orange), R (Red)
    * using CIE L*a*b* opponent chroma, yellow blue-drop analysis, and HSV thresholds.
    */
   classifyRubikColor(r: number, g: number, b: number): FaceName {
@@ -529,7 +529,7 @@ export class WebcamScannerComponent {
       if (h < 0) h += 360;
     }
 
-    // 2. Dedicated White (U) vs Yellow (D) separation
+    // 2. Dedicated Yellow (U) vs White (D) separation
     // Yellow stickers reflect both R and G strongly (G ~ R) while sharply absorbing B (G - B >> |R - G|).
     // Warm-lit White stickers have a smooth Planckian slope R > G > B where (G - B) is comparable to (R - G).
     const rgDiff = r - g;
@@ -549,7 +549,7 @@ export class WebcamScannerComponent {
       gbDiff >= 2.1 * Math.max(4, rgDiff);
 
     if (hasSharpYellowBlueDrop || (isYellowHueBand && s >= 0.28 && lab.b >= 24)) {
-      return 'D'; // Yellow
+      return 'U'; // Yellow (Up face U)
     }
 
     // Neutral White, Shaded White, or Warm-Indoor White
@@ -563,7 +563,7 @@ export class WebcamScannerComponent {
       lab.b < 26;
 
     if ((s < 0.16 && v > 0.28) || (chroma < 16 && lab.l > 55) || isWarmIndoorWhite) {
-      return 'U'; // White
+      return 'D'; // White (Down face D)
     }
 
     // 3. Chromatic HSV + Opponent classification for R, L, D, F, B
@@ -576,12 +576,12 @@ export class WebcamScannerComponent {
           return 'R';
         }
         if (s < 0.34 && gn / Math.max(0.01, rn) >= 0.8) {
-          return 'U'; // Warm white fallback
+          return 'D'; // Warm white fallback
         }
         return 'L'; // Orange
       }
       if (h >= 42 && h < 86) {
-        return 'D'; // Yellow (including bright lemon/chartreuse speedcube yellow)
+        return 'U'; // Yellow (including bright lemon/chartreuse speedcube yellow)
       }
       if (h >= 86 && h < 172) {
         return 'F'; // Green
@@ -593,8 +593,8 @@ export class WebcamScannerComponent {
 
     // 4. Perceptual CIE L*a*b* fallback across canonical Rubik palette
     const canonicalRgb: { face: FaceName; r: number; g: number; b: number }[] = [
-      { face: 'U', r: 242, g: 242, b: 242 },
-      { face: 'D', r: 235, g: 205, b: 20 },
+      { face: 'U', r: 235, g: 205, b: 20 },
+      { face: 'D', r: 242, g: 242, b: 242 },
       { face: 'F', r: 34, g: 197, b: 94 },
       { face: 'B', r: 59, g: 130, b: 246 },
       { face: 'L', r: 249, g: 115, b: 22 },

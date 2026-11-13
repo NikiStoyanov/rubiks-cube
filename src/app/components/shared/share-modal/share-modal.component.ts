@@ -19,7 +19,7 @@ import { RubikGroupAlgebra } from '../../../math/group-algebra';
   template: `
     @if (isOpen()) {
       <div
-        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fade-in"
+        class="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fade-in"
         (click)="close.emit()"
       >
         <div

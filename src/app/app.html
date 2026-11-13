@@ -15,21 +15,10 @@
     <!-- Central Navigation Tabs (Ordered by intuitive user workflow: Home -> Learn -> My Cube -> Practice Timer -> Math Lab -> Validator) -->
     <nav class="desktop-nav">
       <!-- Page 0: Home -->
-      <a
-        routerLink="/"
-        routerLinkActive="active nav-tab-home"
-        [routerLinkActiveOptions]="{ exact: true }"
-        class="nav-tab"
-      >
-        <svg
-          class="w-3.5 h-3.5"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
+      <a routerLink="/" routerLinkActive="active nav-tab-home" [routerLinkActiveOptions]="{ exact: true }"
+        class="nav-tab">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
           <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
           <polyline points="9 22 9 12 15 12 15 22" />
         </svg>
@@ -38,15 +27,8 @@
 
       <!-- Page 1: Cube Tutorial (Academy) -->
       <a routerLink="/tutorial" routerLinkActive="active nav-tab-tutorial" class="nav-tab">
-        <svg
-          class="w-3.5 h-3.5"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
           <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
           <path d="M6 6h10" />
           <path d="M6 10h10" />
@@ -56,57 +38,22 @@
 
       <!-- Page 2: Physical Cube Input (My Cube) -->
       <a routerLink="/custom" routerLinkActive="active nav-tab-custom" class="nav-tab">
-        <svg
-          class="w-3.5 h-3.5"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
           <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
           <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
           <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
           <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
           <path
-            d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"
-          />
+            d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" />
         </svg>
         <span>{{ t().pageCustomCube }}</span>
       </a>
 
-      <!-- Page 3: Speedcubing Timer -->
-      <a routerLink="/timer" routerLinkActive="active nav-tab-timer" class="nav-tab">
-        <svg
-          class="w-3.5 h-3.5"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <circle cx="12" cy="13" r="8" />
-          <path d="M12 9v4l2 2" />
-          <path d="M5 3 2 6" />
-          <path d="m22 6-3-3" />
-          <path d="M10 2h4" />
-        </svg>
-        <span>{{ t().pageTimer }}</span>
-      </a>
-
       <!-- Page 4: Math Concepts -->
       <a routerLink="/math" routerLinkActive="active nav-tab-math" class="nav-tab">
-        <svg
-          class="w-3.5 h-3.5"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
           <path d="M4 4h16v3h-2l-6 5 6 5h2v3H4v-3h2l5-5-5-5H4Z" />
         </svg>
         <span>{{ t().pageMath }}</span>
@@ -114,15 +61,8 @@
 
       <!-- Page 5: Orbit Validator -->
       <a routerLink="/validator" routerLinkActive="active nav-tab-validator" class="nav-tab">
-        <svg
-          class="w-3.5 h-3.5"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
           <path d="m9 12 2 2 4-4" />
         </svg>
@@ -132,192 +72,56 @@
 
     <div class="header-actions">
       <!-- Quick Solve Button in Top Header -->
-      <button
-        type="button"
-        (click)="openSolveModal()"
-        [title]="t().solveBtn"
-        class="btn-solve-header"
-      >
-        <svg
-          class="w-3.5 h-3.5 text-amber-300"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
+      <button type="button" (click)="openSolveModal()" [title]="t().solveBtn" class="btn-solve-header">
+        <svg class="w-3.5 h-3.5 text-amber-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
           <path
-            d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"
-          />
+            d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
           <path d="M5 3v4" />
           <path d="M19 17v4" />
         </svg>
-        <span>{{ t().solveBtn }}</span>
+        <span class="btn-text">{{ t().solveBtn }}</span>
       </button>
 
       <!-- Share State Button in Top Header -->
-      <button
-        type="button"
-        (click)="openShareModal()"
-        [title]="t().shareBtn"
-        class="btn-share-header"
-      >
-        <svg
-          class="w-3.5 h-3.5 text-cyan-400"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
+      <button type="button" (click)="openShareModal()" [title]="t().shareBtn" class="btn-share-header">
+        <svg class="w-3.5 h-3.5 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
           <circle cx="18" cy="5" r="3" />
           <circle cx="6" cy="12" r="3" />
           <circle cx="18" cy="19" r="3" />
           <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
           <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
         </svg>
-        <span>{{ t().shareBtn }}</span>
-      </button>
-
-      <!-- Web Audio Sound FX Toggle -->
-      <button
-        type="button"
-        (click)="toggleSound()"
-        [title]="soundService.isMuted() ? t().soundToggleUnmute : t().soundToggleMute"
-        class="btn-secondary"
-      >
-        @if (!soundService.isMuted()) {
-          <svg
-            class="w-3.5 h-3.5 text-emerald-400"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-            <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
-            <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
-          </svg>
-        } @else {
-          <svg
-            class="w-3.5 h-3.5 text-slate-400"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-            <line x1="22" x2="16" y1="9" y2="15" />
-            <line x1="16" x2="22" y1="9" y2="15" />
-          </svg>
-        }
-        <span>{{ soundService.isMuted() ? t().soundOff : t().soundOn }}</span>
+        <span class="btn-text">{{ t().shareBtn }}</span>
       </button>
 
       <!-- Keyboard Shortcuts Modal Trigger -->
-      <button
-        type="button"
-        (click)="openShortcutsModal()"
-        [title]="t().shortcutsHelpBtn"
-        class="btn-secondary"
-      >
-        <svg
-          class="w-3.5 h-3.5 text-cyan-400"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
+      <button type="button" (click)="openShortcutsModal()" [title]="t().shortcutsHelpBtn" class="btn-secondary">
+        <svg class="w-3.5 h-3.5 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
           <rect width="18" height="12" x="3" y="6" rx="2" />
           <path d="M7 10h.01M11 10h.01M15 10h.01M7 14h10" />
         </svg>
-        <span>{{ t().shortcutsHelpBtn }}</span>
+        <span class="btn-text">{{ t().shortcutsHelpBtn }}</span>
       </button>
 
-      <!-- Interactive Quick Tour Button -->
-      <button type="button" (click)="openTour()" [title]="t().tourBtn" class="btn-tour">
-        <svg
-          class="w-3.5 h-3.5 text-amber-300"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
+      <!-- Separate Settings Menu Button -->
+      <button type="button" (click)="openSettingsModal()" [title]="t().settingsBtn" class="btn-settings-header">
+        <svg class="w-3.5 h-3.5 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
           <path
-            d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"
-          />
+            d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+          <circle cx="12" cy="12" r="3" />
         </svg>
-        <span>{{ t().tourBtn }}</span>
-      </button>
-
-      <!-- Theory Guide Button -->
-      <button type="button" (click)="openTheory()" [title]="t().theoryGuideBtn" class="btn-secondary">
-        <svg
-          class="w-3.5 h-3.5 text-amber-400"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <path
-            d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"
-          />
-          <path d="M9 18h6" />
-          <path d="M10 22h4" />
-        </svg>
-        <span>{{ t().theoryGuideBtn }}</span>
-      </button>
-
-      <!-- Bilingual Language Switcher Toggle -->
-      <button
-        type="button"
-        (click)="toggleLanguage()"
-        [title]="language() === 'en' ? 'Превключи на Български' : 'Switch to English'"
-        class="btn-lang"
-      >
-        <svg
-          class="w-3.5 h-3.5 text-cyan-400"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <path d="m5 8 6 6" />
-          <path d="m4 14 6-6 2-3" />
-          <path d="M2 5h12" />
-          <path d="M7 2h1" />
-          <path d="m22 22-5-10-5 10" />
-          <path d="M14 18h6" />
-        </svg>
-        <span style="font-family: var(--font-mono); font-weight: 700;">{{
-          language() === 'en' ? 'BG' : 'EN'
-        }}</span>
+        <span class="btn-text">{{ t().settingsBtn }}</span>
       </button>
     </div>
   </header>
 
   <!-- Mobile Secondary Tab Bar (Visible on small screens) -->
   <div class="mobile-tab-bar">
-    <a
-      routerLink="/"
-      routerLinkActive="active"
-      [routerLinkActiveOptions]="{ exact: true }"
-      class="mobile-tab-link"
-    >
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="mobile-tab-link">
       <span>{{ t().pageHome }}</span>
     </a>
     <a routerLink="/tutorial" routerLinkActive="active" class="mobile-tab-link">
@@ -325,9 +129,6 @@
     </a>
     <a routerLink="/custom" routerLinkActive="active" class="mobile-tab-link">
       <span>{{ t().pageCustomCube }}</span>
-    </a>
-    <a routerLink="/timer" routerLinkActive="active" class="mobile-tab-link">
-      <span>{{ t().pageTimer }}</span>
     </a>
     <a routerLink="/math" routerLinkActive="active" class="mobile-tab-link">
       <span>{{ t().pageMath }}</span>
@@ -339,35 +140,25 @@
 
   <!-- Main Workspace Layout (Rubik's Cube 3D Application) -->
   <main class="app-main">
-    <!-- Left Column: 3D Cube Canvas & 3D Manipulator (always visible!) -->
-    <section class="canvas-column" [class.tutorial-spotlight]="activePage() === 'tutorial'">
+    <!-- Left Column: 3D Cube Canvas & 3D Manipulator -->
+    <section class="canvas-column" [class.home-canvas-column]="activePage() === 'home'"
+      [class.tutorial-spotlight]="activePage() === 'tutorial'">
       <!-- 3D WebGL Canvas / 2D Net Container -->
-      <div class="viewport-card">
-        <!-- Top Left: View Mode Toggle -->
-        <div class="viewport-top-controls">
+      <div class="viewport-card" [class.home-viewport]="activePage() === 'home'">
+        <!-- Top Control Bar (Unified single row, never collides with instruction text) -->
+        <div class="viewport-top-bar">
           <div class="view-mode-pill">
-            <button
-              type="button"
-              (click)="setViewMode('3d')"
-              class="view-btn"
-              [class.active-3d]="viewMode() === '3d'"
-            >
+            <button type="button" (click)="setViewMode('3d')" class="view-btn" [class.active-3d]="viewMode() === '3d'">
               <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path
-                  d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"
-                />
+                  d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
                 <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
                 <line x1="12" y1="22.08" x2="12" y2="12" />
               </svg>
               <span>3D</span>
             </button>
 
-            <button
-              type="button"
-              (click)="setViewMode('2d')"
-              class="view-btn"
-              [class.active-2d]="viewMode() === '2d'"
-            >
+            <button type="button" (click)="setViewMode('2d')" class="view-btn" [class.active-2d]="viewMode() === '2d'">
               <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect width="18" height="18" x="3" y="3" rx="2" />
                 <path d="M3 9h18" />
@@ -379,171 +170,138 @@
             </button>
           </div>
 
-          <div class="canvas-instruction-tag">
-            {{ viewMode() === '3d' ? t().canvasInstructions : t().net2DTitle }}
-          </div>
-        </div>
+          <div class="viewport-top-actions">
+            @if (activePage() === 'custom') {
+            <button type="button" (click)="toggle3DPaintMode()" [title]="t().paint3DBtn" class="icon-btn"
+              [class.active-paint-icon]="is3DPaintMode()">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
+                <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
+                <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
+                <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
+                <path
+                  d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" />
+              </svg>
+            </button>
+            }
 
-        <div class="viewport-top-right">
-          <button
-            type="button"
-            (click)="toggle3DPaintMode()"
-            [title]="t().paint3DBtn"
-            class="icon-btn"
-            [class.active-paint-icon]="is3DPaintMode()"
-          >
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
-              <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
-              <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
-              <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
-              <path
-                d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"
-              />
-            </svg>
-          </button>
-
-          @if (viewMode() === '3d') {
+            @if (viewMode() === '3d') {
             <button type="button" (click)="handleResetCamera()" [title]="t().resetCameraTitle" class="icon-btn">
-              <svg
-                class="w-4 h-4"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="10" />
                 <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
               </svg>
             </button>
-          }
+            }
+          </div>
         </div>
 
-        <!-- 3D Paint Floating Mini-Toolbar when active -->
-        @if (is3DPaintMode()) {
-          <div class="paint-3d-toolbar animate-fade-in">
-            <div class="paint-3d-badge">
-              <span class="paint-swatch-dot" [style.background-color]="getFaceColor(activeBrushColor())"></span>
-              <span class="paint-brush-label">{{ t().paint3DBrushPrefix }} {{ activeBrushColor() }}</span>
-            </div>
+        <!-- Instruction Tag (Cleanly positioned at bottom-left, never colliding with top controls) -->
+        @if (activePage() !== 'math') {
+        <div class="canvas-instruction-tag">
+          {{ viewMode() === '3d' ? t().canvasInstructions : t().net2DTitle }}
+        </div>
+        }
 
-            <div class="paint-pills-row">
-              @for (fn of faceNames; track fn) {
-                <button
-                  type="button"
-                  (click)="setBrushColor(fn)"
-                  class="pill-color-btn"
-                  [class.active]="activeBrushColor() === fn"
-                  [style.background-color]="getFaceColor(fn)"
-                  [title]="fn"
-                ></button>
-              }
-            </div>
-
-            <span class="paint-3d-instruction">
-              {{ t().paint3DInstruction }}
-            </span>
-
-            <button
-              type="button"
-              (click)="exit3DPaintMode()"
-              class="btn-close-paint"
-              [title]="t().closePaintBtn"
-            >
-              &times;
-            </button>
+        <!-- 3D Paint Floating Mini-Toolbar when active (only in My Cube) -->
+        @if (activePage() === 'custom' && is3DPaintMode()) {
+        <div class="paint-3d-toolbar animate-fade-in">
+          <div class="paint-3d-badge">
+            <span class="paint-swatch-dot" [style.background-color]="getFaceColor(activeBrushColor())"></span>
+            <span class="paint-brush-label">{{ t().paint3DBrushPrefix }} {{ activeBrushColor() }}</span>
           </div>
+
+          <div class="paint-pills-row">
+            @for (fn of faceNames; track fn) {
+            <button type="button" (click)="setBrushColor(fn)" class="pill-color-btn"
+              [class.active]="activeBrushColor() === fn" [style.background-color]="getFaceColor(fn)"
+              [title]="fn"></button>
+            }
+          </div>
+
+          <span class="paint-3d-instruction">
+            {{ t().paint3DInstruction }}
+          </span>
+
+          <button type="button" (click)="exit3DPaintMode()" class="btn-close-paint" [title]="t().closePaintBtn">
+            &times;
+          </button>
+        </div>
         }
 
         <!-- 3D Canvas Mount -->
-        <div
-          #cubeContainer
-          class="canvas-mount"
-          [class.active]="viewMode() === '3d'"
-          [class.inactive]="viewMode() !== '3d'"
-          [class.paint-mode]="is3DPaintMode()"
-        ></div>
+        <div #cubeContainer class="canvas-mount" [class.active]="viewMode() === '3d'"
+          [class.inactive]="viewMode() !== '3d'" [class.paint-mode]="activePage() === 'custom' && is3DPaintMode()"></div>
 
         <!-- 2D Net View Mount -->
         <div class="net-mount" [class.active]="viewMode() === '2d'" [class.inactive]="viewMode() !== '2d'">
-          <app-cube-2d
-            [net]="net2DFaces()"
-            [selectedPieceType]="selectedPieceType()"
-            [selectedPieceId]="selectedPieceId()"
-            [orbitPieces]="orbitPieces()"
-            [isAnimating]="isAnimating()"
-            [active]="viewMode() === '2d'"
-            [showHighlights]="activePage() === 'math'"
-            (pieceClick)="handlePieceClick($event.type, $event.id)"
-            (faceMove)="handleApplyMove($event)"
-          />
+          <app-cube-2d [net]="net2DFaces()" [selectedPieceType]="selectedPieceType()"
+            [selectedPieceId]="selectedPieceId()" [orbitPieces]="orbitPieces()" [isAnimating]="isAnimating()"
+            [active]="viewMode() === '2d'" [showHighlights]="activePage() === 'math'"
+            (pieceClick)="handlePieceClick($event.type, $event.id)" (faceMove)="handleApplyMove($event)" />
         </div>
 
         <!-- Bottom Status Overlay (Only visible in Math Concepts page) -->
         @if (activePage() === 'math') {
-          <div class="status-overlay">
-            <div class="status-badge">
-              {{ t().activeSelection }} {{ selectedPieceType().toUpperCase() }} #{{ selectedPieceId() }} ({{
-                activePieceName()
-              }})
-            </div>
-            <div class="status-hint">
-              {{ viewMode() === '3d' ? t().clickInstruction : t().clickNetInstruction }}
-            </div>
+        <div class="status-overlay">
+          <div class="status-badge">
+            {{ t().activeSelection }} {{ selectedPieceType().toUpperCase() }} #{{ selectedPieceId() }} ({{
+            activePieceName()
+            }})
           </div>
+          <div class="status-hint">
+            {{ viewMode() === '3d' ? t().clickInstruction : t().clickNetInstruction }}
+          </div>
+        </div>
         }
       </div>
 
-      <!-- 3D Controls IMMEDIATELY below the cube (Face turns L, R, U, D, F, B, slice turns, solve, scramble) -->
-      <app-controls-3d
-        [explodeFactor]="explodeFactor()"
-        [animSpeed]="animSpeed()"
-        [showCycleArrows]="showCycleArrows()"
-        [isAnimating]="isAnimating()"
-        (move)="handleApplyMove($event)"
-        (reset)="handleReset()"
-        (scramble)="handleScramble()"
-        (solve)="openSolveModal()"
-        (share)="openShareModal()"
-        (explodeChange)="handleExplodeChange($event)"
-        (speedChange)="handleSpeedChange($event)"
-        (toggleCycleArrows)="setShowCycleArrows($event)"
-        (resetCamera)="handleResetCamera()"
-      />
+      <!-- 3D Controls on non-home pages (stay directly below the cube) -->
+      @if (activePage() !== 'home') {
+      <app-controls-3d [explodeFactor]="explodeFactor()" [animSpeed]="animSpeed()" [showCycleArrows]="showCycleArrows()"
+        [isAnimating]="isAnimating()" (move)="handleApplyMove($event)" (reset)="handleReset()"
+        (scramble)="handleScramble()" (solve)="openSolveModal()" (share)="openShareModal()"
+        (openSettings)="openSettingsModal()" (explodeChange)="handleExplodeChange($event)"
+        (speedChange)="handleSpeedChange($event)" (toggleCycleArrows)="setShowCycleArrows($event)"
+        (resetCamera)="handleResetCamera()" />
 
       <!-- Dynamic Live Math Overlay (Compact Algebra HUD below controls) -->
       <app-algebra-hud />
+      }
     </section>
 
-    <!-- Right Column: Dynamic Routed Content -->
-    <section class="content-column">
+    <!-- Right Column: Controls on Home, or Routed Page Content on Other Pages -->
+    <section class="content-column" [class.home-content-column]="activePage() === 'home'">
+      @if (activePage() === 'home') {
+      <app-controls-3d [explodeFactor]="explodeFactor()" [animSpeed]="animSpeed()" [showCycleArrows]="showCycleArrows()"
+        [isAnimating]="isAnimating()" (move)="handleApplyMove($event)" (reset)="handleReset()"
+        (scramble)="handleScramble()" (solve)="openSolveModal()" (share)="openShareModal()"
+        (openSettings)="openSettingsModal()" (explodeChange)="handleExplodeChange($event)"
+        (speedChange)="handleSpeedChange($event)" (toggleCycleArrows)="setShowCycleArrows($event)"
+        (resetCamera)="handleResetCamera()" />
+      } @else {
       <router-outlet />
+      }
     </section>
   </main>
 
   <!-- Dedicated Modal Components (Clean Architecture / Separation of Concerns) -->
-  <app-theory-guide-modal [isOpen]="isTheoryOpen()" (close)="closeTheory()" />
-  <app-onboarding-tour />
-  <app-solve-modal
-    [isOpen]="isSolveModalOpen()"
-    (close)="closeSolveModal()"
-    (scramble)="handleScramble()"
-  />
+  <app-solve-modal [isOpen]="isSolveModalOpen()" (close)="closeSolveModal()" (scramble)="handleScramble()" />
   <app-shortcuts-modal [isOpen]="isShortcutsModalOpen()" (close)="closeShortcutsModal()" />
   <app-share-modal [isOpen]="isShareModalOpen()" (close)="closeShareModal()" />
+  <app-settings-modal [isOpen]="isSettingsModalOpen()" (close)="closeSettingsModal()"
+    (openShortcuts)="openShortcutsFromSettings()" (testMove)="handleTestMove()" />
 
   <!-- Toast Message Overlay -->
   @if (toastMessage(); as msg) {
-    <div
-      class="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3 bg-slate-900/95 border border-cyan-500/50 text-cyan-300 rounded-xl shadow-2xl backdrop-blur-md animate-fade-in"
-    >
-      <svg class="w-4 h-4 text-cyan-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="10" />
-        <polyline points="12 6 12 12 14 14" />
-      </svg>
-      <span class="text-xs font-semibold">{{ msg }}</span>
-    </div>
+  <div
+    class="fixed bottom-6 right-6 z-[1100] flex items-center gap-2.5 px-4 py-3 bg-slate-900/95 border border-cyan-500/50 text-cyan-300 rounded-xl shadow-2xl backdrop-blur-md animate-fade-in">
+    <svg class="w-4 h-4 text-cyan-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="10" />
+      <polyline points="12 6 12 12 14 14" />
+    </svg>
+    <span class="text-xs font-semibold">{{ msg }}</span>
+  </div>
   }
 </div>

@@ -38,11 +38,18 @@ export class SoundService {
     }
   }
 
+  setMuted(muted: boolean): void {
+    this.isMuted.set(muted);
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('rubik_sound_muted', String(muted));
+    }
+  }
+
   /**
    * Play tactile mechanical cube click sound
    */
-  playTurnSound(isSlice = false): void {
-    if (this.isMuted()) return;
+  playTurnSound(isSlice = false, force = false): void {
+    if (this.isMuted() && !force) return;
     const ctx = this.getAudioContext();
     if (!ctx) return;
 
